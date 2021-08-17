@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import hooks from './hooks';
 
 import { STANDARD } from './config/private-label';
 import { directiveSsr as t } from './plugins/i18n';
@@ -109,6 +110,8 @@ module.exports = {
     base:       routerBasePath,
     middleware: ['i18n'],
   },
+
+  hooks: hooks(this),
 
   build: {
     publicPath: resourceBase,
