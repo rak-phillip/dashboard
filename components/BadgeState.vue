@@ -44,6 +44,14 @@ export default {
 </template>
 
 <style lang="scss">
+
+  @mixin clip {
+    text-overflow : ellipsis;
+    overflow      : hidden;
+    white-space   : nowrap;
+    word-wrap     : break-word;
+  }
+
   .badge-state {
     padding: 2px 10px;
     border: 1px solid transparent;
