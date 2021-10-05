@@ -43,14 +43,7 @@ export default {
   </span>
 </template>
 
-<style lang="scss">
-
-  @mixin clip {
-    text-overflow : ellipsis;
-    overflow      : hidden;
-    white-space   : nowrap;
-    word-wrap     : break-word;
-  }
+<style lang="scss" scoped>
 
   .badge-state {
     padding: 2px 10px;
@@ -78,7 +71,10 @@ export default {
   }
 
   .sortable-table TD .badge-state {
-    @include clip;
+    text-overflow : ellipsis;
+    overflow      : hidden;
+    white-space   : nowrap;
+    word-wrap     : break-word;
     display: inline-block;
     max-width: 100%;
     position: relative;
