@@ -1,6 +1,7 @@
 <script>
 
 export default {
+  name: 'badge-state',
   props: {
     // Set either value or color+label
     // A resource with stateBackground and stateDisplay

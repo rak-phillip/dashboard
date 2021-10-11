@@ -4,6 +4,7 @@ import { _EDIT, _VIEW } from '@/config/query-params';
 import { addObject, removeObject } from '@/utils/array';
 
 export default {
+  name: 'checkbox',
   props: {
     value: {
       type:    [Boolean, Array],
