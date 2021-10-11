@@ -1,13 +1,17 @@
-import BadgeState from './BadgeState.vue'
-import Card from './Card.vue'
-import Checkbox from './form/Checkbox.vue'
+import * as components from './'
 
-export { BadgeState }
-export { Card }
-export { Checkbox }
+const ComponentLibrary = {
+  install(Vue) {
+    for (const componentName in components) {
+      const component = components[componentName]
 
-export default {
-  BadgeState,
-  Card,
-  Checkbox
+      Vue.component(component.name, component)
+    }
+  }
+}
+
+export default ComponentLibrary
+
+if (typeof window !== 'undefined' && window.Vue) {
+  window.Vue.use(ComponentLibrary)
 }
