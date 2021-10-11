@@ -1,4 +1,4 @@
-import * as components from './'
+import * as components from './index'
 
 const ComponentLibrary = {
   install(Vue) {
@@ -15,3 +15,5 @@ export default ComponentLibrary
 if (typeof window !== 'undefined' && window.Vue) {
   window.Vue.use(ComponentLibrary)
 }
+
+export * from './index'

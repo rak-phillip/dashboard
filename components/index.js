@@ -1,13 +1,4 @@
-import BadgeState from './BadgeState.vue'
-import Card from './Card.vue'
-import Checkbox from './form/Checkbox.vue'
-
-export { BadgeState }
-export { Card }
-export { Checkbox }
-
-export default {
-  BadgeState,
-  Card,
-  Checkbox
-}
+export { default as BadgeState } from './BadgeState.vue'
+export { default as Card } from './Card.vue'
+export { default as Checkbox } from './form/Checkbox.vue'
+export { default as HelloWorld } from './HelloWorld.vue'
