@@ -37,6 +37,8 @@ export default {
 </template>
 
 <style lang='scss'>
+$input-padding-lg: 18px;
+
 .labeled-tooltip {
     position: absolute;
     width: 100%;
