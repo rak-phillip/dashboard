@@ -55,5 +55,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
-        hub release edit -a build/${{ env.ARTIFACT_NAME }}.tar.gz -a build/${{ env.ARTIFACT_NAME }}.tar.gz.sha512sum ${{ steps.vars.outputs.VERSION }}
+        tag="${GITHUB_REF##*/}"
+        hub release edit -a build/${{ env.ARTIFACT_NAME }}.tar.gz -a build/${{ env.ARTIFACT_NAME }}.tar.gz.sha512sum "${tag}"
