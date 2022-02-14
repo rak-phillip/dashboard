@@ -55,5 +55,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        tag="${GITHUB_REF##*/}"
-        gh release upload "${tag}" build/${{ env.ARTIFACT_NAME }}.tar.gz -a build/${{ env.ARTIFACT_NAME }}.tar.gz.sha512sum
+        gh release upload ${GITHUB_REF_NAME} build/${{ env.ARTIFACT_NAME }}.tar.gz -a build/${{ env.ARTIFACT_NAME }}.tar.gz.sha512sum
