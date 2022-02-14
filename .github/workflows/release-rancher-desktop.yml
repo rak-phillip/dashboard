@@ -9,7 +9,6 @@ env:
   OUTPUT_DIR: dist
   RELEASE_DIR: release
   ARTIFACT_NAME: rancher-dashboard-desktop-embed
-  TAG: ${{ github.ref }}
   
 jobs:
   build:
@@ -56,4 +55,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        hub release edit -a build/${{ env.ARTIFACT_NAME }}.tar.gz -a build/${{ env.ARTIFACT_NAME }}.tar.gz.sha512sum ${{ env.tag }}
+        tag="${{ github.ref }}"
+        hub release edit -a build/${{ env.ARTIFACT_NAME }}.tar.gz -a build/${{ env.ARTIFACT_NAME }}.tar.gz.sha512sum ${tag}
