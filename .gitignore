@@ -113,3 +113,6 @@ shell/types/shell
 scripts/standalone/ui
 scripts/standalone/cert
 scripts/standalone/node
+
+# utils
+/pkg/rancher-utils/lib/
