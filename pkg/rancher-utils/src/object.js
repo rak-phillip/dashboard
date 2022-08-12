@@ -8,8 +8,8 @@ import isObject from 'lodash/isObject';
 import isArray from 'lodash/isArray';
 import isEqual from 'lodash/isEqual';
 import difference from 'lodash/difference';
-import { splitObjectPath, joinObjectPath } from '@shell/utils/string';
-import { addObject } from '@shell/utils/array';
+import { splitObjectPath, joinObjectPath } from './string';
+import { addObject } from './array';
 
 export function set(obj, path, value) {
   let ptr = obj;

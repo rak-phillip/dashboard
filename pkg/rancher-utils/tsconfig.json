@@ -6,10 +6,12 @@
     "declaration": true,
     "outDir": "./lib",
     "strict": true,
+    "allowJs": true,
+    "esModuleInterop": true,
     "typeRoots": [
       "./node_modules/@types",
       "./types"
-    ]
+    ],
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "**/__tests__/*"],

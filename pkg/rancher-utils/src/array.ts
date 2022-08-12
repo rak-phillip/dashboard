@@ -1,5 +1,5 @@
 import xor from 'lodash/xor';
-import { get } from '@shell/utils/object';
+import { get } from './object';
 
 export function removeObject<T>(ary: T[], obj: T): T[] {
   const idx = ary.indexOf(obj);
