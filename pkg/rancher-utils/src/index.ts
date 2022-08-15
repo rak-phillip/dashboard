@@ -4,3 +4,4 @@ export * from './object';
 export * from './platform';
 export * from './position';
 export * from './sort/sort';
+export * from './unit';
