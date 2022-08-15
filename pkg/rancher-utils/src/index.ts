@@ -2,3 +2,4 @@ export * from './string';
 export * from './array';
 export * from './object';
 export * from './platform';
+export * from './position';
