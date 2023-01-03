@@ -4,6 +4,15 @@ import { shouldNotLoadPlugin, UI_PLUGIN_BASE_URL } from '@shell/config/uiplugins
 
 const META_NAME_PREFIX = 'app-autoload-';
 
+function newCancelToken(context, timeout = 0) {
+  const CancelToken = context.$axios.CancelToken;
+  const source = CancelToken.source();
+
+  setTimeout(() => source.cancel('Operation cancelled by user'), timeout);
+
+  return source.token;
+}
+
 export default async function(context) {
   // UI Plugins declared in the HTML head
   const meta = context.app?.head?.meta || [];
@@ -38,6 +47,7 @@ export default async function(context) {
         method:               'GET',
         headers:              { accept: 'application/json' },
         redirectUnauthorized: false,
+        cancelToken:          newCancelToken(context, 5000),
       });
 
       if (res) {
