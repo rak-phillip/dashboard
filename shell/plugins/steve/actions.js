@@ -116,8 +116,17 @@ export default {
       }
     }
 
+    function newCancelToken(cancelToken, timeout = 0) {
+      const CancelToken = cancelToken;
+      const source = CancelToken.source();
+
+      setTimeout(() => source.cancel('Operation cancelled by user'), timeout);
+
+      return source.token;
+    }
+
     function makeRequest(that, opt) {
-      return that.$axios(opt).then((res) => {
+      return that.$axios({ ...opt, cancelToken: newCancelToken(that.$axios.cancelToken, 5000) }).then((res) => {
         let out;
 
         if ( opt.responseType ) {
