@@ -23,8 +23,10 @@ import { filterOnlyKubernetesClusters, filterHiddenLocalCluster } from '@shell/u
 import { RESET_CARDS_ACTION, SET_LOGIN_ACTION } from '@shell/config/page-actions';
 
 export default {
-  name:       'Home',
-  layout:     'home',
+  name: 'Home',
+  layout({ $config }) {
+    return $config.rancherEnv === 'desktop' ? 'desktop' : 'home';
+  },
   components: {
     Banner,
     BannerGraphic,
