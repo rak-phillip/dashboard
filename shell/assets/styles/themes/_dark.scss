@@ -211,4 +211,7 @@
 
   --product-icon               : #{$lighter};
   --product-icon-active        : #{$lightest};
+
+  --activity-icon-active-background: #{$lightest};
+  --activity-icon-color: #{$blue-500};
 }
