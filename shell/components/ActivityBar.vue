@@ -25,7 +25,7 @@ export default Vue.extend({
     };
   },
   methods: {
-    menuClick() {
+    toggleExpansion() {
       this.isExpanded = !this.isExpanded;
     }
   },
@@ -43,7 +43,7 @@ export default Vue.extend({
     <div class="menu">
       <div
         class="menu-container"
-        @click="menuClick"
+        @click="toggleExpansion"
       >
         <span class="icon icon-2x icon-menu" />
       </div>
