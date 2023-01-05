@@ -3,7 +3,23 @@ import Vue from 'vue';
 export default Vue.extend({
   name: 'ActivityBar',
   data() {
-    return { isExpanded: false };
+    return {
+      isExpanded: false,
+      activities: [
+        {
+          id:     'desktop',
+          icon:   'icon-info',
+          label:  'Desktop',
+          active: false,
+        },
+        {
+          id:     'dashboard',
+          icon:   'icon-warning',
+          label:  'Dashboard',
+          active: true,
+        },
+      ]
+    };
   },
   methods: {
     menuClick() {
@@ -41,23 +57,27 @@ export default Vue.extend({
       </div>
     </div>
     <div class="body">
-      <div class="activity">
-        <div class="activity-icon">
-          <span class="icon icon-2x icon-info" />
+      <div
+        v-for="activity in activities"
+        :key="activity.id"
+        class="activity"
+      >
+        <div
+          class="activity-icon"
+          :class="{ active: activity.active }"
+        >
+          <span
+            class="icon icon-2x"
+            :class="[activity.icon]"
+          />
         </div>
         <span
           v-if="isExpanded"
           class="activity-text"
-        >Rancher Desktop</span>
-      </div>
-      <div class="activity">
-        <div class="activity-icon active">
-          <span class="icon icon-2x icon-warning" />
-        </div>
-        <span
-          v-if="isExpanded"
-          class="activity-text active"
-        >Dashboard</span>
+          :class="{ active: activity.active }"
+        >
+          {{ activity.label }}
+        </span>
       </div>
     </div>
   </div>
