@@ -11,13 +11,13 @@ export default Vue.extend({
       activities: [
         {
           id:     'desktop',
-          icon:   'icon-info',
+          icon:   'icon-rancher-desktop',
           label:  'Desktop',
           active: false,
         },
         {
           id:     'dashboard',
-          icon:   'icon-warning',
+          icon:   'icon-dashboard',
           label:  'Dashboard',
           active: true,
         },
