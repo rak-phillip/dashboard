@@ -1,10 +1,14 @@
 <script lang="ts">
 import Vue from 'vue';
 import ActivityBarBody from './ActivityBarBody.vue';
+import ActivityBarMenu from './ActivityBarMenu.vue';
 
 export default Vue.extend({
   name:       'ActivityBar',
-  components: { ActivityBarBody },
+  components: {
+    ActivityBarBody,
+    ActivityBarMenu,
+  },
   data() {
     return {
       isExpanded: false,
@@ -28,7 +32,7 @@ export default Vue.extend({
     toggleExpansion() {
       this.isExpanded = !this.isExpanded;
     }
-  },
+  }
 });
 </script>
 
@@ -40,14 +44,9 @@ export default Vue.extend({
       'activity-bar-collapsed': !isExpanded
     }"
   >
-    <div class="menu">
-      <div
-        class="menu-container"
-        @click="toggleExpansion"
-      >
-        <span class="icon icon-2x icon-menu" />
-      </div>
-    </div>
+    <activity-bar-menu
+      @click="toggleExpansion"
+    />
     <activity-bar-body
       :activities="activities"
       :is-expanded="isExpanded"
@@ -75,30 +74,6 @@ export default Vue.extend({
 
     &.activity-bar-collapsed {
       width: 100%;
-    }
-
-    .menu {
-      display: flex;
-      padding: 0.75rem 0;
-
-      .menu-container {
-        fill: var(--darker-text);
-        color: var(--darker-text);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 36px;
-        min-height: 36px;
-        opacity: 1;
-
-        .menu-icon {
-          color: var(--darker-text);
-          min-width: 24px;
-          min-height: 24px;
-        }
-      }
-
     }
   }
 </style>
