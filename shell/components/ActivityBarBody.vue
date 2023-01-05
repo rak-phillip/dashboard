@@ -78,6 +78,10 @@ export default {
           border: 1px solid var(--activity-icon-active-background);
           background-color: var(--activity-icon-active-background);
           color: var(--activity-icon-color);
+
+          .icon {
+            font-weight: bold;
+          }
         }
 
         display: flex;
