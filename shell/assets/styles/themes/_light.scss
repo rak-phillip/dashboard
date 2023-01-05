@@ -24,6 +24,8 @@ $lightest  : #FFFFFF;
 $disabled  : $medium;
 
 $primary         : #3D98D3;
+$primary-500     : #0181BE;
+$primary-900     : #002C40;
 $secondary       : $darker;
 $link            : #3D98D3;
 
@@ -45,6 +47,8 @@ $drag-over: #DCDEE7;
 BODY, .theme-light {
 
   --primary                    : #{$primary};
+  --primary-500                : #{$primary-500};
+  --primary-900                : #{$primary-900};
   --primary-text               : #{contrast-color($primary)};
   --primary-hover-bg           : #{darken($primary, 10%)};
   --primary-hover-text         : #{saturate($lightest, 20%)};
