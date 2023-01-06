@@ -30,13 +30,15 @@ export default {
           :class="[activity.icon]"
         />
       </div>
-      <span
-        v-show="isExpanded"
-        class="activity-text"
-        :class="{ active: activity.active }"
-      >
-        {{ activity.label }}
-      </span>
+      <transition name="fade">
+        <span
+          v-show="isExpanded"
+          class="activity-text"
+          :class="{ active: activity.active }"
+        >
+          {{ activity.label }}
+        </span>
+      </transition>
     </div>
   </div>
 </template>
@@ -95,5 +97,13 @@ export default {
         opacity: 1;
       }
     }
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .25s;
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
   }
 </style>
