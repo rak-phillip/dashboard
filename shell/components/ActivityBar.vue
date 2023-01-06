@@ -17,13 +17,13 @@ export default Vue.extend({
           id:     'desktop',
           icon:   'icon-rancher-desktop',
           label:  'Desktop',
-          active: false,
+          active: true,
         },
         {
           id:     'dashboard',
           icon:   'icon-dashboard',
           label:  'Dashboard',
-          active: true,
+          active: false,
         },
       ]
     };
