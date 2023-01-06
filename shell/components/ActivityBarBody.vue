@@ -31,7 +31,7 @@ export default {
         />
       </div>
       <span
-        v-if="isExpanded"
+        v-show="isExpanded"
         class="activity-text"
         :class="{ active: activity.active }"
       >
