@@ -181,9 +181,9 @@ export class Plugin implements IPlugin {
   }
 
   public async onLogOut(store: any) {
-    await Promise.all(this.stores.map((s: any) => store.dispatch(`${ s.storeName }/onLogout`)));
+    // await Promise.all(this.stores.map((s: any) => store.dispatch(`${ s.storeName }/onLogout`)));
 
-    await this._onLogOut(store);
+    // await this._onLogOut(store);
   }
 
   public register(type: string, name: string, fn: Function) {

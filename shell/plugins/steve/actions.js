@@ -126,7 +126,7 @@ export default {
     }
 
     function makeRequest(that, opt) {
-      return that.$axios({ ...opt, cancelToken: newCancelToken(that.$axios.cancelToken, 5000) }).then((res) => {
+      return that.$axios({ ...opt, cancelToken: newCancelToken(that.$axios.CancelToken, 15000) }).then((res) => {
         let out;
 
         if ( opt.responseType ) {
