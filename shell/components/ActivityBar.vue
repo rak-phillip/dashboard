@@ -18,12 +18,14 @@ export default Vue.extend({
           icon:   'icon-rancher-desktop',
           label:  'Desktop',
           active: true,
+          route:  '/general',
         },
         {
           id:     'dashboard',
           icon:   'icon-dashboard',
           label:  'Dashboard',
           active: false,
+          route:  '/c/local',
         },
       ]
     };

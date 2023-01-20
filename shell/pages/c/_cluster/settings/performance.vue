@@ -10,7 +10,7 @@ import { _EDIT, _VIEW } from '@shell/config/query-params';
 import UnitInput from '@shell/components/form/UnitInput';
 
 export default {
-  layout:     'authenticated',
+  layout:     'desktop',
   components: {
     Checkbox,
     Loading,

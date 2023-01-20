@@ -2,7 +2,13 @@
 import { NAME as EXPLORER } from '@shell/config/product/explorer';
 
 export default {
-  layout: 'plain',
+  layout({ $config }) {
+    console.log('C', { config: $config });
+
+    return 'desktop';
+
+    // return $config.rancherEnv === 'desktop' ? 'desktop' : 'plain';
+  },
 
   middleware({ redirect, route } ) {
     return redirect({

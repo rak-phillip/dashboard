@@ -59,6 +59,8 @@ const COMPONENT_STATUS = [
 export default {
   name: 'ClusterExplorerIndexPage',
 
+  // layout: 'desktop',
+
   components: {
     EtcdInfoBanner,
     DashboardMetrics,
@@ -400,6 +402,7 @@ export default {
 
 <template>
   <section class="dashboard">
+    <h1>NOT FAIL - EXPLORER</h1>
     <header class="header-layout">
       <div class="title">
         <h1>

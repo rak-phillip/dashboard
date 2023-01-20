@@ -51,7 +51,7 @@ export default {
   name: 'Install',
 
   layout(context) {
-    return isPlainLayout(context.query) ? 'plain' : '';
+    return 'desktop'; // isPlainLayout(context.query) ? 'plain' : '';
   },
 
   components: {

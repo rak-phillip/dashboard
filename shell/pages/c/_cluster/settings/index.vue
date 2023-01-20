@@ -3,7 +3,7 @@ import { NAME as SETTINGS } from '@shell/config/product/settings';
 import { MANAGEMENT } from '@shell/config/types';
 
 export default {
-  layout: 'plain',
+  layout: 'desktop',
 
   middleware({ redirect, route, store } ) {
     const hasSettings = !!store.getters[`management/schemaFor`](MANAGEMENT.SETTING);

@@ -62,7 +62,7 @@ export default {
     };
   },
 
-  layout: 'plain',
+  layout: 'desktop',
 
   async fetch() {
     const hash = {};

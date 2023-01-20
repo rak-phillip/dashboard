@@ -53,6 +53,7 @@ export default {
 
 <template>
   <div class="dashboard-root">
+    <h1>NOT FAIL - PLAIN</h1>
     <FixedBanner :header="true" />
     <AwsComplianceBanner />
     <AzureWarning />

@@ -20,7 +20,7 @@ import { setFavIcon } from '@shell/utils/favicon';
 const Color = require('color');
 
 export default {
-  layout: 'authenticated',
+  layout: 'desktop',
 
   components: {
     LabeledInput, Checkbox, FileSelector, Loading, SimpleBox, AsyncButton, Banner, ColorInput, TypeDescription

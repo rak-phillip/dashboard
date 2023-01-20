@@ -8,5 +8,8 @@ export default {
 </script>
 
 <template>
-  <ResourceList />
+  <div>
+    <h1>NOT FAIL - RESOURCE</h1>
+    <ResourceList />
+  </div>
 </template>

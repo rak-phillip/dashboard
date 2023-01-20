@@ -3,7 +3,7 @@ import { NAME as AUTH } from '@shell/config/product/auth';
 import { MANAGEMENT } from '@shell/config/types';
 
 export default {
-  layout: 'plain',
+  layout: 'desktop',
 
   middleware({ redirect, route } ) {
     return redirect({

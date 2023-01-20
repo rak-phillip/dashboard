@@ -12,6 +12,7 @@ export default {
 <template>
   <main class="main-layout">
     <div class="dashboard-root">
+      <h1>NOT FAIL - UNAUTHENTICATED</h1>
       <FixedBanner :header="true" />
       <FixedBanner :consent="true" />
       <nuxt />

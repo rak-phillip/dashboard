@@ -21,24 +21,26 @@ export default {
       :key="activity.id"
       class="activity"
     >
-      <div
-        class="activity-icon"
-        :class="{ active: activity.active }"
-      >
-        <span
-          class="icon icon-2x"
-          :class="[activity.icon]"
-        />
-      </div>
-      <transition name="fade">
-        <span
-          v-show="isExpanded"
-          class="activity-text"
+      <nuxt-link :to="activity.route">
+        <div
+          class="activity-icon"
           :class="{ active: activity.active }"
         >
-          {{ activity.label }}
-        </span>
-      </transition>
+          <span
+            class="icon icon-2x"
+            :class="[activity.icon]"
+          />
+        </div>
+        <transition name="fade">
+          <span
+            v-show="isExpanded"
+            class="activity-text"
+            :class="{ active: activity.active }"
+          >
+            {{ activity.label }}
+          </span>
+        </transition>
+      </nuxt-link>
     </div>
   </div>
 </template>
@@ -49,13 +51,19 @@ export default {
     gap: 1rem;
     flex-direction: column;
 
-    .activity {
+    .activity a {
       display: flex;
       gap: 1rem;
       align-items: center;
       cursor: pointer;
 
+      &:active {
+        text-decoration: none;
+      }
+
       &:hover {
+        text-decoration: none;
+
         .activity-icon {
           color: var(--primary-hover-text);
           border-color: var(--primary-hover-text);

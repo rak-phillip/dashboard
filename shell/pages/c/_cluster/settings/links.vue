@@ -13,7 +13,7 @@ import DefaultLinksEditor from './DefaultLinksEditor';
 import { CUSTOM_LINKS_VERSION, fetchLinks } from '@shell/config/home-links';
 
 export default {
-  layout:     'authenticated',
+  layout:     'desktop',
   components: {
     KeyValue,
     Loading,

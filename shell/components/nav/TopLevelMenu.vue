@@ -131,6 +131,8 @@ export default {
           params: { cluster }
         };
 
+        console.log('P', { p, to });
+
         if ( !this.$router.getMatchedComponents(to).length ) {
           to.name = 'c-cluster-product';
           to.params.product = p.name;

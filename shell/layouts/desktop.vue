@@ -19,9 +19,10 @@ export default {
 
 <template>
   <div class="dashboard-root">
+    <h1>NOT FAIL - DESKTOP</h1>
     <div class="dashboard-content">
       <activity-bar class="activity-bar" />
-      <div>Mock Header</div>
+      <!-- <div>Mock Header</div> -->
       <main class="main-layout">
         <nuxt class="outlet" />
       </main>
@@ -41,11 +42,12 @@ export default {
     flex-grow:1;
 
     grid-template-areas:
-      "activity-bar header"
+      // "activity-bar header"
       "activity-bar main";
 
     grid-template-columns: max(57px) auto;
-    grid-template-rows:    var(--header-height) auto;
+    grid-template-rows: auto;
+    // grid-template-rows:    var(--header-height) auto;
 
     > HEADER {
       grid-area: header;

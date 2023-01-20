@@ -53,7 +53,7 @@ const DEFAULT_BANNER_SETTING = {
 };
 
 export default {
-  layout: 'authenticated',
+  layout: 'desktop',
 
   components: {
     Checkbox,
