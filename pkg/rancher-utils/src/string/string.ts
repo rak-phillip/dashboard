@@ -33,6 +33,18 @@ export function strPad(str: string, toLength: number, padChars = ' ', right = fa
   }
 }
 
+// Turn thing1 into thing00000001 so that the numbers sort numerically
+export function sortableNumericSuffix(str: string) {
+  str = str || '';
+  const match = str.match(/^(.*[^0-9])([0-9]+)$/);
+
+  if (match) {
+    return match[1] + strPad(match[2], 8, '0');
+  }
+
+  return str;
+}
+
 type EntityMap = Record<'&' | '<' | '>' | '"' | "'" | '/', string>;
 
 const entityMap: EntityMap = {
@@ -54,6 +66,19 @@ export function escapeHtml(html: any) {
 
     return entityMap[s];
   });
+}
+
+/**
+ * Return HTML markup from escaped HTML string, allowing specific tags
+ * @param text string
+ * @returns string
+ */
+export function decodeHtml(text: string) {
+  const div = document.createElement('div');
+
+  div.innerHTML = text;
+
+  return div.textContent || div.innerText || '';
 }
 
 export function escapeRegex(string: string) {
@@ -131,6 +156,8 @@ export function formatPercent(value: number, maxPrecision = 2) {
 export function pluralize(str: string) {
   if ( str.match(/.*[^aeiou]y$/i) ) {
     return `${ str.substr(0, str.length - 1) }ies`;
+  } else if ( str.endsWith('ics') ) {
+    return str;
   } else if ( str.endsWith('s') ) {
     return `${ str }es`;
   } else {
