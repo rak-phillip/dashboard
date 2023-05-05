@@ -33,18 +33,6 @@ export function strPad(str: string, toLength: number, padChars = ' ', right = fa
   }
 }
 
-// Turn thing1 into thing00000001 so that the numbers sort numerically
-export function sortableNumericSuffix(str: string) {
-  str = str || '';
-  const match = str.match(/^(.*[^0-9])([0-9]+)$/);
-
-  if (match) {
-    return match[1] + strPad(match[2], 8, '0');
-  }
-
-  return str;
-}
-
 type EntityMap = Record<'&' | '<' | '>' | '"' | "'" | '/', string>;
 
 const entityMap: EntityMap = {
