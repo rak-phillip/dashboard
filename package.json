@@ -54,7 +54,7 @@
     "publish:lib": "cd pkg/rancher-components && npm publish"
   },
   "dependencies": {
-    "@aws-sdk/client-ec2": "3.1.0",
+    "@aws-sdk/client-ec2": "3.347.1",
     "@aws-sdk/client-eks": "3.1.0",
     "@aws-sdk/client-kms": "3.8.1",
     "@innologica/vue-dropdown-menu": "0.1.3",
