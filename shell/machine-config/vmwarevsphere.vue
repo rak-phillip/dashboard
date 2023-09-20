@@ -383,7 +383,7 @@ export default {
       const content = this.mapPathOptionsToContent(options);
       const valueInContent = content.find((c) => c.value === this.value.datacenter );
 
-      if (!valueInContent) {
+      if (!valueInContent && this.mode === _CREATE) {
         set(this.value, 'datacenter', options[0]);
         set(this.value, 'cloneFrom', undefined);
         set(this.value, 'useDataStoreCluster', false);
@@ -581,7 +581,7 @@ export default {
         return content.find((c) => c.value === this.value[key] );
       };
 
-      if (!isValueInContent()) {
+      if (!isValueInContent() && this.mode === _CREATE) {
         const value = isArray ? [] : content[0]?.value;
 
         if (value !== SENTINEL) {
