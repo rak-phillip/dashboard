@@ -7,17 +7,19 @@ import { VCleanTooltip } from '@shell/plugins/clean-tooltip-directive.js';
 
 import '@shell/plugins/replaceall';
 
-import Vue from 'vue';
+import { createApp } from 'vue';
 
 import { TextEncoder, TextDecoder } from 'util';
+const vueApp = createApp({});
+
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
-Vue.config.productionTip = false;
-Vue.use(i18n, { store: { dispatch() {} } });
-Vue.use(VTooltip);
-Vue.use(VCleanTooltip);
-Vue.component('v-select', vSelect);
+vueApp.config.productionTip = false;
+vueApp.use(i18n, { store: { dispatch() {} } });
+vueApp.use(VTooltip);
+vueApp.use(VCleanTooltip);
+vueApp.component('v-select', vSelect);
 
 /**
  * Global configuration for Jest tests

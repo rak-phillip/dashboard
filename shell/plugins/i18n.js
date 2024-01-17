@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { escapeHtml } from '../utils/string';
-import Vue, { watchEffect, ref, h } from 'vue';
+import { watchEffect, ref, h } from 'vue';
 import { useStore } from '../composables/useStore';
 
 function stringFor(store, key, args, raw = false, escapehtml = true) {
@@ -56,22 +56,18 @@ export function directiveSsr(vnode, binding) {
 }
 
 const i18n = {
-  name:    'i18n',
-  install: (Vue, _options) => {
+  install: (vueApp, _options) => {
     _options?.store?.dispatch('i18n/init');
-
-    if (Vue.prototype.t && Vue.directive('t') && Vue.component('t')) {
+    if (vueApp.config.globalProperties.t && vueApp.directive('t') && vueApp.component('t')) {
       // eslint-disable-next-line no-console
       console.debug('Skipping i18n install. Directive, component, and option already exist.');
     }
 
-    Vue.prototype.t = function(key, args, raw) {
-      return stringFor(this.$store, key, args, raw);
-    };
+    vueApp.config.globalProperties.t = (key, args, raw) => stringFor(this.$store, key, args, raw);
 
     // InnerHTML: <some-tag v-t="'some.key'" />
     // As an attribute: <some-tag v-t:title="'some.key'" />
-    Vue.directive('t', {
+    vueApp.directive('t', {
       bind() {
         directive(...arguments);
       },
@@ -82,7 +78,7 @@ const i18n = {
 
     // Basic (but you might want the directive above): <t k="some.key" />
     // With interpolation: <t k="some.key" count="1" :foo="bar" />
-    Vue.component('t', {
+    vueApp.component('t', {
       inheritAttrs: false,
       props:        {
         k: {
@@ -131,13 +127,3 @@ const i18n = {
 };
 
 export default i18n;
-
-// This is being done for backwards compatibility with our extensions that have written tests and didn't properly make use of Vue.use() when importing and mocking translations
-// Example failing test https://github.com/rancher/dashboard/actions/runs/8927503474/job/24521022320?pr=10923
-const isThisFileBeingExecutedInATest = process.env.NODE_ENV === 'test';
-
-if (isThisFileBeingExecutedInATest) {
-  // Go take a look at our jest.setup.js to see how we make use of Vue.use(i18n, ...)
-  console.warn('The implicit addition of i18n options has been deprecated in Rancher Shell and will be removed in a future version. Make sure to invoke `Vue.use(i18n)` to maintain compatibility.');
-  Vue.use(i18n);
-}
