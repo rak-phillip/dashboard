@@ -46,10 +46,10 @@ beforeEach(() => {
   jest.restoreAllMocks(); // Use this function inside your test if you need to reset mocks and restore existing functionality
 
   // Mock the $plugin object
-  config.mocks['$plugin'] = { getDynamic: () => undefined };
+  // config.mocks['$plugin'] = { getDynamic: () => undefined };
 
-  config.mocks['$store'] = { getters: { 'i18n/t': jest.fn() } };
-  config.directives = { 'clean-tooltip': VCleanTooltip };
+  // config.mocks['$store'] = { getters: { 'i18n/t': jest.fn() } };
+  config.directives = { t, 'clean-tooltip': VCleanTooltip };
 
   // Overrides some components
   // config.stubs['my-component'] = { template: "<div></div> "};
