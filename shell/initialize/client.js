@@ -11,7 +11,7 @@ import {
   globalHandleError,
   urlJoin
 } from '../utils/nuxt.js';
-import { createApp } from './index.js';
+import { extendApp } from './index.js';
 import fetchMixin from '../mixins/fetch.client';
 import { nuxtLinkAlias } from '../components/nuxt/nuxt-link.client.js'; // should be included after ./index.js
 import { updatePageTitle } from '@shell/utils/title';
@@ -34,9 +34,9 @@ if (!global.fetch) {
 }
 
 // Global shared references
-let app;
-let router;
-
+let configApp;
+let configRouter;
+let _lastPaths = [];
 const $config = nuxt.publicRuntimeConfig || {}; // eslint-disable-line no-undef
 
 if ($config._app) {
@@ -87,7 +87,7 @@ if (debug) {
 const errorHandler = Vue.config.errorHandler || console.error; // eslint-disable-line no-console
 
 // Create and mount App
-createApp(nuxt.publicRuntimeConfig).then(mountApp).catch(errorHandler); // eslint-disable-line no-undef
+extendApp(nuxt.publicRuntimeConfig).then(mountApp).catch(errorHandler); // eslint-disable-line no-undef
 
 function callMiddleware(Components, context) {
   let midd = [];
@@ -143,13 +143,13 @@ async function render(to, from, next) {
   };
 
   // Update context
-  await setContext(app, {
+  await setContext(configApp, {
     route: to,
     from,
     next:  _next.bind(this)
   });
-  this._dateLastError = app.nuxt.dateErr;
-  this._hadError = Boolean(app.nuxt.err);
+  this._dateLastError = configApp.nuxt.dateErr;
+  this._hadError = Boolean(configApp.nuxt.err);
 
   // Get route's matched components
   const matches = [];
@@ -163,7 +163,7 @@ async function render(to, from, next) {
     // 3. Authenticated middleware would then load plugins and check to see if there was a valid route and navigate to that if it existed
     // 4. This would allow harvester cluster pages to load on page reload
     // We should really make authenticated middleware do less...
-    await callMiddleware.call(this, [{ options: { middleware: ['authenticated'] } }], app.context);
+    await callMiddleware.call(this, [{ options: { middleware: ['authenticated'] } }], configApp.context);
 
     if (nextCalled) {
       return;
@@ -177,20 +177,20 @@ async function render(to, from, next) {
 
   try {
     // Call middleware
-    await callMiddleware.call(this, Components, app.context);
+    await callMiddleware.call(this, Components, configApp.context);
     if (nextCalled) {
       return;
     }
-    if (app.context._errored) {
+    if (configApp.context._errored) {
       return next();
     }
 
     // Call middleware for layout
-    await callMiddleware.call(this, Components, app.context);
+    await callMiddleware.call(this, Components, configApp.context);
     if (nextCalled) {
       return;
     }
-    if (app.context._errored) {
+    if (configApp.context._errored) {
       return next();
     }
 
@@ -203,7 +203,7 @@ async function render(to, from, next) {
           continue;
         }
 
-        isValid = await Component.options.validate(app.context);
+        isValid = await Component.options.validate(configApp.context);
 
         if (!isValid) {
           break;
@@ -260,33 +260,33 @@ function normalizeComponents(to, ___) {
 
 function checkForErrors(app) {
   // Hide error component if no error
-  if (app._hadError && app._dateLastError === app.$options.nuxt.dateErr) {
-    app.error();
+  if (configApp._hadError && configApp._dateLastError === configApp.$options.nuxt.dateErr) {
+    configApp.error();
   }
 }
 
 async function mountApp(__app) {
   // Set global variables
-  app = __app.app;
-  router = __app.router;
+  configApp = __app.app;
+  configRouter = __app.router;
 
   // Create Vue instance
-  const _app = new Vue(app);
+  const _app = new Vue(configApp);
 
   // Mounts Vue app to DOM element
   const mount = () => {
     _app.$mount('#app');
 
     // Add afterEach router hooks
-    router.afterEach(normalizeComponents);
+    configRouter.afterEach(normalizeComponents);
   };
 
   // Initialize error handler
   _app.$loading = {}; // To avoid error while _app.$nuxt does not exist
 
   // Add beforeEach router hooks
-  router.beforeEach(render.bind(_app));
-  router.beforeEach((from, to, next) => {
+  configRouter.beforeEach(render.bind(_app));
+  configRouter.beforeEach((from, to, next) => {
     if (from?.name !== to?.name) {
       updatePageTitle(getVendor());
     }
@@ -296,14 +296,14 @@ async function mountApp(__app) {
 
   // First render on client-side
   const clientFirstMount = () => {
-    normalizeComponents(router.currentRoute, router.currentRoute);
+    normalizeComponents(configRouter.currentRoute, configRouter.currentRoute);
     checkForErrors(_app);
     mount();
   };
 
   // fix: force next tick to avoid having same timestamp when an error happen on spa fallback
   await new Promise((resolve) => setTimeout(resolve, 0));
-  render.call(_app, router.currentRoute, router.currentRoute, (path) => {
+  render.call(_app, configRouter.currentRoute, configRouter.currentRoute, (path) => {
     // If not redirected
     if (!path) {
       clientFirstMount();
@@ -313,13 +313,13 @@ async function mountApp(__app) {
 
     // Add a one-time afterEach hook to
     // mount the app wait for redirect and route gets resolved
-    const unregisterHook = router.afterEach((to, from) => {
+    const unregisterHook = configRouter.afterEach((to, from) => {
       unregisterHook();
       clientFirstMount();
     });
 
     // Push the path and let route to be resolved
-    router.push(path, undefined, (err) => {
+    configRouter.push(path, undefined, (err) => {
       if (err) {
         errorHandler(err);
       }
