@@ -66,7 +66,7 @@ loadDirectives();
 Vue.component(NuxtChild.name, NuxtChild);
 Vue.component('NChild', NuxtChild);
 
-async function createApp(config = {}) {
+async function extendApp(config = {}) {
   const router = await extendRouter(config);
 
   const store = createStore();
@@ -166,61 +166,26 @@ async function createApp(config = {}) {
   inject('config', config);
 
   // Plugin execution
-  if (typeof cookieUniversalNuxt === 'function') {
-    await cookieUniversalNuxt(app.context, inject);
-  }
-
-  if (typeof axios === 'function') {
-    await axios(app.context, inject);
-  }
-
-  if (typeof plugins === 'function') {
-    await plugins(app.context, inject);
-  }
-
-  if (typeof pluginsLoader === 'function') {
-    await pluginsLoader(app.context, inject);
-  }
-
-  if (typeof axiosShell === 'function') {
-    await axiosShell(app.context, inject);
-  }
-
-  if (typeof intNumber === 'function') {
-    await intNumber(app.context, inject);
-  }
-
-  if (typeof positiveIntNumber === 'function') {
-    await positiveIntNumber(app.context, inject);
-  }
-
-  if (typeof nuxtClientInit === 'function') {
-    await nuxtClientInit(app.context, inject);
-  }
-
-  if (typeof replaceAll === 'function') {
-    await replaceAll(app.context, inject);
-  }
-
-  if (typeof backButton === 'function') {
-    await backButton(app.context, inject);
-  }
-
-  if (typeof plugin === 'function') {
-    await plugin(app.context, inject);
-  }
-
-  if (typeof codeMirror === 'function') {
-    await codeMirror(app.context, inject);
-  }
-
-  if (typeof version === 'function') {
-    await version(app.context, inject);
-  }
-
-  if (typeof steveCreateWorker === 'function') {
-    await steveCreateWorker(app.context, inject);
-  }
+  [
+    cookieUniversalNuxt,
+    axios,
+    plugins,
+    pluginsLoader,
+    axiosShell,
+    intNumber,
+    positiveIntNumber,
+    nuxtClientInit,
+    replaceAll,
+    backButton,
+    plugin,
+    codeMirror,
+    version,
+    steveCreateWorker,
+  ].forEach((pluginFn) => {
+    if (typeof pluginFn === 'function') {
+      await pluginFn(app.context, inject);
+    }
+  });
 
   // Wait for async component to be resolved first
   await new Promise((resolve, reject) => {
@@ -282,4 +247,4 @@ async function createApp(config = {}) {
   };
 }
 
-export { createApp };
+export { extendApp };
