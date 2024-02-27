@@ -83,7 +83,7 @@ jobs:
 
           if ! git am -3 "$PATCH_FILE" 2>error.log; then
               ERROR_MESSAGE=$(< error.log)
-              FORMATTED_ERROR_MESSAGE=$(printf "\n```\n%s\n```" "$ERROR_MESSAGE")
+              FORMATTED_ERROR_MESSAGE=$(printf "\n\`\`\`\n%s\n\`\`\`" "$ERROR_MESSAGE")
               gh issue comment ${ORIGINAL_ISSUE_NUMBER} --body "Not creating port PR, there was an error running git am -3: $FORMATTED_ERROR_MESSAGE"
           else
               git push origin $BRANCH
