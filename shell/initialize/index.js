@@ -26,8 +26,8 @@ import '../plugins/global-formatters';
 import '../plugins/trim-whitespace';
 import '../plugins/extend-router';
 
-import intNumber from '../plugins/int-number';
-import positiveIntNumber from '../plugins/positive-int-number.js';
+import * as intNumber from '../plugins/int-number';
+import * as positiveIntNumber from '../plugins/positive-int-number.js';
 import nuxtClientInit from '../plugins/nuxt-client-init';
 import replaceAll from '../plugins/replaceall';
 import backButton from '../plugins/back-button';
