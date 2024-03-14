@@ -181,7 +181,7 @@ async function extendApp(config = {}) {
     codeMirror,
     version,
     steveCreateWorker,
-  ].forEach((pluginFn) => {
+  ].forEach(async(pluginFn) => {
     if (typeof pluginFn === 'function') {
       await pluginFn(app.context, inject);
     }
