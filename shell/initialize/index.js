@@ -24,7 +24,7 @@ import '../plugins/shortkey';
 import '../plugins/i18n';
 import '../plugins/global-formatters';
 import '../plugins/trim-whitespace';
-import '../plugins/extend-router';
+// import '../plugins/extend-router';
 
 import * as intNumber from '../plugins/int-number';
 import * as positiveIntNumber from '../plugins/positive-int-number.js';
