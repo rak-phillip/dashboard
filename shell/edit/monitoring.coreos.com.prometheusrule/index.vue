@@ -137,7 +137,7 @@ export default {
       <div class="col span-12">
         <NameNsDescription
           v-if="!isView"
-          :value="value"
+          :modelValue="value"
           :mode="mode"
           :rules="{ name: fvGetAndReportPathRules('metadata.name'), namespace: [], description: [] }"
           @change="name = value.metadata.name"
@@ -172,14 +172,14 @@ export default {
           <div class="row">
             <div class="col span-6">
               <UnitInput
-                :value="getGroupInterval(group.interval)"
+                :modelValue="getGroupInterval(group.interval)"
                 :suffix="t('suffix.seconds', {count: group.interval})"
                 :placeholder="
                   t('prometheusRule.groups.groupInterval.placeholder')
                 "
                 :label="t('prometheusRule.groups.groupInterval.label')"
                 :mode="mode"
-                @input="(e) => updateGroupInterval(filteredGroups[idx], e)"
+                @update:modelValue="(e) => updateGroupInterval(filteredGroups[idx], e)"
               />
             </div>
           </div>

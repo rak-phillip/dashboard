@@ -89,7 +89,7 @@ export default {
       :done-route="doneRoute"
       :subtypes="workloadSubTypes"
       :apply-hooks="applyHooks"
-      :value="value"
+      :modelValue="value"
       :errors-map="getErrorsMap(fvUnreportedValidationErrors)"
       @finish="save"
       @select-type="selectType"
@@ -97,7 +97,7 @@ export default {
     >
       <!-- <pre>{{ JSON.stringify(allContainers, null, 2) }}</pre> -->
       <NameNsDescription
-        :value="value"
+        :modelValue="value"
         :mode="mode"
         :rules="{name: fvGetAndReportPathRules('metadata.name'), namespace: fvGetAndReportPathRules('metadata.namespace'), description: []}"
         @change="name=value.metadata.name"
@@ -203,11 +203,11 @@ export default {
                   <div class="col span-6">
                     <RadioGroup
                       :mode="mode"
-                      :value="allContainers[i]._init"
+                      :modelValue="allContainers[i]._init"
                       name="initContainer"
                       :options="[true, false]"
                       :labels="[t('workload.container.init'), t('workload.container.standard')]"
-                      @input="updateInitContainer($event, allContainers[i])"
+                      @update:modelValue="updateInitContainer($event, allContainers[i])"
                     />
                   </div>
                 </div>
@@ -281,14 +281,14 @@ export default {
                 />
               </div>
               <ServiceNameSelect
-                :value="podTemplateSpec.serviceAccountName"
+                :modelValue="podTemplateSpec.serviceAccountName"
                 :mode="mode"
                 :select-label="t('workload.serviceAccountName.label')"
                 :select-placeholder="t('workload.serviceAccountName.label')"
                 :options="namespacedServiceNames"
                 option-label="metadata.name"
                 :loading="isLoadingSecondaryResources"
-                @input="updateServiceAccount"
+                @update:modelValue="updateServiceAccount"
               />
               <div class="spacer" />
               <div>
@@ -319,9 +319,9 @@ export default {
               :weight="tabWeightMap['healthCheck']"
             >
               <HealthCheck
-                :value="allContainers[i]"
+                :modelValue="allContainers[i]"
                 :mode="mode"
-                @input="Object.assign(allContainers[i], $event)"
+                @update:modelValue="Object.assign(allContainers[i], $event)"
               />
             </Tab>
             <Tab
@@ -464,7 +464,7 @@ export default {
             >
               <PodAffinity
                 :mode="mode"
-                :value="podTemplateSpec"
+                :modelValue="podTemplateSpec"
                 :nodes="allNodeObjects"
                 :loading="isLoadingSecondaryResources"
               />
@@ -476,7 +476,7 @@ export default {
             >
               <NodeScheduling
                 :mode="mode"
-                :value="podTemplateSpec"
+                :modelValue="podTemplateSpec"
                 :nodes="allNodes"
                 :loading="isLoadingSecondaryResources"
               />

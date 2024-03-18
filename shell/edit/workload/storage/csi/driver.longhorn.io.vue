@@ -39,7 +39,7 @@ export default {
         v-model="value"
         :mode="mode"
         :as-map="true"
-        @input="$emit('input', value)"
+        @update:modelValue="$emit('input', value)"
       />
     </div>
   </div>

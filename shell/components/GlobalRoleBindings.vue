@@ -335,7 +335,7 @@ export default {
                   :label="role.nameDisplay"
                   :description="role.descriptionDisplay"
                   :mode="mode"
-                  @input="checkboxChanged"
+                  @update:modelValue="checkboxChanged"
                 >
                   <template #label>
                     <div class="checkbox-label-slot">

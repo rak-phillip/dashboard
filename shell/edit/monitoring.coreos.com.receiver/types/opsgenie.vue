@@ -165,7 +165,7 @@ export default {
         <ArrayList
           v-model="responders"
           :mode="mode"
-          :default-add-value="defaultResponder"
+          :default-add-modelValue="defaultResponder"
           :show-header="true"
         >
           <template v-slot:column-headers>
@@ -201,9 +201,9 @@ export default {
                   class="target"
                   :mode="mode"
                   :options="TARGETS"
-                  :select-value="scope.row.value.target"
-                  :text-value="scope.row.value.value"
-                  @input="updateResponder($event, scope.row.value)"
+                  :select-modelValue="scope.row.value.target"
+                  :text-modelValue="scope.row.value.value"
+                  @update:modelValue="updateResponder($event, scope.row.value)"
                 />
               </div>
             </div>
@@ -225,7 +225,7 @@ export default {
       width: 100%;
     }
 
-    .target-container ::v-deep .unlabeled-select {
+    .target-container :deep() .unlabeled-select {
       min-width: 35%;
       height: 100%;
     }

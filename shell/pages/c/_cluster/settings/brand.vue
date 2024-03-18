@@ -229,7 +229,7 @@ export default {
               :mode="mode"
               accept="image/jpeg,image/png,image/svg+xml"
               @error="setError"
-              @input="updateLogo($event, 'uiLogoLight')"
+              @update:modelValue="updateLogo($event, 'uiLogoLight')"
             />
           </div>
           <SimpleBox
@@ -254,7 +254,7 @@ export default {
               :mode="mode"
               accept="image/jpeg,image/png,image/svg+xml"
               @error="setError"
-              @input="updateLogo($event, 'uiLogoDark')"
+              @update:modelValue="updateLogo($event, 'uiLogoDark')"
             />
           </div>
           <SimpleBox
@@ -300,7 +300,7 @@ export default {
               :mode="mode"
               accept="image/jpeg,image/png,image/svg+xml"
               @error="setError"
-              @input="updateLogo($event, 'uiFavicon')"
+              @update:modelValue="updateLogo($event, 'uiFavicon')"
             />
           </div>
           <SimpleBox v-if="uiFavicon">
@@ -398,7 +398,7 @@ export default {
     display: flex;
     flex-direction: column;
 
-    ::v-deep.simple-box {
+    :deep().simple-box {
         position: relative;
         flex: 1;
         max-height: 120px;

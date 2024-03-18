@@ -210,13 +210,13 @@ export default {
   >
     <NameNsDescription
       :namespaced="false"
-      :value="value"
+      :modelValue="value"
       :mode="modeOverride"
       :register-before-hook="registerBeforeHook"
     />
 
     <LabeledSelect
-      :value="value.provisioner"
+      :modelValue="value.provisioner"
       label="Provisioner"
       :options="provisioners"
       :localized-label="true"
@@ -225,7 +225,7 @@ export default {
       :searchable="true"
       :taggable="true"
       class="mb-20"
-      @input="updateProvisioner($event)"
+      @update:modelValue="updateProvisioner($event)"
     />
     <Banner
       v-if="provisionerIsDeprecated"
@@ -246,7 +246,7 @@ export default {
         <component
           :is="getComponent(value.provisioner)"
           :key="value.provisioner"
-          :value="value"
+          :modelValue="value"
           :mode="modeOverride"
         />
       </Tab>

@@ -202,7 +202,7 @@ export default {
     }
   }
 
-.rotate-modal ::v-deep.v--modal-box{
+.rotate-modal :deep().v--modal-box{
   border:none;
 
   & .card-container{

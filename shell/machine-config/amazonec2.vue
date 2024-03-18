@@ -468,7 +468,7 @@ export default {
           <div class="col span-6">
             <LabeledSelect
               :mode="mode"
-              :value="selectedNetwork"
+              :modelValue="selectedNetwork"
               :options="networkOptions"
               :searchable="true"
               :required="true"
@@ -477,7 +477,7 @@ export default {
               :label="t('cluster.machineConfig.amazonEc2.selectedNetwork.label')"
               data-testid="amazonEc2__selectedNetwork"
               option-key="value"
-              @input="updateNetwork($event)"
+              @update:modelValue="updateNetwork($event)"
             >
               <template v-slot:option="opt">
                 <div :class="{'vpc': opt.kind === 'vpc', 'vpc-subnet': opt.kind !== 'vpc'}">
@@ -664,13 +664,13 @@ export default {
           <div class="row mt-20">
             <div class="col span-12">
               <KeyValue
-                :value="tags"
+                :modelValue="tags"
                 :mode="mode"
                 :read-allowed="false"
                 :label="t('cluster.machineConfig.amazonEc2.tagTitle')"
                 :add-label="t('labels.addTag')"
                 :disabled="disabled"
-                @input="updateTags"
+                @update:modelValue="updateTags"
               />
             </div>
           </div>

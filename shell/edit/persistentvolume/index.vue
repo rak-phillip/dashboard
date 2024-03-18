@@ -227,7 +227,7 @@ export default {
     @cancel="done"
   >
     <NameNsDescription
-      :value="value"
+      :modelValue="value"
       :mode="mode"
       :register-before-hook="registerBeforeHook"
       :namespaced="false"
@@ -245,7 +245,7 @@ export default {
           <label class="text-muted">Age:</label>&nbsp;
           <LiveDate
             class="live-date"
-            :value="value.metadata.creationTimestamp"
+            :modelValue="value.metadata.creationTimestamp"
           />
         </div>
       </div>
@@ -254,7 +254,7 @@ export default {
     <div class="row mb-20 top-level">
       <div class="col span-6">
         <LabeledSelect
-          :value="plugin"
+          :modelValue="plugin"
           :label="t('persistentVolume.plugin.label')"
           :localized-label="true"
           option-label="labelKey"
@@ -262,7 +262,7 @@ export default {
           :options="plugins"
           :mode="modeOverride"
           :required="true"
-          @input="updatePlugin($event)"
+          @update:modelValue="updatePlugin($event)"
         />
       </div>
       <div class="col span-6">
@@ -286,7 +286,7 @@ export default {
         <component
           :is="getComponent(plugin)"
           :key="plugin"
-          :value="value"
+          :modelValue="value"
           :mode="modeOverride"
         />
       </Tab>
@@ -350,7 +350,7 @@ export default {
             <ArrayListGrouped
               v-model="nodeSelectorTerms"
               :mode="modeOverride"
-              :default-add-value="{matchExpressions:[]}"
+              :default-add-modelValue="{matchExpressions:[]}"
               :add-label="t('workload.scheduling.affinity.addNodeSelector')"
             >
               <template #default="props">

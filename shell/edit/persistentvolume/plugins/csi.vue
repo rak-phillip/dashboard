@@ -83,7 +83,7 @@ export default {
     <div class="row mb-20">
       <div class="col span-6">
         <LabeledSelect
-          :value="value.spec.csi.driver"
+          :modelValue="value.spec.csi.driver"
           :loading="loadingDrivers"
           :options="driverOptions"
           :mode="mode"

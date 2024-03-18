@@ -235,7 +235,7 @@ export default {
       >
         <Labels
           default-container-class="labels-and-annotations-container"
-          :value="value"
+          :modelValue="value"
           :mode="canEditTabElements"
           :display-side-by-side="false"
         />

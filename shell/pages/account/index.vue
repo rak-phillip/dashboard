@@ -154,7 +154,7 @@ export default {
     <div class="account">
       <Principal
         :key="principal.id"
-        :value="principal.id"
+        :modelValue="principal.id"
         :use-muted="false"
         :show-labels="true"
       />

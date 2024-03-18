@@ -24,7 +24,7 @@ export default {
         :mode="mode"
         :disabled="disabled"
         :protip="displayTooltip"
-        @input="update"
+        @update:modelValue="update"
       />
     </div>
     <div

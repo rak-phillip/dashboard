@@ -319,7 +319,7 @@ export default {
                   v-model="col.isColVisible"
                   class="table-options-checkbox"
                   :label="col.label"
-                  @input="tableOptionsCheckbox($event, col.label)"
+                  @update:modelValue="tableOptionsCheckbox($event, col.label)"
                 />
               </li>
             </ul>

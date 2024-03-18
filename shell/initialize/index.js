@@ -1,7 +1,7 @@
 // Taken from @nuxt/vue-app/template/index.js
 // This file was generated during Nuxt migration
 
-import Vue from 'vue';
+import { createApp } from 'vue';
 import { extendRouter } from '../config/router.js';
 import NuxtChild from '../components/nuxt/nuxt-child.js';
 import App from './App.js';
@@ -38,14 +38,15 @@ import version from '../plugins/version';
 import steveCreateWorker from '../plugins/steve-create-worker';
 import { REDIRECTED } from '@shell/config/cookies';
 import { UPGRADED, _FLAGGED, _UNFLAG } from '@shell/config/query-params';
+const vueApp = createApp({});
 
 // Prevent extensions from overriding existing directives
-// Hook into Vue.directive and keep track of the directive names that have been added
+// Hook into vueApp.directive and keep track of the directive names that have been added
 // and prevent an existing directive from being overwritten
 const directiveNames = {};
-const vueDirective = Vue.directive;
+const vueDirective = vueApp.directive;
 
-Vue.directive = function(name) {
+vueApp.directive = function(name) {
   if (directiveNames[name]) {
     console.log(`Can not override directive: ${ name }`); // eslint-disable-line no-console
 
@@ -63,8 +64,8 @@ Vue.directive = function(name) {
 loadDirectives();
 
 // Component: <NuxtChild>
-Vue.component(NuxtChild.name, NuxtChild);
-Vue.component('NChild', NuxtChild);
+vueApp.component(NuxtChild.name, NuxtChild);
+vueApp.component('NChild', NuxtChild);
 
 async function extendApp(config = {}) {
   const router = await extendRouter(config);
@@ -109,6 +110,7 @@ async function extendApp(config = {}) {
   // Resolve route
 
   const path = getLocation(router.options.base, router.options.mode);
+  const routeResolve = router.resolve(path);
   const route = router.resolve(path).route;
 
   // Set context to app.context
@@ -150,10 +152,10 @@ async function extendApp(config = {}) {
       return;
     }
     window[window.installedPlugins] = true;
-    // Call Vue.use() to install the plugin into vm
-    Vue.use(() => {
-      if (!Object.prototype.hasOwnProperty.call(Vue.prototype, key)) {
-        Object.defineProperty(Vue.prototype, key, {
+    // Call vueApp.use() to install the plugin into vm
+    vueApp.use(() => {
+      if (!Object.prototype.hasOwnProperty.call(vueApp.config.globalProperties, key)) {
+        Object.defineProperty(vueApp.config.globalProperties, key, {
           get() {
             return this.$root.$options[key];
           }

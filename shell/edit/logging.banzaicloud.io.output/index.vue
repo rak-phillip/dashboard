@@ -172,7 +172,7 @@ export default {
     >
       <NameNsDescription
         v-if="!isView"
-        :value="value"
+        :modelValue="value"
         :mode="mode"
         label="generic.name"
         :register-before-hook="registerBeforeHook"
@@ -214,7 +214,7 @@ export default {
           <div class="spacer" />
           <component
             :is="getComponent(selectedProvider)"
-            :value="value.spec[selectedProvider]"
+            :modelValue="value.spec[selectedProvider]"
             :namespace="value.namespace"
             :mode="mode"
           />
@@ -241,7 +241,7 @@ export default {
         >
           <Labels
             default-container-class="labels-and-annotations-container"
-            :value="value"
+            :modelValue="value"
             :mode="mode"
             :display-side-by-side="false"
           />

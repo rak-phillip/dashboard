@@ -180,7 +180,7 @@ export default {
         <div class="col span-6">
           <Principal
             :key="row.value.principalId"
-            :value="row.value.principalId"
+            :modelValue="row.value.principalId"
           />
         </div>
         <div class="col span-6 role">

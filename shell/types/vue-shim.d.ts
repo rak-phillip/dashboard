@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import Vue, { ComponentCustomProperties } from 'vue';
+import Vue from 'vue';
 declare module '*.vue' {
   export default Vue;
 }

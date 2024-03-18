@@ -270,7 +270,7 @@ export default {
         <component
           :is="item.component"
           v-if="item.component"
-          :value="item.value"
+          :modelValue="item.value"
         />
         <nuxt-link
           v-else-if="item.to"

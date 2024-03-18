@@ -187,7 +187,7 @@ export default {
           :register-after-hook="registerAfterHook"
           :role-scope="SCOPE_CLUSTER"
           :binding-scope="SCOPE_NAMESPACE"
-          :filter-role-value="FLEET_NAME"
+          :filter-role-modelValue="FLEET_NAME"
           :namespace="value.name"
           :mode="mode"
           in-store="management"

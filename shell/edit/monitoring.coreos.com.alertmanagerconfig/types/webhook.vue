@@ -154,7 +154,7 @@ export default {
         :placeholder="t('monitoringReceiver.webhook.add.generic')"
         :localized-label="true"
         :options="webhookOptons"
-        @input="updateWebhookType($event)"
+        @update:modelValue="updateWebhookType($event)"
       />
     </div>
     <div class="row">

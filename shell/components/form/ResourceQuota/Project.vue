@@ -66,7 +66,7 @@ export default {
       v-model="typeValues"
       label="Resources"
       :add-label="t('resourceQuota.add.label')"
-      :default-add-value="remainingTypes()[0] ? remainingTypes()[0].value : ''"
+      :default-add-modelValue="remainingTypes()[0] ? remainingTypes()[0].value : ''"
       :add-allowed="remainingTypes().length > 0"
       :mode="mode"
       @remove="emitRemove"

@@ -224,7 +224,7 @@ export default defineComponent({
           :label="level"
           :label-key="`podSecurityAdmission.labels.${ level }`"
           :disabled="isView"
-          @input="updateLabels()"
+          @update:modelValue="updateLabels()"
         />
         <p v-else>
           <t :k="`podSecurityAdmission.labels.${level}`" />
@@ -242,7 +242,7 @@ export default defineComponent({
           :disabled="isPsaControlDisabled(psaControl.active)"
           :options="options"
           :mode="mode"
-          @input="updateLabels()"
+          @update:modelValue="updateLabels()"
         />
       </span>
 
@@ -254,7 +254,7 @@ export default defineComponent({
           :options="options"
           :placeholder="t('podSecurityAdmission.version.placeholder', { psaControl: mode })"
           :mode="mode"
-          @input="updateLabels()"
+          @update:modelValue="updateLabels()"
         />
       </span>
     </div>
@@ -282,7 +282,7 @@ export default defineComponent({
             :label="dimension"
             :label-key="`podSecurityAdmission.labels.${ dimension }`"
             :disabled="isView"
-            @input="updateExemptions()"
+            @update:modelValue="updateExemptions()"
           />
         </span>
         <span class="col span-8">
@@ -293,7 +293,7 @@ export default defineComponent({
             :options="options"
             :placeholder="t('podSecurityAdmission.exemptions.placeholder', { psaExemptionsControl: dimension })"
             :mode="mode"
-            @input="updateExemptions()"
+            @update:modelValue="updateExemptions()"
           />
         </span>
       </div>

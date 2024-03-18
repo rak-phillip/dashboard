@@ -274,13 +274,13 @@ export default {
             v-model="value.spec[receiverType.key]"
             class="namespace-list"
             :mode="mode"
-            :default-add-value="{}"
+            :default-add-modelValue="{}"
             :add-label="t('monitoringReceiver.addButton', { type: t(receiverType.label) })"
           >
             <template #default="props">
               <component
                 :is="getComponent(receiverType.name)"
-                :value="props.row.value"
+                :modelValue="props.row.value"
                 :mode="mode"
               />
             </template>

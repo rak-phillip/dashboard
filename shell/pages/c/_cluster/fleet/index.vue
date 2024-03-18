@@ -406,7 +406,6 @@ export default {
             key-field="_key"
             :search="false"
             :table-actions="false"
-            v-on="$listeners"
           >
             <template #cell:clustersReady="{row}">
               <span v-if="ws.type === 'namespace'"> - </span>
@@ -416,7 +415,7 @@ export default {
                 :tooltip-text="getTooltipInfo('clusters', row)"
                 :badge-class="getStatusInfo('clusters', row).badgeClass"
                 :icon="getStatusInfo('clusters', row).icon"
-                :value="`${ row.clusterInfo.ready }/${ row.clusterInfo.total }`"
+                :modelValue="`${ row.clusterInfo.ready }/${ row.clusterInfo.total }`"
               />
             </template>
             <template #cell:bundlesReady="{row}">
@@ -427,7 +426,7 @@ export default {
                 :tooltip-text="getTooltipInfo('bundles', row)"
                 :badge-class="getStatusInfo('bundles', row).badgeClass"
                 :icon="getStatusInfo('bundles', row).icon"
-                :value="`${ row.bundlesReady.length || 0 }/${ row.bundles.length }`"
+                :modelValue="`${ row.bundlesReady.length || 0 }/${ row.bundles.length }`"
               />
             </template>
             <template #cell:resourcesReady="{row}">
@@ -436,7 +435,7 @@ export default {
                 :tooltip-text="getTooltipInfo('resources', row)"
                 :badge-class="getStatusInfo('resources', row).badgeClass"
                 :icon="getStatusInfo('resources', row).icon"
-                :value="`${ row.status.resourceCounts.ready }/${ row.status.resourceCounts.desiredReady }`"
+                :modelValue="`${ row.status.resourceCounts.ready }/${ row.status.resourceCounts.desiredReady }`"
               />
             </template>
 

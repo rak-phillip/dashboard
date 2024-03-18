@@ -85,7 +85,7 @@ export default {
     <Row
       v-for="(limit, i) in editableLimits"
       :key="project.id + i"
-      :value="value.resourceQuota"
+      :modelValue="value.resourceQuota"
       :namespace="value"
       :mode="mode"
       :types="mappedTypes"
@@ -93,7 +93,7 @@ export default {
       :project-resource-quota-limits="projectResourceQuotaLimits"
       :default-resource-quota-limits="defaultResourceQuotaLimits"
       :namespace-resource-quota-limits="namespaceResourceQuotaLimits"
-      @input="update"
+      @update:modelValue="update"
     />
   </div>
 </template>

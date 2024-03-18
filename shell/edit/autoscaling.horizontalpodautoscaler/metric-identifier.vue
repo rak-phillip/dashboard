@@ -68,10 +68,10 @@ export default {
         <h3>Metric Selector</h3>
         <MatchExpressions
           :mode="mode"
-          :value="matchExpressions"
+          :modelValue="matchExpressions"
           :label="t('hpa.metricIdentifier.selector.label')"
           :show-remove="false"
-          @input="matchChanged($event)"
+          @update:modelValue="matchChanged($event)"
         />
       </div>
     </div>

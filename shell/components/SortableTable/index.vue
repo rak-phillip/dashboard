@@ -348,7 +348,7 @@ export default {
     $main?.addEventListener('scroll', this._onScroll);
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.loadingDelayTimer);
     clearTimeout(this._scrollTimer);
     clearTimeout(this._loadingDelayTimer);
@@ -481,9 +481,9 @@ export default {
     showHeaderRow() {
       return this.search ||
         this.tableActions ||
-        this.$slots['header-left']?.length ||
-        this.$slots['header-middle']?.length ||
-        this.$slots['header-right']?.length;
+        this.$slots['header-left']()()()()()?.length ||
+        this.$slots['header-middle']()()()()()?.length ||
+        this.$slots['header-right']()()()()()?.length;
     },
 
     columns() {
@@ -1229,7 +1229,7 @@ export default {
                     class="selection-checkbox"
                     :data-node-id="row.key"
                     :data-testid="componentTestid + '-' + i + '-checkbox'"
-                    :value="selectedRows.includes(row.row)"
+                    :modelValue="selectedRows.includes(row.row)"
                   />
                 </td>
                 <td
@@ -1269,13 +1269,13 @@ export default {
                         :name="'cell:' + col.col.name"
                         :row="row.row"
                         :col="col.col"
-                        :value="col.value"
+                        :modelValue="col.value"
                       >
                         <component
                           :is="col.component"
                           v-if="col.component && col.needRef"
                           ref="column"
-                          :value="col.value"
+                          :modelValue="col.value"
                           :row="row.row"
                           :col="col.col"
                           v-bind="col.col.formatterOpts"
@@ -1285,7 +1285,7 @@ export default {
                         <component
                           :is="col.component"
                           v-else-if="col.component"
-                          :value="col.value"
+                          :modelValue="col.value"
                           :row="row.row"
                           :col="col.col"
                           v-bind="col.col.formatterOpts"
@@ -1294,7 +1294,7 @@ export default {
                         <component
                           :is="col.col.formatter"
                           v-else-if="col.col.formatter"
-                          :value="col.value"
+                          :modelValue="col.value"
                           :row="row.row"
                           :col="col.col"
                           v-bind="col.col.formatterOpts"

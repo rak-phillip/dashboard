@@ -349,7 +349,7 @@ export default {
   >
     <NameNsDescription
       v-if="!isView"
-      :value="value"
+      :modelValue="value"
       :mode="mode"
       :rules="{ name: fvGetAndReportPathRules('metadata.name'), namespace: [], description: [] }"
     />
@@ -391,7 +391,7 @@ export default {
           :mode="mode"
           :spec-type="serviceType"
           :rules="fvGetAndReportPathRules('spec.ports')"
-          @input="updateServicePorts"
+          @update:modelValue="updateServicePorts"
         />
       </Tab>
       <Tab
@@ -415,7 +415,7 @@ export default {
               :mode="mode"
               :initial-empty-row="true"
               :protip="false"
-              @input="(e) => $set(value.spec, 'selector', e)"
+              @update:modelValue="(e) => $set(value.spec, 'selector', e)"
             />
           </div>
         </div>
@@ -438,7 +438,7 @@ export default {
               :tooltip-key="
                 hasClusterIp ? 'servicesPage.ips.clusterIpHelpText' : null
               "
-              @input="(e) => $set(value.spec, 'clusterIP', e)"
+              @update:modelValue="(e) => $set(value.spec, 'clusterIP', e)"
             />
           </div>
         </div>
@@ -455,7 +455,7 @@ export default {
               :tooltip-key="
                 hasClusterIp ? 'servicesPage.ips.loadBalancerIp.helpText' : null
               "
-              @input="(e) => $set(value.spec, 'loadBalancerIP', e)"
+              @update:modelValue="(e) => $set(value.spec, 'loadBalancerIP', e)"
             />
           </div>
         </div>
@@ -468,7 +468,7 @@ export default {
               :value-placeholder="t('servicesPage.ips.external.placeholder')"
               :mode="mode"
               :protip="false"
-              @input="(e) => $set(value.spec, 'externalIPs', e)"
+              @update:modelValue="(e) => $set(value.spec, 'externalIPs', e)"
             />
           </div>
         </div>
@@ -481,7 +481,7 @@ export default {
       >
         <HarvesterServiceAddOnConfig
           :mode="mode"
-          :value="value"
+          :modelValue="value"
           :register-before-hook="registerBeforeHook"
         />
       </Tab>
@@ -516,7 +516,7 @@ export default {
               "
               :label="t('servicesPage.affinity.timeout.label')"
               :placeholder="t('servicesPage.affinity.timeout.placeholder')"
-              @input="
+              @update:modelValue="
                 (e) =>
                   $set(
                     value.spec.sessionAffinityConfig.clientIP,
@@ -536,7 +536,7 @@ export default {
       >
         <Labels
           :default-container-class="'labels-and-annotations-container'"
-          :value="value"
+          :modelValue="value"
           :mode="mode"
           :display-side-by-side="false"
         />

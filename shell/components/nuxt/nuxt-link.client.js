@@ -1,4 +1,5 @@
-import Vue from 'vue'
+import { createApp } from 'vue';
+const vueApp = createApp({});
 
 const requestIdleCallback = window.requestIdleCallback ||
   function (cb) {
@@ -26,7 +27,7 @@ const observer = window.IntersectionObserver && new window.IntersectionObserver(
 
 export default {
   name: 'NuxtLink',
-  extends: Vue.component('RouterLink'),
+  extends: vueApp.component('RouterLink'),
   props: {
     prefetch: {
       type: Boolean,

@@ -376,20 +376,20 @@ export default {
         <ArrayListGrouped
           v-model="matches"
           :add-label="t('ingress.rules.addRule')"
-          :default-add-value="{}"
+          :default-add-modelValue="{}"
           :mode="mode"
         >
           <template #default="props">
             <Match
               class="rule mb-20"
-              :value="props.row.value"
+              :modelValue="props.row.value"
               :mode="mode"
               :namespaces="namespaceChoices"
               :nodes="nodeChoices"
               :containers="containerChoices"
               :is-cluster-flow="value.type === LOGGING.CLUSTER_FLOW"
               @remove="e=>removeMatch(props.row.i)"
-              @input="e=>updateMatch(e,props.row.i)"
+              @update:modelValue="e=>updateMatch(e,props.row.i)"
             />
           </template>
           <template #add>
@@ -487,7 +487,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-::v-deep {
+:deep() {
   .icon-info {
     margin-top: -3px;
     margin-right: 4px;

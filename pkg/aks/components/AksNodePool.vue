@@ -171,7 +171,7 @@ export default defineComponent({
           :disabled="!pool._isNewOrUnprovisioned"
           :row="true"
           label-key="generic.mode"
-          @input="$emit('validationChanged')"
+          @update:modelValue="$emit('validationChanged')"
         >
           <template #label>
             <span class="text-label">{{ t('aks.nodePools.mode.label') }}</span>
@@ -296,7 +296,7 @@ export default defineComponent({
               :key="keyedTaint._id"
               :taint="keyedTaint.taint"
               :mode="mode"
-              @input="e=>updateTaint({_id:keyedTaint._id, taint: e}, i)"
+              @update:modelValue="e=>updateTaint({_id:keyedTaint._id, taint: e}, i)"
               @remove="removeTaint(i)"
             />
           </template>
@@ -359,7 +359,7 @@ export default defineComponent({
 }
 .taints {
   width: 100%;
-  th,::v-deep td{
+  th,:deep() td{
     text-align: left;
     padding-right: 10px;
     font-weight: inherit;

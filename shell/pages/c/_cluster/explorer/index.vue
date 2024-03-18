@@ -146,7 +146,7 @@ export default {
     };
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     // Remove the data and stop watching resources that were fetched in this page
     // Events in particular can lead to change messages having to be processed when we are no longer interested in events
     this.$store.dispatch('cluster/forgetType', EVENT);
@@ -462,7 +462,7 @@ export default {
       <div>
         <label>{{ t('glance.created') }}: </label>
         <span><LiveDate
-          :value="currentCluster.metadata.creationTimestamp"
+          :modelValue="currentCluster.metadata.creationTimestamp"
           :add-suffix="true"
           :show-tooltip="true"
         /></span>
@@ -719,7 +719,7 @@ export default {
   align-items: center;
 }
 
-.etcd-metrics ::v-deep .external-link {
+.etcd-metrics :deep() .external-link {
   top: -107px;
 }
 

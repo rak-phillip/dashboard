@@ -612,9 +612,9 @@ export default {
               v-model="provisioner"
               data-testid="cluster-manager-create-rke-switch"
               class="rke-switch"
-              :off-value="_RKE1"
+              :off-modelValue="_RKE1"
               :off-label="t('cluster.toggle.v1')"
-              :on-value="_RKE2"
+              :on-modelValue="_RKE2"
               :on-label="t('cluster.toggle.v2')"
             />
           </div>
@@ -644,8 +644,8 @@ export default {
         :is="selectedSubType.component"
         v-if="selectedSubType && selectedSubType.component"
         v-model="value"
-        :initial-value="initialValue"
-        :live-value="liveValue"
+        :initial-modelValue="initialValue"
+        :live-modelValue="liveValue"
         :mode="mode"
         :provider="subType"
         :provider-config="selectedSubType.providerConfig"
@@ -653,8 +653,8 @@ export default {
       <Rke2Config
         v-else
         v-model="value"
-        :initial-value="initialValue"
-        :live-value="liveValue"
+        :initial-modelValue="initialValue"
+        :live-modelValue="liveValue"
         :mode="mode"
         :provider="subType"
         :provider-config="selectedSubType.providerConfig"

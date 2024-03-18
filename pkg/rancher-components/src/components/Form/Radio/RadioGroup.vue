@@ -211,7 +211,7 @@ export default defineComponent({
         :key="name+'-'+i"
       >
         <slot
-          :listeners="$listeners"
+          :v-bind="$attrs"
           :option="option"
           :is-disabled="isDisabled"
           :name="i"
@@ -220,13 +220,13 @@ export default defineComponent({
           <RadioButton
             :key="name+'-'+i"
             :name="name"
-            :value="value"
+            :modelValue="value"
             :label="option.label"
             :description="option.description"
             :val="option.value"
             :disabled="isDisabled"
             :mode="mode"
-            v-on="$listeners"
+            
           />
         </slot>
       </div>

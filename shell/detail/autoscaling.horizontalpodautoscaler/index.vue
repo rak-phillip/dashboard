@@ -239,7 +239,7 @@ export default {
 
 <style lang="scss" scoped>
 .hpa-metrics-table {
-  .info-box ::v-deep {
+  .info-box :deep() {
     background-color: var(--simple-box-bg);
   }
   .row {

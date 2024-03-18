@@ -35,7 +35,7 @@ export default {
           :protip="false"
           :disabled="disabled"
           :title-protip="displayTooltip"
-          @input="update"
+          @update:modelValue="update"
         />
       </div>
     </div>

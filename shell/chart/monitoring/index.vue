@@ -109,7 +109,7 @@ export default {
     });
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.workloadTypes.forEach((type) => {
       this.$store.dispatch('cluster/forgetType', type);
     });
@@ -247,7 +247,7 @@ export default {
         <div class="row mb-20">
           <div class="col span-6">
             <ClusterSelector
-              :value="value"
+              :modelValue="value"
               :mode="mode"
               @onClusterTypeChanged="clusterType = $event"
             />

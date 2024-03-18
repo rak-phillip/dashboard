@@ -72,7 +72,7 @@ export default {
     return { canViewPods: false };
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     // Stop watching pods, nodes and node metrics
     this.$store.dispatch('cluster/forgetType', POD);
     this.$store.dispatch('cluster/forgetType', NODE);
@@ -168,7 +168,6 @@ export default {
       :use-query-params-for-simple-filtering="useQueryParamsForSimpleFiltering"
       :force-update-live-and-delayed="forceUpdateLiveAndDelayed"
       data-testid="cluster-node-list"
-      v-on="$listeners"
     >
       <template #sub-row="{fullColspan, row, onRowMouseEnter, onRowMouseLeave}">
         <tr

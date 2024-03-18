@@ -224,12 +224,12 @@ export default {
             <div class="col span-6">
               <LabeledSelect
                 :disabled="!availableBackups.length"
-                :value="targetBackup"
+                :modelValue="targetBackup"
                 :options="availableBackups"
                 :mode="mode"
                 option-label="metadata.name"
                 :label="t('backupRestoreOperator.targetBackup')"
-                @input="updateTargetBackup"
+                @update:modelValue="updateTargetBackup"
               />
             </div>
           </div>

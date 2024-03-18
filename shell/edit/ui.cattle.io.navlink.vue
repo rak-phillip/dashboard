@@ -356,7 +356,7 @@ export default {
             :placeholder="t('navLink.tabs.link.toService.service.placeholder')"
             :rules="fvGetAndReportPathRules('spec.toService.namespace')"
             data-testid="Navlink-currentService-field"
-            @input="setService"
+            @update:modelValue="setService"
           />
         </div>
         <div class="col span-2">
@@ -387,7 +387,7 @@ export default {
           name="type"
           :mode="mode"
           :options="targetOptions"
-          @input="setTargetValue($event)"
+          @update:modelValue="setTargetValue($event)"
         />
       </div>
       <div class="col span-6">
@@ -396,7 +396,7 @@ export default {
           v-model="targetName"
           :mode="mode"
           :label="t('navLink.tabs.target.namedValue.label')"
-          @input="setTargetValue($event);"
+          @update:modelValue="setTargetValue($event);"
         />
       </div>
     </div>
@@ -445,7 +445,7 @@ export default {
         :label="t('navLink.tabs.groupImage.iconSrc.label')"
         accept="image/jpeg,image/png,image/svg+xml"
         @error="setImageError"
-        @input="setIcon"
+        @update:modelValue="setIcon"
       />
     </div>
     <Banner

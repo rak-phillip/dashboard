@@ -35,8 +35,8 @@ export default {
 
     keyLabel: {
       type: String,
-      default() {
-        return this.$store.getters['i18n/t']('generic.key');
+      default(props) {
+        return props.$store.getters['i18n/t']('generic.key');
       },
     },
 
@@ -53,8 +53,8 @@ export default {
 
     valueLabel: {
       type: String,
-      default() {
-        return this.$store.getters['i18n/t']('generic.value');
+      default(props) {
+        return props.$store.getters['i18n/t']('generic.value');
       },
     },
 

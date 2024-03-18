@@ -349,7 +349,7 @@ export default {
       <PlusMinus
         class="text-right"
         :label="t('tableHeaders.scale')"
-        :value="value.spec.replicas"
+        :modelValue="value.spec.replicas"
         :disabled="!isScalable"
         @minus="scaleDown"
         @plus="scaleUp"
@@ -387,7 +387,7 @@ export default {
       </template>
     </div>
     <ResourceTabs
-      :value="value"
+      :modelValue="value"
     >
       <Tab
         v-if="isCronJob"

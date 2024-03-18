@@ -181,7 +181,7 @@ export default {
       />
       <S3
         v-if="storageSource==='s3'"
-        :value="value.s3"
+        :modelValue="value.s3"
         :secrets="secrets"
         :mode="mode"
         @valid="updatePageValid($event)"
@@ -234,7 +234,7 @@ export default {
 </template>
 
 <style lang='scss' scoped>
-::v-deep .radio-group.label>SPAN {
+:deep() .radio-group.label>SPAN {
   font-size: 1em;
 }
 </style>

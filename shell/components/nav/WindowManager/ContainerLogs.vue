@@ -277,7 +277,7 @@ export default {
 
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.cleanup();
   },
 
@@ -598,8 +598,8 @@ export default {
           <div>
             <Checkbox
               :label="t('wm.containerLogs.previous')"
-              :value="previous"
-              @input="togglePrevious"
+              :modelValue="previous"
+              @update:modelValue="togglePrevious"
             />
           </div>
         </div>
@@ -623,20 +623,20 @@ export default {
                   :options="rangeOptions"
                   :clearable="false"
                   placement="top"
-                  @input="toggleRange($event)"
+                  @update:modelValue="toggleRange($event)"
                 />
                 <div>
                   <Checkbox
                     :label="t('wm.containerLogs.wrap')"
-                    :value="wrap"
-                    @input="toggleWrap "
+                    :modelValue="wrap"
+                    @update:modelValue="toggleWrap "
                   />
                 </div>
                 <div>
                   <Checkbox
                     :label="t('wm.containerLogs.timestamps')"
-                    :value="timestamps"
-                    @input="toggleTimestamps"
+                    :modelValue="timestamps"
+                    @update:modelValue="toggleTimestamps"
                   />
                 </div>
               </div>
@@ -716,11 +716,11 @@ export default {
       opacity: 0.25;
     }
 
-    &.wrap-lines ::v-deep .msg {
+    &.wrap-lines :deep() .msg {
       white-space: pre-wrap;
     }
 
-    &.show-times ::v-deep .time {
+    &.show-times :deep() .time {
       display: initial;
       width: auto;
     }
@@ -728,7 +728,7 @@ export default {
   }
 
   .containerPicker {
-    ::v-deep &.unlabeled-select {
+    :deep() &.unlabeled-select {
       display: inline-block;
       min-width: 200px;
       height: 30px;

@@ -340,7 +340,7 @@ export default {
             :reduce="(e) => e.value"
             label-key="secret.type"
             required
-            @input="selectCustomType"
+            @update:modelValue="selectCustomType"
           />
         </div>
 
@@ -363,7 +363,7 @@ export default {
         v-if="isCloud"
         ref="cloudComponent"
         :driver-name="driverName"
-        :value="value"
+        :modelValue="value"
         :mode="mode"
         :hide-sensitive-data="hideSensitiveData"
       />
@@ -379,7 +379,7 @@ export default {
         >
           <component
             :is="dataComponent"
-            :value="value"
+            :modelValue="value"
             :mode="mode"
             :hide-sensitive-data="hideSensitiveData"
           />

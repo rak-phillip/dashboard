@@ -242,7 +242,7 @@ export default {
   <ResourceTabs
     mode="view"
     class="mt-20"
-    :value="value"
+    :modelValue="value"
   >
     <Tab
       :label="t('workload.container.titles.containers')"
@@ -267,10 +267,10 @@ export default {
     >
       <LabeledSelect
         class="pod-metrics-chooser"
-        :value="selection"
+        :modelValue="selection"
         label-key="workload.metrics.metricsView"
         :options="metricsOptions"
-        @input="selectionChanged($event)"
+        @update:modelValue="selectionChanged($event)"
       />
       <div id="ember-anchor">
         <EmberPage

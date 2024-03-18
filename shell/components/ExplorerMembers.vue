@@ -438,7 +438,7 @@ export default {
 }
 
 .project-members {
-  & ::v-deep .group-bar{
+  & :deep() .group-bar{
     display: flex;
     justify-content: space-between;
   }

@@ -302,7 +302,7 @@ export default {
           v-model="row.key"
           :mode="mode"
           :data-testid="`input-match-expression-key-control-${index}`"
-          @input="update"
+          @update:modelValue="update"
         >
         <LabeledSelect
           v-else
@@ -327,7 +327,7 @@ export default {
           :reduce="opt=>opt.value"
           :mode="mode"
           :data-testid="`input-match-expression-operator-control-${index}`"
-          @input="update"
+          @update:modelValue="update"
         />
       </div>
 
@@ -350,7 +350,7 @@ export default {
           :mode="mode"
           :disabled="row.operator==='Exists' || row.operator==='DoesNotExist'"
           :data-testid="`input-match-expression-values-control-${index}`"
-          @input="update"
+          @update:modelValue="update"
         >
       </div>
       <div

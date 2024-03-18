@@ -88,7 +88,7 @@ export default {
     @cancel="done"
   >
     <NameNsDescription
-      :value="value"
+      :modelValue="value"
       :mode="mode"
       :register-before-hook="registerBeforeHook"
       :namespaced="true"
@@ -127,7 +127,7 @@ export default {
       >
         <ResourceSelector
           :type="POD"
-          :value="value.spec.selector"
+          :modelValue="value.spec.selector"
           :mode="mode"
           :namespace="value.metadata.namespace"
         />
@@ -139,7 +139,7 @@ export default {
       >
         <Labels
           default-container-class="labels-and-annotations-container"
-          :value="value"
+          :modelValue="value"
           :mode="mode"
           :display-side-by-side="false"
         />

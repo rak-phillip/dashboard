@@ -227,7 +227,7 @@ export default {
     @cancel="done"
   >
     <NameNsDescription
-      :value="value"
+      :modelValue="value"
       :mode="mode"
       :register-before-hook="registerBeforeHook"
       :namespaced="true"
@@ -252,7 +252,7 @@ export default {
               :mode="immutableMode"
               :label="t('persistentVolumeClaim.source.label')"
               :options="sourceOptions"
-              @input="updateDefaults"
+              @update:modelValue="updateDefaults"
             />
           </div>
           <div class="col span-6">
@@ -376,7 +376,7 @@ export default {
       >
         <Labels
           default-container-class="labels-and-annotations-container"
-          :value="value"
+          :modelValue="value"
           :mode="mode"
           :display-side-by-side="false"
         />

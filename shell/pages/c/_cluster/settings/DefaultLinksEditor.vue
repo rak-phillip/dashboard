@@ -1,8 +1,9 @@
 <script>
-import Vue from 'vue';
+import { createApp } from 'vue';
 
 import { _VIEW } from '@shell/config/query-params';
 import { Checkbox } from '@components/Form/Checkbox';
+const vueApp = createApp({});
 
 export default {
   name: 'DefaultLinksEditor',
@@ -32,7 +33,7 @@ export default {
     showhide(row, i, e) {
       const value = this.value[i];
 
-      Vue.set(value, 'enabled', !!value.enabled);
+      value['enabled'] = !!value.enabled;
       this.$emit('input', this.value);
     },
   }
@@ -83,7 +84,7 @@ export default {
             v-model="row.enabled"
             label-key="customLinks.settings.showLabel"
             :data-testid="`custom-links__checkbox-${i}`"
-            @input="showhide(row, i, $event)"
+            @update:modelValue="showhide(row, i, $event)"
           />
         </div>
         <div

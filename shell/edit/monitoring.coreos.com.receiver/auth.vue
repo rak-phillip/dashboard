@@ -85,7 +85,7 @@ export default {
           v-model="authType"
           :options="authOptions"
           label="Auth Type"
-          @input="initializeType(authOptions, authType)"
+          @update:modelValue="initializeType(authOptions, authType)"
         />
       </div>
     </div>

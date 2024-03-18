@@ -95,15 +95,15 @@ export default {
       <ArrayListGrouped
         v-model="templates"
         class="mb-20"
-        @input="update()"
+        @update:modelValue="update()"
       >
         <template #default="props">
           <div class="bordered-section">
             <PersistentVolumeClaim
               v-if="props.row.value.metadata"
-              :value="props.row.value"
+              :modelValue="props.row.value"
               :mode="mode"
-              @input="updatePVC(props.row.value)"
+              @update:modelValue="updatePVC(props.row.value)"
             />
           </div>
           <Mount

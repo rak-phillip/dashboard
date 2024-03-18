@@ -291,7 +291,7 @@ export default {
           :is="cloudComponent"
           ref="cloudComponent"
           :driver-name="driverName"
-          :value="value"
+          :modelValue="value"
           :mode="mode"
           :hide-sensitive-data="hideSensitiveData"
           @validationChanged="createValidationChanged"

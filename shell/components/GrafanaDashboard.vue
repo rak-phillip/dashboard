@@ -95,7 +95,7 @@ export default {
     this.$refs.frame.onload = this.inject;
     this.poll();
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.interval) {
       clearInterval(this.interval);
     }
@@ -285,7 +285,7 @@ export default {
   min-height: 100%;
   min-width: 100%;
 
-  & ::v-deep .content {
+  & :deep() .content {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -296,7 +296,7 @@ export default {
     padding: 0;
   }
 
-  & ::v-deep .overlay {
+  & :deep() .overlay {
     position: static;
     background-color: initial;
   }

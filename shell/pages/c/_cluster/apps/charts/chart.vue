@@ -230,7 +230,7 @@ export default {
               {{ vers.originalVersion === currentVersion ? t('catalog.install.versions.current', { ver: currentVersion }): vers.shortLabel }}
             </a>
             <DateFormatter
-              :value="vers.created"
+              :modelValue="vers.created"
               :show-time="false"
             />
           </div>

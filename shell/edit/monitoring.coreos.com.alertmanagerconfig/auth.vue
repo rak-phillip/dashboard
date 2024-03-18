@@ -248,7 +248,7 @@ export default {
           :disabled="mode === view"
           :options="authOptions"
           label="Auth Type"
-          @input="initializeType(authOptions, authType)"
+          @update:modelValue="initializeType(authOptions, authType)"
         />
       </div>
     </div>

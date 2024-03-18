@@ -401,7 +401,6 @@ export default {
       :loading="loading"
       group-tooltip="resourceTable.groupBy.project"
       key-field="_key"
-      v-on="$listeners"
     >
       <template #group-by="group">
         <div
@@ -504,7 +503,7 @@ export default {
 </template>
 <style lang="scss" scoped>
 .project-namespaces {
-  & ::v-deep {
+  & :deep() {
     .project-namespaces-table table {
       table-layout: fixed;
     }

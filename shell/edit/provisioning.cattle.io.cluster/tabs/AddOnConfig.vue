@@ -106,12 +106,12 @@ export default {
         <YamlEditor
           v-else
           ref="yaml-values"
-          :value="initYamlEditor(v.name)"
+          :modelValue="initYamlEditor(v.name)"
           :scrolling="true"
           :as-object="true"
           :editor-mode="mode === 'view' ? 'VIEW_CODE' : 'EDIT_CODE'"
           :hide-preview-buttons="true"
-          @input="data => $emit('update-values', v.name, data)"
+          @update:modelValue="data => $emit('update-values', v.name, data)"
         />
         <div class="spacer" />
       </div>

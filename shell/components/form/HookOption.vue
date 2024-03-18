@@ -126,7 +126,7 @@ export default {
           t('workload.container.lifecycleHook.httpGet.add'),
         ]"
         :mode="mode"
-        @input="update"
+        @update:modelValue="update"
       />
     </div>
 
@@ -148,7 +148,7 @@ export default {
     <template v-if="selectHook === 'httpGet'">
       <h4>{{ t('workload.container.lifecycleHook.httpGet.title') }}</h4>
       <div class="var-row">
-        <template @input="update">
+        <template @update:modelValue="update">
           <LabeledInput
             v-model="value.httpGet.host"
             :label="t('workload.container.lifecycleHook.httpGet.host.label')"
@@ -185,7 +185,7 @@ export default {
         :key="header.id"
         class="var-row"
       >
-        <template @input="update">
+        <template @update:modelValue="update">
           <LabeledInput
             v-model="value.httpGet.httpHeaders[index].name"
             :label="t('workload.container.lifecycleHook.httpHeaders.name.label')"

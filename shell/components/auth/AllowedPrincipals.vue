@@ -90,10 +90,10 @@ export default {
           :mode="mode"
           :protip="false"
         >
-          <template #value="{row}">
+          <template #modelValue="{row}">
             <Principal
               :key="row.value"
-              :value="row.value"
+              :modelValue="row.value"
             />
           </template>
 

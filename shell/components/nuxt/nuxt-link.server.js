@@ -1,8 +1,9 @@
-import Vue from 'vue'
+import { createApp } from 'vue';
+const vueApp = createApp({});
 
 export default {
   name: 'NuxtLink',
-  extends: Vue.component('RouterLink'),
+  extends: vueApp.component('RouterLink'),
   props: {
     prefetch: {
       type: Boolean,

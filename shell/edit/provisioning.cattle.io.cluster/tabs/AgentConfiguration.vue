@@ -238,7 +238,7 @@ export default {
         :options="affinityOptions"
         class="mt-10"
         data-testid="affinity-options"
-        @input="affinitySettingChange"
+        @update:modelValue="affinitySettingChange"
       />
 
       <Banner
@@ -283,7 +283,7 @@ export default {
         :mode="mode"
         class="mt-0"
         data-testid="node-affinity"
-        @input="updateNodeAffinity"
+        @update:modelValue="updateNodeAffinity"
       />
     </GroupPanel>
   </div>

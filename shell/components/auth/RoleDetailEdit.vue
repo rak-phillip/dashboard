@@ -635,7 +635,7 @@ export default {
           :weight="1"
         >
           <Error
-            :value="value.rules"
+            :modelValue="value.rules"
             :rules="fvGetAndReportPathRules('rules')"
             as-banner
           />
@@ -645,7 +645,7 @@ export default {
             :disabled="isBuiltin"
             :remove-allowed="!isBuiltin"
             :add-allowed="!isBuiltin"
-            :default-add-value="defaultRule"
+            :default-add-modelValue="defaultRule"
             :initial-empty-row="true"
             :show-header="true"
             add-label="Add Resource"
@@ -686,7 +686,7 @@ export default {
               <div class="columns row mr-20">
                 <div :class="ruleClass">
                   <Select
-                    :value="props.row.value.verbs"
+                    :modelValue="props.row.value.verbs"
                     class="lg"
                     :disabled="isBuiltin"
                     :taggable="true"
@@ -695,12 +695,12 @@ export default {
                     :multiple="true"
                     :mode="mode"
                     :data-testid="`grant-resources-verbs${props.i}`"
-                    @input="updateSelectValue(props.row.value, 'verbs', $event)"
+                    @update:modelValue="updateSelectValue(props.row.value, 'verbs', $event)"
                   />
                 </div>
                 <div :class="ruleClass">
                   <Select
-                    :value="getRule('resources', props.row.value)"
+                    :modelValue="getRule('resources', props.row.value)"
                     :disabled="isBuiltin"
                     :options="resourceOptions"
                     option-key="optionKey"
@@ -708,17 +708,17 @@ export default {
                     :taggable="true"
                     :mode="mode"
                     :data-testid="`grant-resources-resources${props.i}`"
-                    @input="setRule('resources', props.row.value, $event)"
+                    @update:modelValue="setRule('resources', props.row.value, $event)"
                     @createdListItem="setRule('resources', props.row.value, $event)"
                   />
                 </div>
                 <div :class="ruleClass">
                   <input
-                    :value="getRule('apiGroups', props.row.value)"
+                    :modelValue="getRule('apiGroups', props.row.value)"
                     :disabled="isBuiltin"
                     :mode="mode"
                     :data-testid="`grant-resources-api-groups${props.i}`"
-                    @input="setRule('apiGroups', props.row.value, $event.target.value)"
+                    @update:modelValue="setRule('apiGroups', props.row.value, $event.target.value)"
                   >
                 </div>
                 <div
@@ -726,11 +726,11 @@ export default {
                   :class="ruleClass"
                 >
                   <input
-                    :value="getRule('nonResourceURLs', props.row.value)"
+                    :modelValue="getRule('nonResourceURLs', props.row.value)"
                     :disabled="isBuiltin"
                     :mode="mode"
                     :data-testid="`grant-resources-non-resource-urls${props.i}`"
-                    @input="setRule('nonResourceURLs', props.row.value, $event.target.value)"
+                    @update:modelValue="setRule('nonResourceURLs', props.row.value, $event.target.value)"
                   >
                 </div>
               </div>
@@ -783,7 +783,7 @@ export default {
     color: var(--error);
   }
 
-  ::v-deep {
+  :deep() {
     .column-headers {
       margin-right: 75px;
       margin-bottom: 5px;

@@ -191,7 +191,7 @@ export default {
       <template>
         <NameNsDescription
           :mode="mode"
-          :value="value"
+          :modelValue="value"
           :namespaced="false"
           :rules="{name: fvGetAndReportPathRules('metadata.name')}"
           @change="name=value.metadata.name"
@@ -283,7 +283,7 @@ export default {
             <div class="row mt-10">
               <div class="col span-12">
                 <S3
-                  :value="s3"
+                  :modelValue="s3"
                   :secrets="allSecrets"
                   :mode="mode"
                 />

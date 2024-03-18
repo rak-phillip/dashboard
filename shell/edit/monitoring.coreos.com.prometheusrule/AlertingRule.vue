@@ -308,7 +308,7 @@ export default {
           <template #field>
             <CodeMirror
               class="mt-20"
-              :value="value.expr"
+              :modelValue="value.expr"
               :options="{
                 mode: null,
                 foldGutter: false,
@@ -360,12 +360,12 @@ export default {
         <div class="col span-12">
           <KeyValue
             key="labels"
-            :value="filteredLabels"
+            :modelValue="filteredLabels"
             :add-label="t('labels.addLabel')"
             :mode="mode"
             :read-allowed="false"
             :value-multiline="false"
-            @input="queueLabelUpdate"
+            @update:modelValue="queueLabelUpdate"
           />
         </div>
       </div>
@@ -500,11 +500,11 @@ export default {
         <div :class="[{ hide: isView && Object.keys(filteredAnnotations).length === 0}, 'row', 'mt-0']">
           <KeyValue
             key="annotations"
-            :value="filteredAnnotations"
+            :modelValue="filteredAnnotations"
             :add-label="t('labels.addAnnotation')"
             :mode="mode"
             :read-allowed="false"
-            @input="queueAnnotationUpdate"
+            @update:modelValue="queueAnnotationUpdate"
           />
         </div>
       </div>

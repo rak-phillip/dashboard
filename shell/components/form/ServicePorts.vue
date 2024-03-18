@@ -186,7 +186,7 @@ export default {
             v-model.number="row.name"
             type="text"
             :placeholder="t('servicePorts.rules.name.placeholder')"
-            @input="queueUpdate"
+            @update:modelValue="queueUpdate"
           >
         </div>
         <div class="port">
@@ -199,7 +199,7 @@ export default {
             min="1"
             max="65535"
             :placeholder="t('servicePorts.rules.listening.placeholder')"
-            @input="queueUpdate"
+            @update:modelValue="queueUpdate"
           >
         </div>
         <div
@@ -211,7 +211,7 @@ export default {
             v-else
             v-model="row.protocol"
             :options="protocolOptions"
-            @input="queueUpdate"
+            @update:modelValue="queueUpdate"
           />
         </div>
         <div class="target-port">
@@ -220,7 +220,7 @@ export default {
             v-else
             v-model="row.targetPort"
             :placeholder="t('servicePorts.rules.target.placeholder')"
-            @input="queueUpdate"
+            @update:modelValue="queueUpdate"
           >
         </div>
         <div
@@ -235,7 +235,7 @@ export default {
             min="1"
             max="65535"
             :placeholder="t('servicePorts.rules.node.placeholder')"
-            @input="queueUpdate"
+            @update:modelValue="queueUpdate"
           >
         </div>
         <div
@@ -251,7 +251,7 @@ export default {
           </button>
         </div>
         <Error
-          :value="{...row, idx}"
+          :modelValue="{...row, idx}"
           :rules="rules"
         />
       </div>
@@ -317,7 +317,7 @@ export default {
       height: 100%;
     }
 
-    .port-protocol ::v-deep {
+    .port-protocol :deep() {
       .unlabeled-select {
         .v-select.inline {
           margin-top: 2px;

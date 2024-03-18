@@ -180,7 +180,7 @@ export default {
           :required="true"
           :base-unit="t('suffix.cpus')"
           :output-modifier="true"
-          @input="updateQuantityValue"
+          @update:modelValue="updateQuantityValue"
         />
         <UnitInput
           v-else-if="resourceName === 'memory'"
@@ -192,7 +192,7 @@ export default {
           :required="true"
           :output-modifier="true"
           :increment="1024"
-          @input="updateQuantityValue"
+          @update:modelValue="updateQuantityValue"
         />
       </div>
       <div
@@ -206,7 +206,7 @@ export default {
           :label="t('hpa.metricTarget.quantity.label')"
           :mode="mode"
           :required="true"
-          @input="updateQuantityValue"
+          @update:modelValue="updateQuantityValue"
         />
       </div>
     </div>

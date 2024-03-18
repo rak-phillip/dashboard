@@ -169,7 +169,7 @@ export default {
         name="selectNode"
         :options="selectNodeOptions"
         :mode="mode"
-        @input="update"
+        @update:modelValue="update"
       />
     </div>
     <template v-if="selectNode === 'nodeSelector'">
@@ -182,7 +182,7 @@ export default {
             :mode="mode"
             :multiple="false"
             :loading="loading"
-            @input="update"
+            @update:modelValue="update"
           />
         </div>
       </div>
@@ -191,7 +191,7 @@ export default {
       <NodeAffinity
         v-model="nodeAffinity"
         :mode="mode"
-        @input="update"
+        @update:modelValue="update"
       />
     </template>
   </div>

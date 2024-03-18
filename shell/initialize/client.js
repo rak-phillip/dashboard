@@ -1,6 +1,6 @@
 // Taken from @nuxt/vue-app/template/client.js
 
-import Vue from 'vue';
+import { createApp } from 'vue';
 import fetch from 'unfetch';
 import middleware from '../config/middleware.js';
 import {
@@ -24,17 +24,18 @@ import fetchMixin from '../mixins/fetch.client';
 import NuxtLink from '../components/nuxt/nuxt-link.client.js'; // should be included after ./index.js
 import { updatePageTitle } from '@shell/utils/title';
 import { getVendor } from '@shell/config/private-label';
+const vueApp = createApp({});
 
 // Mimic old @nuxt/vue-app/template/client.js
 const isDev = process.env.dev;
 const debug = isDev;
 
 // Fetch mixin
-Vue.mixin(fetchMixin);
+vueApp.mixin(fetchMixin);
 
 // Component: <NuxtLink>
-Vue.component(NuxtLink.name, NuxtLink);
-Vue.component('NLink', NuxtLink);
+vueApp.component(NuxtLink.name, NuxtLink);
+vueApp.component('NLink', NuxtLink);
 
 if (!global.fetch) {
   global.fetch = fetch;
@@ -53,10 +54,10 @@ if ($config._app) {
   __webpack_public_path__ = urlJoin($config._app.cdnURL, $config._app.assetsPath); // eslint-disable-line camelcase, no-undef
 }
 
-Object.assign(Vue.config, { silent: false, performance: true });
+Object.assign(vueApp.config, { silent: false, performance: true });
 
 if (debug) {
-  const defaultErrorHandler = Vue.config.errorHandler;
+  const defaultErrorHandler = vueApp.config.errorHandler;
 
   vueApp.config.errorHandler = async(err, vm, info, ...rest) => {
     // Call other handler if exist
@@ -94,7 +95,7 @@ if (debug) {
   };
 }
 
-const errorHandler = Vue.config.errorHandler || console.error; // eslint-disable-line no-console
+const errorHandler = vueApp.config.errorHandler || console.error; // eslint-disable-line no-console
 
 // Create and mount App
 extendApp(nuxt.publicRuntimeConfig).then(mountApp).catch(errorHandler); // eslint-disable-line no-undef
@@ -463,7 +464,7 @@ function fixPrepatch(to, ___) {
   const instances = getMatchedComponentsInstances(to);
   const Components = getMatchedComponents(to);
 
-  Vue.nextTick(() => {
+  nextTick(() => {
     instances.forEach((instance, i) => {
       if (!instance || instance._isDestroyed) {
         return;
@@ -478,7 +479,7 @@ function fixPrepatch(to, ___) {
         const newData = instance.constructor.options.data.call(instance);
 
         for (const key in newData) {
-          Vue.set(instance.$data, key, newData[key]);
+          instance.$data[key] = newData[key];
         }
       }
     });
@@ -624,7 +625,7 @@ async function mountApp(__app) {
     configRouter.afterEach(fixPrepatch.bind(_app));
 
     // Listen for first Vue update
-    Vue.nextTick(() => {
+    nextTick(() => {
       // Call window.{{globals.readyCallback}} callbacks
       nuxtReady(_app);
 

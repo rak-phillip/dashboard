@@ -251,7 +251,7 @@ export default {
             <p>
               <Date
                 v-if="snapshot"
-                :value="snapshot.createdAt || snapshot.created || snapshot.metadata.creationTimestamp"
+                :modelValue="snapshot.createdAt || snapshot.created || snapshot.metadata.creationTimestamp"
               />
             </p>
           </div>
@@ -314,7 +314,7 @@ export default {
     }
   }
 
-  .prompt-restore ::v-deep .card-wrap .card-actions {
+  .prompt-restore :deep() .card-wrap .card-actions {
     display: block;
 
     button:not(:last-child) {

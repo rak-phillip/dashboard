@@ -1,5 +1,5 @@
 <script>
-import Vue from 'vue';
+import { createApp } from 'vue';
 import merge from 'lodash/merge';
 import { ucFirst } from '@shell/utils/string';
 import { isSimpleKeyValue } from '@shell/utils/object';
@@ -18,6 +18,7 @@ import { saferDump } from '@shell/utils/create-yaml';
 import NamespaceList, { NAMESPACE_FILTERS_HELPER } from './NamespaceList';
 import MatchKinds from './MatchKinds';
 import Scope, { SCOPE_OPTIONS } from './Scope';
+const vueApp = createApp({});
 
 function findConstraintTypes(schemas) {
   return schemas
@@ -197,7 +198,7 @@ export default {
      */
     purgeNamespacesField(value) {
       if (value?.spec?.match?.namespaces && (value.spec.match.namespaces.length === 0)) {
-        Vue.delete(value.spec.match, 'namespaces');
+        delete value.spec.match['namespaces'];
       }
     },
 
@@ -243,7 +244,7 @@ export default {
       <div>
         <NameNsDescription
           v-if="!isView"
-          :value="value"
+          :modelValue="value"
           :mode="mode"
           :namespaced="false"
         />
@@ -275,7 +276,7 @@ export default {
               <Scope
                 v-model="value.spec.match.scope"
                 :mode="mode"
-                @input="onScopeChange($event)"
+                @update:modelValue="onScopeChange($event)"
               />
             </div>
           </div>

@@ -320,7 +320,7 @@ export default {
               type="hidden"
               name="username"
               autocomplete="username"
-              :value="username"
+              :modelValue="username"
             >
             <div class="mb-20">
               <RadioGroup
@@ -404,7 +404,7 @@ export default {
                   data-testid="setup-server-url"
                   :rules="fvGetAndReportPathRules('serverUrl')"
                   :required="true"
-                  @input="onServerUrlChange"
+                  @update:modelValue="onServerUrlChange"
                 />
               </div>
             </template>
@@ -525,7 +525,7 @@ export default {
     }
 
     .setup-title {
-      ::v-deep code {
+      :deep() code {
         font-size: 12px;
         padding: 0;
       }

@@ -306,7 +306,7 @@ export default {
 </style>
 <style lang="scss" scoped>
   .markdown {
-    ::v-deep {
+    :deep() {
       P {
         line-height: 1.25;
         margin-bottom: 10px;

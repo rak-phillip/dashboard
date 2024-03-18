@@ -116,7 +116,7 @@ export default {
         :mode="mode"
         :loading="loading"
         @remove="removeRow(i)"
-        @input="updateRow"
+        @update:modelValue="updateRow"
       />
     </div>
     <button
@@ -131,7 +131,7 @@ export default {
 </template>
 
 <style lang='scss' scoped>
-.value-from ::v-deep {
+.value-from :deep() {
   .v-select {
     height: 50px;
   }

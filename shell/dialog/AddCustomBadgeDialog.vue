@@ -224,7 +224,7 @@ export default {
           <ColorInput
             v-model="badgeBgColor"
             :disabled="!badgeAsIcon"
-            :default-value="badgeBgColor"
+            :default-modelValue="badgeBgColor"
             :label="t('clusterBadge.modal.badgeBgColor')"
           />
         </div>
@@ -326,7 +326,7 @@ export default {
       }
     }
 
-    ::v-deep .badge-icon-text input {
+    :deep() .badge-icon-text input {
       text-transform: uppercase;
     }
   }

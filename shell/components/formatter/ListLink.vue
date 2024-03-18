@@ -28,7 +28,7 @@ export default {
     >
       <Link
         :row="el"
-        :value="el"
+        :modelValue="el"
         :options="el.options || options"
         v-bind="el"
       /><span v-if="i != value.length - 1">, </span>

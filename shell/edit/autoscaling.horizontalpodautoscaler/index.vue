@@ -200,7 +200,7 @@ export default {
     >
       <NameNsDescription
         v-if="!isView"
-        :value="value"
+        :modelValue="value"
         :mode="mode"
       />
 
@@ -255,7 +255,7 @@ export default {
         >
           <ArrayListGrouped
             v-model="value.spec.metrics"
-            :default-add-value="{ ...defaultResourceMetric }"
+            :default-add-modelValue="{ ...defaultResourceMetric }"
             :mode="mode"
             :initial-empty-row="true"
           >
@@ -328,7 +328,7 @@ export default {
         >
           <Labels
             :default-container-class="'labels-and-annotations-container'"
-            :value="value"
+            :modelValue="value"
             :mode="mode"
             :display-side-by-side="false"
           />

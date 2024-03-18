@@ -41,7 +41,7 @@ export default defineComponent({
      */
     items: {
       type: Array as PropType<string[]>,
-      default() {
+      default(props) {
         return [];
       },
     },
@@ -79,7 +79,7 @@ export default defineComponent({
      */
     errorMessages: {
       type: Object as PropType<ErrorMessages>,
-      default() {
+      default(props) {
         return {} as ErrorMessages;
       },
     },
@@ -107,8 +107,8 @@ export default defineComponent({
      * Create an array of error messages, one for each current error
      */
     errorMessagesArray(): string[] {
-      return (Object.keys(this.errors) as Error[])
-        .filter((f) => this.errors[f] && this.errorMessages[f])
+      return (Object.keys(props.errors) as Error[])
+        .filter((f) => props.errors[f] && this.errorMessages[f])
         .map((k) => this.errorMessages[k]);
     },
   },
@@ -460,8 +460,8 @@ export default defineComponent({
           ref="item-edit"
           :data-testid="`item-edit-${item}`"
           class="edit-input static"
-          :value="value != null ? value : item"
-          @input="onChange($event, index)"
+          :modelValue="value != null ? value : item"
+          @update:modelValue="onChange($event, index)"
           @blur.prevent="updateItem(item)"
           @keydown.native.enter="updateItem(item, !errors.duplicate)"
         />
@@ -475,9 +475,9 @@ export default defineComponent({
           data-testid="item-create"
           class="create-input static"
           type="text"
-          :value="value"
+          :modelValue="value"
           :placeholder="placeholder"
-          @input="onChange($event)"
+          @update:modelValue="onChange($event)"
           @blur.prevent="saveItem"
           @keydown.native.enter="saveItem(!errors.duplicate)"
         />
@@ -638,7 +638,7 @@ export default defineComponent({
   }
 }
 
-::v-deep {
+:deep() {
   .labeled-input INPUT.no-label,
   .labeled-input INPUT:hover.no-label,
   .labeled-input INPUT:focus.no-label {

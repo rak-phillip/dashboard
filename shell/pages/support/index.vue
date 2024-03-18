@@ -209,7 +209,7 @@ export default {
       box-shadow: none;
     }
 
-    &::v-deep .card-actions {
+    &:deep() .card-actions {
       display: flex;
       justify-content: space-between;
     }

@@ -469,10 +469,10 @@ export default {
             :in-store="inStore"
             :question="q"
             :target-namespace="targetNamespace"
-            :value="get(value, q.variable)"
+            :modelValue="get(value, q.variable)"
             :disabled="disabled"
             :chart-name="chartName"
-            @input="update(q.variable, $event)"
+            @update:modelValue="update(q.variable, $event)"
           />
         </div>
       </div>
@@ -498,10 +498,10 @@ export default {
             :question="q"
             :target-namespace="targetNamespace"
             :mode="mode"
-            :value="get(value, q.variable)"
+            :modelValue="get(value, q.variable)"
             :disabled="disabled"
             :chart-name="chartName"
-            @input="update(q.variable, $event)"
+            @update:modelValue="update(q.variable, $event)"
           />
         </div>
       </div>

@@ -326,7 +326,7 @@ export default {
               <StorageClassSelector
                 :mode="mode"
                 :options="storageClasses"
-                :value="value.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName"
+                :modelValue="value.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName"
                 :label="t('monitoring.prometheus.storage.className')"
                 @updateName="(name) => $set(value.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec, 'storageClassName', name)"
               />
@@ -360,9 +360,9 @@ export default {
             <MatchExpressions
               :initial-empty-row="false"
               :mode="mode"
-              :value="matchExpressions"
+              :modelValue="matchExpressions"
               :show-remove="false"
-              @input="matchChanged($event)"
+              @update:modelValue="matchChanged($event)"
             />
           </div>
         </div>

@@ -54,7 +54,7 @@ export default {
         <ArrayListGrouped
           v-model="value.spec.behavior[type].policies"
           :add-label="t('hpa.scalingRule.addPolicy')"
-          :default-add-value="{}"
+          :default-add-modelValue="{}"
           :mode="mode"
         >
           <template #default="props">

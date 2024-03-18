@@ -223,7 +223,7 @@ export default {
           :disabled="!isCreate"
           :add-allowed="isCreate"
           :remove-allowed="isCreate"
-          @input="updateTags"
+          @update:modelValue="updateTags"
         />
       </div>
     </div>

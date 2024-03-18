@@ -158,12 +158,12 @@ export default {
   },
 
   data(props) {
-    this.$on('createNamespace', (e) => {
-      // When createNamespace is set to true,
-      // the UI will attempt to create a new namespace
-      // before saving the resource.
-      this.createNamespace = e;
-    });
+    // this.$on('createNamespace', (e) => {
+    //   // When createNamespace is set to true,
+    //   // the UI will attempt to create a new namespace
+    //   // before saving the resource.
+    //   this.createNamespace = e;
+    // });
 
     const inStore = this.$store.getters['currentStore'](this.resource);
     const schema = this.$store.getters[`${ inStore }/schemaFor`](this.resource.type);
@@ -586,7 +586,7 @@ export default {
                 >
                   <!-- Pass down templates provided by the caller -->
                   <template
-                    v-for="(_, slot) of $scopedSlots"
+                    v-for="(_, slot) of $slots"
                     v-slot:[slot]="scope"
                   >
                     <slot
@@ -667,7 +667,7 @@ export default {
           >
             <!-- Pass down templates provided by the caller -->
             <template
-              v-for="(_, slot) of $scopedSlots"
+              v-for="(_, slot) of $slots"
               v-slot:[slot]="scope"
             >
               <slot
@@ -708,7 +708,7 @@ export default {
       >
         <ResourceYaml
           ref="resourceyaml"
-          :value="resource"
+          :modelValue="resource"
           :mode="mode"
           :initial-yaml-for-diff="initialYaml"
           :yaml="resourceYaml"
@@ -777,7 +777,6 @@ export default {
           </template>
         </ResourceYaml>
       </section>
-      </com>
     </component>
   </section>
 </template>

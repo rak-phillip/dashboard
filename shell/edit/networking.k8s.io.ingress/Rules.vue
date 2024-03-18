@@ -131,7 +131,7 @@ export default {
     <ArrayListGrouped
       v-model="value.spec.rules"
       :add-label="t('ingress.rules.addRule')"
-      :default-add-value="{}"
+      :default-add-modelValue="{}"
       :mode="mode"
       @add="onAdd"
     >

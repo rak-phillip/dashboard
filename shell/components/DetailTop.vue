@@ -223,7 +223,7 @@ export default {
           <component
             :is="detail.formatter"
             v-if="detail.formatter"
-            :value="detail.content"
+            :modelValue="detail.content"
             v-bind="detail.formatterOpts"
           />
           <span v-else>{{ detail.content }}</span>
@@ -286,7 +286,7 @@ export default {
           v-for="(val, key) in annotations"
           :key="key"
           class="annotation"
-          :value="val"
+          :modelValue="val"
           :label="key"
         />
       </div>

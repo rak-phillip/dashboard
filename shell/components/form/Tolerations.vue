@@ -202,7 +202,7 @@ export default {
           :mode="mode"
           :data-testid="`toleration-key-index${ index }`"
           class="height-adjust-input"
-          @input="update"
+          @update:modelValue="update"
         />
       </div>
       <div class="col">
@@ -212,13 +212,13 @@ export default {
           :options="operatorOpts"
           :mode="mode"
           :data-testid="`toleration-operator-index${ index }`"
-          @input="update"
+          @update:modelValue="update"
         />
       </div>
       <template v-if="rule.operator==='Exists'">
         <div class="col">
           <LabeledInput
-            value="n/a"
+            modelValue="n/a"
             :mode="mode"
             disabled
             class="height-adjust-input"
@@ -232,7 +232,7 @@ export default {
             :mode="mode"
             :data-testid="`toleration-value-index${ index }`"
             class="height-adjust-input"
-            @input="update"
+            @update:modelValue="update"
           />
         </div>
       </template>
@@ -242,7 +242,7 @@ export default {
           :options="effectOpts"
           :mode="mode"
           :data-testid="`toleration-effect-index${ index }`"
-          @input="e=>updateEffect(e, rule)"
+          @update:modelValue="e=>updateEffect(e, rule)"
         />
       </div>
       <div class="col">
@@ -253,7 +253,7 @@ export default {
           suffix="Seconds"
           :data-testid="`toleration-seconds-index${ index }`"
           class="height-adjust-input"
-          @input="update"
+          @update:modelValue="update"
         />
       </div>
       <div class="col remove">

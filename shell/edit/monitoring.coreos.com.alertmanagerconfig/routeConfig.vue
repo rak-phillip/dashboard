@@ -117,7 +117,7 @@ export default {
       class="mt-20"
       :mode="mode"
       :add-label="t('monitoringRoute.matching.addMatcher')"
-      :default-add-value="{ matchers: [] }"
+      :default-add-modelValue="{ matchers: [] }"
     >
       <template #default="props">
         <div class="row mt-20 mb-20">

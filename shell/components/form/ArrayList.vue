@@ -48,8 +48,8 @@ export default {
     },
     addLabel: {
       type: String,
-      default() {
-        return this.$store.getters['i18n/t']('generic.add');
+      default(props) {
+        return props.$store.getters['i18n/t']('generic.add');
       },
     },
     addAllowed: {
@@ -58,8 +58,8 @@ export default {
     },
     removeLabel: {
       type: String,
-      default() {
-        return this.$store.getters['i18n/t']('generic.remove');
+      default(props) {
+        return props.$store.getters['i18n/t']('generic.remove');
       },
     },
     removeAllowed: {
@@ -267,7 +267,7 @@ export default {
                 :mode="mode"
                 :disabled="disabled"
                 @paste="onPaste(idx, $event)"
-                @input="queueUpdate"
+                @update:modelValue="queueUpdate"
               />
               <LabeledInput
                 v-else-if="rules.length > 0"
@@ -279,7 +279,7 @@ export default {
                 :rules="rules"
                 :compact="false"
                 @paste="onPaste(idx, $event)"
-                @input="queueUpdate"
+                @update:modelValue="queueUpdate"
               />
               <input
                 v-else
@@ -289,7 +289,7 @@ export default {
                 :placeholder="valuePlaceholder"
                 :disabled="isView || disabled"
                 @paste="onPaste(idx, $event)"
-                @input="queueUpdate"
+                @update:modelValue="queueUpdate"
               >
             </slot>
           </div>

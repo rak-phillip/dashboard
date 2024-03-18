@@ -188,14 +188,14 @@ export default {
 <template>
   <div
     class="row"
-    @input="queueUpdate"
+    @update:modelValue="queueUpdate"
   >
     <div class="col span-12">
       <ArrayListGrouped
         v-model="allSelectorTerms"
         class="mt-20"
         :mode="mode"
-        :default-add-value="{matchExpressions:[]}"
+        :default-add-modelValue="{matchExpressions:[]}"
         :add-label="t('workload.scheduling.affinity.addNodeSelector')"
         @remove="remove"
       >
@@ -204,11 +204,11 @@ export default {
             <div class="col span-9">
               <LabeledSelect
                 :options="affinityOptions"
-                :value="priorityDisplay(props.row.value)"
+                :modelValue="priorityDisplay(props.row.value)"
                 :label="t('workload.scheduling.affinity.priority')"
                 :mode="mode"
                 :data-testid="`node-affinity-priority-index${props.i}`"
-                @input="(changePriority(props.row.value))"
+                @update:modelValue="(changePriority(props.row.value))"
               />
             </div>
             <div
@@ -229,14 +229,14 @@ export default {
           </div>
           <MatchExpressions
             :key="rerenderNums"
-            :value="matchingSelectorDisplay ? props.row.value : props.row.value.matchExpressions"
+            :modelValue="matchingSelectorDisplay ? props.row.value : props.row.value.matchExpressions"
             :matching-selector-display="matchingSelectorDisplay"
             :mode="mode"
             class="col span-12 mt-20"
             :type="node"
             :show-remove="false"
             :data-testid="`node-affinity-expressions-index${props.i}`"
-            @input="(updateExpressions(props.row.value, $event))"
+            @update:modelValue="(updateExpressions(props.row.value, $event))"
           />
         </template>
       </ArrayListGrouped>

@@ -1,5 +1,5 @@
 <script>
-import Vue from 'vue';
+import { createApp } from 'vue';
 import { mapGetters } from 'vuex';
 import { get, set } from '@shell/utils/object';
 import { sortBy } from '@shell/utils/sort';
@@ -10,6 +10,7 @@ import { LabeledInput } from '@components/Form/LabeledInput';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import { normalizeName } from '@shell/utils/kube';
 import ClusterIconMenu from '@shell/components/ClusterIconMenu';
+const vueApp = createApp({});
 
 export default {
   name:       'NameNsDescription',
@@ -402,7 +403,7 @@ export default {
         this.createNamespace = true;
         this.$parent.$emit('createNamespace', true);
         this.$emit('isNamespaceNew', true);
-        Vue.nextTick(() => this.$refs.namespace.focus());
+        nextTick(() => this.$refs.namespace.focus());
       } else {
         this.createNamespace = false;
         this.$parent.$emit('createNamespace', false);
@@ -563,7 +564,7 @@ button {
     max-height: $input-height;
   }
 
-  .namespace-select ::v-deep {
+  .namespace-select :deep() {
     .labeled-select {
       min-width: 40%;
 

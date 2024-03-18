@@ -223,13 +223,13 @@ export default {
         padding-left: 3px;
       }
 
-      ::v-deep .highlight {
+      :deep() .highlight {
         background: var(--diff-ins-bg);
         color: var(--body-text);
         padding: 2px;
       }
 
-      ::v-deep .icon {
+      :deep() .icon {
         position: relative;
         color: var(--muted);
       }
@@ -254,7 +254,7 @@ export default {
         background: var(--nav-hover);
         text-decoration: none;
 
-        ::v-deep .icon {
+        :deep() .icon {
           color: var(--body-text);
         }
       }
@@ -281,7 +281,7 @@ export default {
         padding-left: 16px;
       }
 
-      ::v-deep .label I {
+      :deep() .label I {
         padding-right: 2px;
       }
     }

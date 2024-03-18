@@ -819,12 +819,12 @@ export default defineComponent({
       <div class="row mb-10">
         <div class="col span-3">
           <LabeledInput
-            :value="normanCluster.name"
+            :modelValue="normanCluster.name"
             :mode="mode"
             label-key="generic.name"
             required
             :rules="fvGetAndReportPathRules('name')"
-            @input="setClusterName"
+            @update:modelValue="setClusterName"
           />
         </div>
         <div class="col span-3">
@@ -1073,7 +1073,7 @@ export default defineComponent({
               class="col span-3"
             >
               <LabeledSelect
-                :value="config.virtualNetwork || t('generic.none')"
+                :modelValue="config.virtualNetwork || t('generic.none')"
                 label-key="aks.virtualNetwork.label"
                 :mode="mode"
                 :options="virtualNetworkOptions"
@@ -1166,7 +1166,7 @@ export default defineComponent({
                 value-placeholder="10.0.0.0/14"
                 :label="t('aks.authorizedIpRanges.label')"
                 :rules="fvGetAndReportPathRules('authorizedIpRanges')"
-                @input="$emit('validationChanged')"
+                @update:modelValue="$emit('validationChanged')"
               >
                 <template #title>
                   <div class="text-label">

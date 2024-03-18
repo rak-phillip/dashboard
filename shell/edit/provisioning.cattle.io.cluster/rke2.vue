@@ -2121,7 +2121,7 @@ export default {
             >
               <MachinePool
                 ref="pool"
-                :value="obj"
+                :modelValue="obj"
                 :cluster="value"
                 :mode="mode"
                 :provider="provider"
@@ -2159,7 +2159,7 @@ export default {
           <Basics
             ref="tab-Basics"
             v-model="value"
-            :live-value="liveValue"
+            :live-modelValue="liveValue"
             :mode="mode"
             :provider="provider"
             :user-chart-values="userChartValues"

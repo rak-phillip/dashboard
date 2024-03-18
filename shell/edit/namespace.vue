@@ -181,7 +181,7 @@ export default {
   >
     <NameNsDescription
       v-if="!isView"
-      :value="value"
+      :modelValue="value"
       :namespaced="false"
       :mode="mode"
       :extra-columns="['project-col']"
@@ -241,7 +241,7 @@ export default {
       >
         <ContainerResourceLimit
           :key="JSON.stringify(containerResourceLimits)"
-          :value="containerResourceLimits"
+          :modelValue="containerResourceLimits"
           :mode="mode"
           :namespace="value"
           :register-before-hook="registerBeforeHook"
@@ -255,7 +255,7 @@ export default {
         <Labels
           :key="rerenderNums"
           default-container-class="labels-and-annotations-container"
-          :value="value"
+          :modelValue="value"
           :mode="mode"
           :display-side-by-side="false"
         />
