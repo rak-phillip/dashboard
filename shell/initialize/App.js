@@ -1,7 +1,5 @@
 // Taken from @nuxt/vue-app/template/App.js
 
-import { createApp } from 'vue';
-
 import {
   getMatchedComponentsInstances, getChildrenComponentInstancesUsingFetch, promisify, globalHandleError, sanitizeComponent
 } from '../utils/nuxt';
@@ -9,7 +7,6 @@ import NuxtError from '../components/templates/error.vue';
 import NuxtLoading from '../components/nav/GlobalLoading.vue';
 
 import '../assets/styles/app.scss';
-const vueApp = createApp({});
 
 export default {
   render(h) {
