@@ -143,6 +143,7 @@ export default {
 </script>
 
 <template>
+  {{ showBanner }}
   <div
     v-if="showBanner"
     :id="id"

@@ -1168,3 +1168,10 @@ export const actions = {
 
   ...gcActions
 };
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};

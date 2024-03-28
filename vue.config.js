@@ -30,5 +30,29 @@ module.exports = defineConfig({
     config.resolve.alias['~shell'] = SHELL_ABS;
     config.resolve.alias['@shell'] = SHELL_ABS;
     config.resolve.alias['@components'] = COMPONENTS_DIR;
-  }
+
+    const loaders = [
+      {
+        test:    /\.ya?ml$/i,
+        loader:  'js-yaml-loader',
+        options: { name: '[path][name].[ext]' },
+      },
+    ];
+
+    config.module.rules.push(...loaders);
+  },
+  css: {
+    extract:       false, // inline css styles instead of including with `<links`
+    loaderOptions: {
+      sass: {
+        // This is effectively added to the beginning of each style that's imported or included in a vue file. We may want to look into including these in app.scss
+        additionalData: `
+          @use 'sass:math';
+          @import "~shell/assets/styles/base/_variables.scss";
+          @import "~shell/assets/styles/base/_functions.scss";
+          @import "~shell/assets/styles/base/_mixins.scss";
+        `
+      }
+    }
+  },
 });
