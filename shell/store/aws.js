@@ -254,3 +254,10 @@ export const actions = {
     return data;
   }
 };
+
+export default {
+  state,
+  getters,
+  actions,
+  // mutations,
+};

@@ -333,8 +333,8 @@ module.exports = function(dir, _appConfig) {
 
     pages: {
       index: {
-        entry:    path.join(SHELL_ABS, '/initialize/client.js'),
-        template: path.join(SHELL_ABS, '/public/index.html')
+        entry:    path.resolve(dir, 'src/main.ts'),
+        template: path.resolve(dir, 'shell/public/index.html'),
       }
     },
 

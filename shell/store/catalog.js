@@ -667,3 +667,10 @@ export function filterAndArrangeCharts(charts, {
 
   return sortBy(out, ['certifiedSort', 'repoName', 'chartNameDisplay']);
 }
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};

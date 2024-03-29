@@ -18,7 +18,13 @@ const fetchGithubAPI = async(endpoint) => {
   return await response.json();
 };
 
+export const state = function() {
+  return { };
+};
+
 export const getters = {};
+
+export const mutations = {};
 
 export const actions = {
   async apiList(ctx, {
@@ -106,4 +112,11 @@ export const actions = {
       };
     }
   },
+};
+
+export default {
+  state,
+  getters,
+  mutations,
+  actions,
 };

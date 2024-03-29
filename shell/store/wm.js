@@ -93,3 +93,10 @@ export const actions = {
     commit('addTab', tab);
   }
 };
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};

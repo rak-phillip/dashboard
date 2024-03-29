@@ -42,3 +42,10 @@ export const actions = {
     commit('updateRefreshFlag', finalData);
   },
 };
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};

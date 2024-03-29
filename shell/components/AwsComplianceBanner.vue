@@ -1,9 +1,36 @@
 <script>
 // This component is used to show warnings when current usage exceeds support purchased through AWS Marketplace
+import { MANAGEMENT } from '@shell/config/types';
+
+export default {
+  async fetch() {
+    if ( this.$store.getters['management/schemaFor'](MANAGEMENT.USER_NOTIFICATION)) {
+      this.notifications = await this.$store.dispatch('management/findAll', { type: MANAGEMENT.USER_NOTIFICATION });
+    }
+  },
+
+  data() {
+    return { notifications: [] };
+  },
+
+  computed: {
+    // The notification will always come from the csp-adapter component & there will be no more than one
+    // Backend will remove the notification when its no longer relevant
+    awsNotification() {
+      return this.notifications.find((notification) => notification.componentName === 'csp-adapter');
+    }
+  }
+};
 </script>
 
 <template>
-  <h1>AWS Compliance</h1>
+  <h2>AWS Compliance: {{ awsNotification }}</h2>
+  <div
+    v-if="awsNotification"
+    class="aws-compliance"
+  >
+    {{ awsNotification.message }}
+  </div>
 </template>
 
 <style lang='scss' scoped>
