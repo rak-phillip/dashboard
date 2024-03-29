@@ -542,3 +542,10 @@ function getLoginRoute(route) {
     params
   };
 }
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};

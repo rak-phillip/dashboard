@@ -33,3 +33,10 @@ export const actions = {
     commit('setDefaultPreviewCluster');
   }
 };
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};

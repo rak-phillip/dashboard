@@ -228,3 +228,10 @@ function _execute(resources, action, args, opts = {}) {
 
   return Promise.all(promises);
 }
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};

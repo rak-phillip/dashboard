@@ -65,3 +65,10 @@ export const actions = {
     commit('removePlugin', pluginName);
   }
 };
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};

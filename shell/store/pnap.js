@@ -126,3 +126,10 @@ export const actions = {
     return out;
   }
 };
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
+};
