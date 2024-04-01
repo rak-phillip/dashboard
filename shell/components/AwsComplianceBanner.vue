@@ -24,12 +24,14 @@ export default {
 </script>
 
 <template>
-  <h2>AWS Compliance: {{ awsNotification }}</h2>
-  <div
-    v-if="awsNotification"
-    class="aws-compliance"
-  >
-    {{ awsNotification.message }}
+  <div>
+    <h2>AWS Compliance: {{ awsNotification }}</h2>
+    <div
+      v-if="awsNotification"
+      class="aws-compliance"
+    >
+      {{ awsNotification.message }}
+    </div>
   </div>
 </template>
 
