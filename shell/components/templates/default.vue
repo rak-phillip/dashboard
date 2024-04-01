@@ -12,11 +12,12 @@ export default {
     AzureWarning,
   },
 
-  middleware: [
-    'authenticated'
-  ],
+  computed: { ...mapState(['managementReady']) },
 
-  computed: { ...mapState(['managementReady']) }
+  mounted() {
+    console.log('STORE', { store: this.$store });
+    this.$store.dispatch('loadManagement');
+  }
 };
 </script>
 
