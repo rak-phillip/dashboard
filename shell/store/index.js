@@ -39,6 +39,7 @@ import { STORE, BLANK_CLUSTER } from '@shell/store/store-types';
 import { isDevBuild } from '@shell/utils/version';
 import { createStore } from 'vuex';
 import features from '@shell/store/features';
+import auth from '@shell/store/auth';
 
 // Disables strict mode for all store instances to prevent warning about changing state outside of mutations
 // because it's more efficient to do that sometimes.
@@ -1182,9 +1183,10 @@ const baseStoreModule = {
 export default createStore({
   plugins,
   modules: {
-    baseStoreModule,
-    features,
     // eslint-disable-next-line
     ['type-map']: typeMap,
+    baseStoreModule,
+    features,
+    auth,
   },
 });

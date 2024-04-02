@@ -111,6 +111,8 @@ export default {
     type = getters.normalizeType(type);
     const entry = state.types[type];
 
+    console.log('BY_ID', { type, entry })
+
     if ( entry && entry.value ) {
       garbageCollect.gcUpdateLastAccessed({
         state, getters, rootState

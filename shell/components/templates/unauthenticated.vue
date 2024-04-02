@@ -5,7 +5,9 @@ import FixedBanner from '@shell/components/FixedBanner';
 export default {
   mixins:     [Brand],
   components: { FixedBanner },
-  middleware: ['unauthenticated'],
+  mounted() {
+    console.log('STORE', { store: this.$store });
+  },
 };
 </script>
 
@@ -14,6 +16,7 @@ export default {
     <div class="dashboard-root">
       <FixedBanner :header="true" />
       <FixedBanner :consent="true" />
+      {{ $route.path }}
       <router-view :key="$route.path" />
       <FixedBanner :footer="true" />
     </div>

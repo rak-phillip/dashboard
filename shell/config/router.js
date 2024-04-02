@@ -2,17 +2,17 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { interopDefault } from '../utils/nuxt';
 
 const routes = [
-  {
-    path:      '/',
-    component: () => interopDefault(import('../components/templates/default.vue')),
-    children:  [
-      {
-        path:      '',
-        component: () => interopDefault(import('../pages/index.vue')),
-        name:      'index'
-      },
-    ]
-  },
+  // {
+  //   path:      '/',
+  //   component: () => interopDefault(import('../components/templates/default.vue')),
+  //   children:  [
+  //     {
+  //       path:      '',
+  //       component: () => interopDefault(import('../pages/index.vue')),
+  //       name:      'index'
+  //     },
+  //   ]
+  // },
   // {
   //   path:      '/fail-whale',
   //   component: () => interopDefault(import('../pages/fail-whale.vue')),
@@ -101,32 +101,32 @@ const routes = [
   //   children:  [
   //   ]
   // },
-  // {
-  //   path:      '',
-  //   component: () => interopDefault(import('../components/templates/unauthenticated.vue')),
-  //   name:      'unauthenticated',
-  //   children:  [
-  //     {
-  //       path:      '/auth/login',
-  //       component: () => interopDefault(import('../pages/auth/login.vue')),
-  //       name:      'auth-login',
-  //     },
-  //     {
-  //       path:      '/auth/logout',
-  //       component: () => interopDefault(import('../pages/auth/logout.vue')),
-  //       name:      'auth-logout'
-  //     },
-  //     {
-  //       path:      '/auth/setup',
-  //       component: () => interopDefault(import('../pages/auth/setup.vue')),
-  //       name:      'auth-setup'
-  //     }, {
-  //       path:      '/auth/verify',
-  //       component: () => interopDefault(import('../pages/auth/verify.vue')),
-  //       name:      'auth-verify'
-  //     },
-  //   ]
-  // },
+  {
+    path:      '',
+    component: () => interopDefault(import('../components/templates/unauthenticated.vue')),
+    name:      'unauthenticated',
+    children:  [
+      {
+        path:      '/auth/login',
+        component: () => interopDefault(import('../pages/auth/login.vue')),
+        name:      'auth-login',
+      },
+      // {
+      //   path:      '/auth/logout',
+      //   component: () => interopDefault(import('../pages/auth/logout.vue')),
+      //   name:      'auth-logout'
+      // },
+      // {
+      //   path:      '/auth/setup',
+      //   component: () => interopDefault(import('../pages/auth/setup.vue')),
+      //   name:      'auth-setup'
+      // }, {
+      //   path:      '/auth/verify',
+      //   component: () => interopDefault(import('../pages/auth/verify.vue')),
+      //   name:      'auth-verify'
+      // },
+    ]
+  },
   // {
   //   path:      '',
   //   component: () => interopDefault(import('../components/templates/default.vue')),
