@@ -111,12 +111,22 @@ export default {
     type = getters.normalizeType(type);
     const entry = state.types[type];
 
-    if ( entry ) {
+    if ( entry && entry.value ) {
       garbageCollect.gcUpdateLastAccessed({
         state, getters, rootState
       }, type);
 
-      return entry.map.get(id);
+      console.log('BY_ID', { entry, type, id, state })
+
+      if (entry.value.map) {
+        return entry.value.map.get(id);
+      } else {
+        console.error("entry.value.map is not defined");
+        return null; 
+      }
+    } else {
+      console.error("entry or entry.value is not defined");
+      return null; 
     }
   },
 
@@ -184,17 +194,28 @@ export default {
       }
     }
 
-    const out = schemas.map.get(type);
+    if ( schemas && schemas.value) {
+      if (schemas.value.map) {
+        const out = schemas.value.map.get(type);
 
-    if ( !out && fuzzy ) {
-      const close = getters.schemaName(type);
+        if ( !out && fuzzy ) {
+          const close = getters.schemaName(type);
 
-      if ( close ) {
-        return getters.schemaFor(close);
+          if ( close ) {
+            return getters.schemaFor(close);
+          }
+        }
+
+        return out;
+      } else {
+        console.error("schemas.value.map is not defined");
+        return null; 
       }
+    } else {
+      console.error("schemas or schemas.value is not defined");
+      return null; 
     }
 
-    return out;
   },
 
   defaultFor: (state, getters) => (type, rootSchema, schemaDefinitions = null) => {

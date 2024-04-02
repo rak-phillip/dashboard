@@ -2,51 +2,43 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from '../shell/config/router';
 import defineIndex from '../shell/store/index';
-import defineActionMenu from '../shell/store/action-menu';
-import defineAuth from '../shell/store/auth';
-import defineAws from '../shell/store/aws';
-import defineCatalog from '../shell/store/catalog';
-import defineDigitalOcean from '../shell/store/digitalocean';
-import defineFeatures from '../shell/store/features';
+// import defineActionMenu from '../shell/store/action-menu';
+// import defineAuth from '../shell/store/auth';
+// import defineAws from '../shell/store/aws';
+// import defineCatalog from '../shell/store/catalog';
+// import defineDigitalOcean from '../shell/store/digitalocean';
 // import defineGithub from '../shell/store/github';
 // import defineGitlab from '../shell/store/gitlab';
-import defineGrowl from '../shell/store/growl';
-import defineI18N from '../shell/store/i18n';
-import defineLinode from '../shell/store/linode';
-import definePlugins from '../shell/store/plugins';
-import definePnap from '../shell/store/pnap';
-import definePrefs from '../shell/store/prefs';
-import defineResourceFetch from '../shell/store/resource-fetch';
-import defineTypeMap from '../shell/store/type-map';
-import defineUiplugins from '../shell/store/uiplugins';
-import defineWm from '../shell/store/wm';
-import defineCustomisation from '../shell/store/customisation';
+// import defineGrowl from '../shell/store/growl';
+// import defineI18N from '../shell/store/i18n';
+// import defineLinode from '../shell/store/linode';
+// import definePlugins from '../shell/store/plugins';
+// import definePnap from '../shell/store/pnap';
+// import definePrefs from '../shell/store/prefs';
+// import defineResourceFetch from '../shell/store/resource-fetch';
+// import defineUiplugins from '../shell/store/uiplugins';
+// import defineWm from '../shell/store/wm';
+// import defineCustomisation from '../shell/store/customisation';
 
-import { createStore } from 'vuex';
-// import store from './store'
-
-const storeIndex = createStore(defineIndex);
-const storeActionMenu = createStore(defineActionMenu);
-const storeAuth = createStore(defineAuth);
-const storeAws = createStore(defineAws);
-const storeCatalog = createStore(defineCatalog);
-const storeDigitalOcean = createStore(defineDigitalOcean);
-const storeFeatures = createStore(defineFeatures);
-// const storeGithub = createStore(defineGithub);
-// const storeGitlab = createStore(defineGitlab);
-const storeGrowl = createStore(defineGrowl);
-const storeI18N = createStore(defineI18N);
-const storeLinode = createStore(defineLinode);
-const storePlugins = createStore(definePlugins);
-const storePnap = createStore(definePnap);
-const storePrefs = createStore(definePrefs);
-const storeResourceFetch = createStore(defineResourceFetch);
-const storeTypeMap = createStore(defineTypeMap);
-const storeUiplugins = createStore(defineUiplugins);
-const storeWm = createStore(defineWm);
-const storeCustomisation = createStore(defineCustomisation);
+// const storeActionMenu = createStore(defineActionMenu);
+// const storeAuth = createStore(defineAuth);
+// const storeAws = createStore(defineAws);
+// const storeCatalog = createStore(defineCatalog);
+// const storeDigitalOcean = createStore(defineDigitalOcean);
+// // const storeGithub = createStore(defineGithub);
+// // const storeGitlab = createStore(defineGitlab);
+// const storeGrowl = createStore(defineGrowl);
+// const storeI18N = createStore(defineI18N);
+// const storeLinode = createStore(defineLinode);
+// const storePlugins = createStore(definePlugins);
+// const storePnap = createStore(definePnap);
+// const storePrefs = createStore(definePrefs);
+// const storeResourceFetch = createStore(defineResourceFetch);
+// const storeUiplugins = createStore(defineUiplugins);
+// const storeWm = createStore(defineWm);
+// const storeCustomisation = createStore(defineCustomisation);
 
 createApp(App)
   .use(router)
-  .use(storeIndex)
+  .use(defineIndex)
   .mount('#app');
