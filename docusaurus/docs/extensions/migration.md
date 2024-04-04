@@ -5,6 +5,7 @@ Migration of Rancher plugins can be easily done using the migration script. This
 - Run script `node ./scripts/vue-migrate.js` to migrate files from Vue2 to Vue3
 - Update NVM/Node version to 20.0.0 or higher
 - Reinstall the packages to fetch the newer versions with `yarn`
+- Run unit test upgrade tool `npx vue-upgrade-tool --files 'shell/**/*.test.ts'`
 - Run linter with auto-fix flag `yarn lint --fix`
 - Manually review logged issues
 
