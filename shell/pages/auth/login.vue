@@ -1,12 +1,34 @@
 <script>
+import { LabeledInput } from '@components/Form/LabeledInput';
+import AsyncButton from '@shell/components/AsyncButton';
+import LocaleSelector from '@shell/components/LocaleSelector';
 import BrandImage from '@shell/components/BrandImage';
+import InfoBox from '@shell/components/InfoBox';
+import CopyCode from '@shell/components/CopyCode';
+import { Banner } from '@components/Banner';
+import { Checkbox } from '@components/Form/Checkbox';
+import Password from '@shell/components/form/Password';
+import { ref } from 'vue';
 
 export default {
   name:       'Login',
-  components: { BrandImage },
-  mounted() {
-    console.log('STORE', { store: this.$store, that: this });
-  }
+  components: {
+    LabeledInput, AsyncButton, Checkbox, BrandImage, Banner, InfoBox, CopyCode, Password, LocaleSelector
+  },
+
+  setup() {
+    const hasLocal = ref(true);
+    const username = ref('');
+    const password = ref('');
+    const remember = ref(false);
+
+    return {
+      hasLocal,
+      username,
+      password,
+      remember,
+    };
+  },
 };
 </script>
 
@@ -17,6 +39,56 @@ export default {
         <p class="text-center">
           {{ t('login.howdy') }}
         </p>
+        <template v-if="hasLocal">
+          <form
+            v-if="true"
+          >
+            <div class="span-6 offset-3">
+              <div class="mb-20">
+                <LabeledInput
+                  id="username"
+                  ref="username"
+                  v-model.trim="username"
+                  data-testid="local-login-username"
+                  :label="t('login.username')"
+                  autocomplete="username"
+                />
+              </div>
+              <div class="">
+                <Password
+                  id="password"
+                  ref="password"
+                  v-model="password"
+                  data-testid="local-login-password"
+                  :label="t('login.password')"
+                  autocomplete="password"
+                />
+              </div>
+            </div>
+            <div class="mt-20">
+              <div class="col span-12 text-center">
+                <AsyncButton
+                  id="submit"
+                  data-testid="login-submit"
+                  type="submit"
+                  :action-label="t('login.loginWithLocal')"
+                  :waiting-label="t('login.loggingIn')"
+                  :success-label="t('login.loggedIn')"
+                  :error-label="t('asyncButton.default.error')"
+                />
+                <div
+                  class="mt-20"
+                >
+                  <Checkbox
+                    v-model="remember"
+                    :label="t('login.remember.label')"
+                    type="checkbox"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+        </template>
       </div>
 
       <BrandImage
@@ -70,7 +142,7 @@ export default {
         margin-bottom: 0;
         border-left: 0;
 
-        :deep() code {
+        ::v-deep code {
           font-size: 12px;
           padding: 0;
         }

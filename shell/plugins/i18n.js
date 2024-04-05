@@ -1,4 +1,5 @@
 import { escapeHtml } from '../utils/string';
+import { watchEffect, ref, h } from 'vue';
 
 function stringFor(store, key, args, raw = false, escapehtml = true) {
   const translation = store.getters['i18n/t'](key, args);
@@ -40,74 +41,74 @@ export default {
     };
 
     console.log('WILL REGISTER DIRECTIVE');
-    // app.directive('t', {
-    //   mounted(el, binding, vnode) {
-    //     const { ctx } = vnode;
-    //     const raw = binding.modifiers && binding.modifiers.raw === true;
-    //     const str = stringFor(ctx.$store, binding.value, {}, raw);
+    app.directive('t', {
+      mounted(el, binding, vnode) {
+        const { ctx } = vnode;
+        const raw = binding.modifiers && binding.modifiers.raw === true;
+        const str = stringFor(ctx.$store, binding.value, {}, raw);
 
-    //     if (binding.arg) {
-    //       el.setAttribute(binding.arg, str);
-    //     } else {
-    //       el.innerHTML = str;
-    //     }
-    //   },
-    //   updated(el, binding, vnode) {
-    //     const { ctx } = vnode;
-    //     const raw = binding.modifiers && binding.modifiers.raw === true;
-    //     const str = stringFor(ctx.$store, binding.value, {}, raw);
+        if (binding.arg) {
+          el.setAttribute(binding.arg, str);
+        } else {
+          el.innerHTML = str;
+        }
+      },
+      updated(el, binding, vnode) {
+        const { ctx } = vnode;
+        const raw = binding.modifiers && binding.modifiers.raw === true;
+        const str = stringFor(ctx.$store, binding.value, {}, raw);
 
-    //     if (binding.arg) {
-    //       el.setAttribute(binding.arg, str);
-    //     } else {
-    //       el.innerHTML = str;
-    //     }
-    //   }
-    // });
+        if (binding.arg) {
+          el.setAttribute(binding.arg, str);
+        } else {
+          el.innerHTML = str;
+        }
+      }
+    });
 
     console.log('WILL REGISTER COMPONENT');
-    // app.component('t', {
-    //   props: {
-    //     k: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //     raw: {
-    //       type: Boolean,
-    //       default: false,
-    //     },
-    //     tag: {
-    //       type: [String, Object],
-    //       default: 'span'
-    //     },
-    //     escapehtml: {
-    //       type: Boolean,
-    //       default: true,
-    //     }
-    //   },
-    //   setup(props) {
-    //     const msg = ref('');
+    app.component('t', {
+      props: {
+        k: {
+          type:     String,
+          required: true,
+        },
+        raw: {
+          type:    Boolean,
+          default: false,
+        },
+        tag: {
+          type:    [String, Object],
+          default: 'span'
+        },
+        escapehtml: {
+          type:    Boolean,
+          default: true,
+        }
+      },
+      setup(props) {
+        const msg = ref('');
 
-    //     // Update msg whenever k, $attrs, raw, or escapehtml changes
-    //     watchEffect(() => {
-    //       msg.value = stringFor(app.$store, props.k, props.$attrs, props.raw, props.escapehtml);
-    //     });
+        // Update msg whenever k, $attrs, raw, or escapehtml changes
+        watchEffect(() => {
+          msg.value = stringFor(app.$store, props.k, props.$attrs, props.raw, props.escapehtml);
+        });
 
-    //     return { msg };
-    //   },
-    //   render() {
-    //     if (this.raw) {
-    //       return h(
-    //         this.tag,
-    //         { innerHTML: this.msg }
-    //       );
-    //     } else {
-    //       return h(
-    //         this.tag,
-    //         [this.msg]
-    //       );
-    //     }
-    //   }
-    // });
+        return { msg };
+      },
+      render() {
+        if (this.raw) {
+          return h(
+            this.tag,
+            { innerHTML: this.msg }
+          );
+        } else {
+          return h(
+            this.tag,
+            [this.msg]
+          );
+        }
+      }
+    });
   }
 };

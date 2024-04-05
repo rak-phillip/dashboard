@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
+import '../shell/assets/styles/app.scss';
 
 const count = ref(0);
 

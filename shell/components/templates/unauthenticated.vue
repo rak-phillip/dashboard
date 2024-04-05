@@ -1,10 +1,10 @@
 <script>
-// import Brand from '@shell/mixins/brand';
+import Brand from '@shell/mixins/brand';
 import FixedBanner from '@shell/components/FixedBanner';
 
 export default {
-  // mixins:     [Brand],
-  // components: { FixedBanner },
+  mixins:     [Brand],
+  components: { FixedBanner },
   mounted() {
     console.log('STORE', { store: this.$store, that: this });
   },
@@ -14,11 +14,11 @@ export default {
 <template>
   <main class="main-layout">
     <div class="dashboard-root">
-      <!-- <FixedBanner :header="true" />
-      <FixedBanner :consent="true" /> -->
+      <FixedBanner :header="true" />
+      <FixedBanner :consent="true" />
       {{ $route.path }}
       <router-view :key="$route.path" />
-      <!-- <FixedBanner :footer="true" /> -->
+      <FixedBanner :footer="true" />
     </div>
   </main>
 </template>
