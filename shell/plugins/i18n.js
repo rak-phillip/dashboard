@@ -1,7 +1,4 @@
-import { createApp } from 'vue';
 import { escapeHtml } from '../utils/string';
-
-const app = createApp({});
 
 function stringFor(store, key, args, raw = false, escapehtml = true) {
   const translation = store.getters['i18n/t'](key, args);
@@ -28,80 +25,89 @@ function stringFor(store, key, args, raw = false, escapehtml = true) {
   }
 }
 
-app.config.globalProperties.t = (key, args, raw) => stringFor(this.$store, key, args, raw);
+export default {
+  install: (app, options) => {
+    console.log('WILL REGISTER GLOBAL PROPERTY');
+    app.config.globalProperties.$translate = (key) => {
+      // retrieve a nested property in `options`
+      // using `key` as the path
+      return key.split('.').reduce((o, i) => {
+        if (o) return o[i];
+      }, options);
+    };
+    app.config.globalProperties.t = function(key, args, raw) {
+      return stringFor(this.$store, key, args, raw);
+    };
 
-function directive(el, binding, vnode /*, oldVnode */) {
-  const { context } = vnode;
-  const raw = binding.modifiers && binding.modifiers.raw === true;
-  const str = stringFor(context.$store, binding.value, {}, raw);
+    console.log('WILL REGISTER DIRECTIVE');
+    // app.directive('t', {
+    //   mounted(el, binding, vnode) {
+    //     const { ctx } = vnode;
+    //     const raw = binding.modifiers && binding.modifiers.raw === true;
+    //     const str = stringFor(ctx.$store, binding.value, {}, raw);
 
-  if ( binding.arg ) {
-    el.setAttribute(binding.arg, str);
-  } else {
-    el.innerHTML = str;
+    //     if (binding.arg) {
+    //       el.setAttribute(binding.arg, str);
+    //     } else {
+    //       el.innerHTML = str;
+    //     }
+    //   },
+    //   updated(el, binding, vnode) {
+    //     const { ctx } = vnode;
+    //     const raw = binding.modifiers && binding.modifiers.raw === true;
+    //     const str = stringFor(ctx.$store, binding.value, {}, raw);
+
+    //     if (binding.arg) {
+    //       el.setAttribute(binding.arg, str);
+    //     } else {
+    //       el.innerHTML = str;
+    //     }
+    //   }
+    // });
+
+    console.log('WILL REGISTER COMPONENT');
+    // app.component('t', {
+    //   props: {
+    //     k: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //     raw: {
+    //       type: Boolean,
+    //       default: false,
+    //     },
+    //     tag: {
+    //       type: [String, Object],
+    //       default: 'span'
+    //     },
+    //     escapehtml: {
+    //       type: Boolean,
+    //       default: true,
+    //     }
+    //   },
+    //   setup(props) {
+    //     const msg = ref('');
+
+    //     // Update msg whenever k, $attrs, raw, or escapehtml changes
+    //     watchEffect(() => {
+    //       msg.value = stringFor(app.$store, props.k, props.$attrs, props.raw, props.escapehtml);
+    //     });
+
+    //     return { msg };
+    //   },
+    //   render() {
+    //     if (this.raw) {
+    //       return h(
+    //         this.tag,
+    //         { innerHTML: this.msg }
+    //       );
+    //     } else {
+    //       return h(
+    //         this.tag,
+    //         [this.msg]
+    //       );
+    //     }
+    //   }
+    // });
   }
-}
-
-export function directiveSsr(vnode, binding) {
-  const { context } = vnode;
-  const raw = binding.modifiers && binding.modifiers.raw === true;
-  const str = stringFor(context.$store, binding.value, {}, raw);
-
-  if ( binding.arg ) {
-    vnode.data.attrs[binding.arg] = str;
-  } else {
-    vnode.data.domProps = { innerHTML: str };
-  }
-}
-
-// InnerHTML: <some-tag v-t="'some.key'" />
-// As an attribute: <some-tag v-t:title="'some.key'" />
-app.directive('t', {
-  bind() {
-    directive(...arguments);
-  },
-
-  update() {
-    directive(...arguments);
-  },
-});
-
-// Basic (but you might want the directive above): <t k="some.key" />
-// With interpolation: <t k="some.key" count="1" :foo="bar" />
-app.component('t', {
-  inheritAttrs: false,
-  props:        {
-    k: {
-      type:     String,
-      required: true,
-    },
-    raw: {
-      type:    Boolean,
-      default: false,
-    },
-    tag: {
-      type:    [String, Object],
-      default: 'span'
-    },
-    escapehtml: {
-      type:    Boolean,
-      default: true,
-    }
-  },
-
-  render(h) {
-    const msg = stringFor(this.$store, this.k, this.$attrs, this.raw, this.escapehtml);
-
-    if ( this.raw ) {
-      return h(
-        this.tag,
-        { domProps: { innerHTML: msg } }
-      );
-    } else {
-      return h(
-        this.tag,
-        [msg]
-      );
-    }
-  },
-});
+};

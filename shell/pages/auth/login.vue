@@ -3,11 +3,9 @@ import BrandImage from '@shell/components/BrandImage';
 
 export default {
   name:       'Login',
-  components: {
-    BrandImage, 
-  },
+  components: { BrandImage },
   mounted() {
-    console.log('STORE', { store: this.$store })
+    console.log('STORE', { store: this.$store, that: this });
   }
 };
 </script>

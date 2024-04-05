@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from '../shell/config/router';
 import defineIndex from '../shell/store/index';
+import I18n from '../shell/plugins/i18n';
 // import defineActionMenu from '../shell/store/action-menu';
 // import defineAuth from '../shell/store/auth';
 // import defineAws from '../shell/store/aws';
@@ -41,4 +42,5 @@ import defineIndex from '../shell/store/index';
 createApp(App)
   .use(router)
   .use(defineIndex)
+  .use(I18n, { greetings: { hello: 'Bonjour!' } })
   .mount('#app');
