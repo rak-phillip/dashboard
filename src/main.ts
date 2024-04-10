@@ -3,6 +3,8 @@ import App from './App.vue';
 import router from '../shell/config/router';
 import defineIndex from '../shell/store/index';
 import I18n from '../shell/plugins/i18n';
+import { VCleanTooltip } from '../shell/plugins/clean-tooltip-directive';
+import { cleanHtmlDirective } from '../shell/plugins/clean-html-directive';
 // import defineActionMenu from '../shell/store/action-menu';
 // import defineAuth from '../shell/store/auth';
 // import defineAws from '../shell/store/aws';
@@ -43,4 +45,6 @@ createApp(App)
   .use(router)
   .use(defineIndex)
   .use(I18n, { greetings: { hello: 'Bonjour!' } })
+  .directive('clean-tooltip', VCleanTooltip)
+  .directive('clean-html', cleanHtmlDirective)
   .mount('#app');
