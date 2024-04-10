@@ -1,8 +1,5 @@
-import { createApp } from 'vue';
 import { VTooltip } from 'v-tooltip';
 import { purifyHTML } from './clean-html';
-
-const app = createApp({});
 
 function purifyContent(value) {
   const type = typeof value;
@@ -32,4 +29,3 @@ export const VCleanTooltip = {
   update: bind,
 };
 
-app.directive('clean-tooltip', VCleanTooltip);

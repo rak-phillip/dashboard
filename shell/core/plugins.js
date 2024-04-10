@@ -7,12 +7,15 @@ import { ExtensionPoint } from './types';
 
 const MODEL_TYPE = 'models';
 
-export default function({
-  app,
-  store,
-  $axios,
-  redirect
-}, inject) {
+export default function(
+  {
+    app,
+    store,
+    $axios,
+    redirect
+  },
+  inject
+) {
   const dynamic = {};
   const validators = {};
   let _lastLoaded = 0;
