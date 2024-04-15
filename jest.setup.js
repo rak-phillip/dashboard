@@ -24,6 +24,11 @@ config.global.directives['clean-tooltip'] = VCleanTooltip ;
 config.global.components['v-select'] = vSelect;
 config.global.plugins = [VTooltip];
 config.global.mocks['t'] = key => `%${key}%`
+config.global.mocks['$store'] = {
+  getters: {},
+  dispatch: jest.fn(),
+  commit: jest.fn(),
+}
   
 /**
  * Global configuration for Jest tests
