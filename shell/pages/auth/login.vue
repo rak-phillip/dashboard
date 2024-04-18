@@ -1,12 +1,38 @@
 <script>
+import { LabeledInput } from '@components/Form/LabeledInput';
+import AsyncButton from '@shell/components/AsyncButton';
 import BrandImage from '@shell/components/BrandImage';
+import { Checkbox } from '@components/Form/Checkbox';
+import Password from '@shell/components/form/Password';
+import { getVendor } from '@shell/config/private-label';
+import { ref } from 'vue';
 
 export default {
   name:       'Login',
-  components: { BrandImage },
-  mounted() {
-    console.log('STORE', { store: this.$store, that: this });
-  }
+  components: {
+    LabeledInput,
+    AsyncButton,
+    Checkbox,
+    BrandImage,
+    Password,
+  },
+
+  setup() {
+    const providers = ref([]);
+    const hasLocal = ref(true);
+    const hasOthers = ref(false);
+    const singleProvider = ref('');
+
+    return {
+      vendor:     getVendor(),
+      providers,
+      hasOthers,
+      hasLocal,
+      showLocal:  true,
+      firstLogin: false,
+      singleProvider,
+    };
+  },
 };
 </script>
 
@@ -21,6 +47,87 @@ export default {
         <p class="text-center">
           {{ t('login.howdy') }}
         </p>
+        <h1 class="text-center login-welcome">
+          {{ t('login.welcome', {vendor}) }}
+        </h1>
+        <template v-if="hasLocal">
+          <form
+            v-if="showLocal"
+            :class="{'mt-30': !hasLoginMessage}"
+          >
+            <div class="span-6 offset-3">
+              <div class="mb-20">
+                <LabeledInput
+                  v-if="!firstLogin"
+                  id="username"
+                  ref="username"
+                  v-model.trim="username"
+                  data-testid="local-login-username"
+                  :label="t('login.username')"
+                  autocomplete="username"
+                />
+              </div>
+              <div class="">
+                <Password
+                  id="password"
+                  ref="password"
+                  v-model="password"
+                  data-testid="local-login-password"
+                  :label="t('login.password')"
+                  autocomplete="password"
+                />
+              </div>
+            </div>
+            <div class="mt-20">
+              <div class="col span-12 text-center">
+                <AsyncButton
+                  id="submit"
+                  data-testid="login-submit"
+                  type="submit"
+                  :action-label="t('login.loginWithLocal')"
+                  :waiting-label="t('login.loggingIn')"
+                  :success-label="t('login.loggedIn')"
+                  :error-label="t('asyncButton.default.error')"
+                  @click="loginLocal"
+                />
+                <div
+                  v-if="!firstLogin"
+                  class="mt-20"
+                >
+                  <Checkbox
+                    v-model="remember"
+                    :label="t('login.remember.label')"
+                    type="checkbox"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+          <div
+            v-if="hasLocal && !showLocal"
+            class="mt-20 text-center"
+          >
+            <a
+              id="login-useLocal"
+              data-testid="login-useLocal"
+              role="button"
+              @click="toggleLocal"
+            >
+              {{ t('login.useLocal') }}
+            </a>
+          </div>
+          <div
+            v-if="hasLocal && showLocal && providers.length"
+            class="mt-20 text-center"
+          >
+            <a
+              role="button"
+              @click="toggleLocal"
+            >
+              {{ nonLocalPrompt }}
+            </a>
+          </div>
+        </template>
       </div>
       <BrandImage
         class="col span-6 landscape"
