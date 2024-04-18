@@ -4,7 +4,6 @@ import AsyncButton from '@shell/components/AsyncButton';
 import BrandImage from '@shell/components/BrandImage';
 import { Checkbox } from '@components/Form/Checkbox';
 import Password from '@shell/components/form/Password';
-import { getVendor } from '@shell/config/private-label';
 import { ref } from 'vue';
 
 export default {
@@ -23,13 +22,20 @@ export default {
     const hasOthers = ref(false);
     const singleProvider = ref('');
 
+    const username = ref('');
+    const password = ref('');
+    const remember = ref(false);
+
     return {
-      vendor:     getVendor(),
+      hasLocal,
+      username,
+      password,
+      remember,
       providers,
       hasOthers,
-      hasLocal,
-      showLocal:  true,
-      firstLogin: false,
+      showLocal:       ref(true),
+      firstLogin:      ref(false),
+      hasLoginMessage: ref(false),
       singleProvider,
     };
   },
@@ -47,9 +53,6 @@ export default {
         <p class="text-center">
           {{ t('login.howdy') }}
         </p>
-        <h1 class="text-center login-welcome">
-          {{ t('login.welcome', {vendor}) }}
-        </h1>
         <template v-if="hasLocal">
           <form
             v-if="showLocal"

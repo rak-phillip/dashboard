@@ -28,4 +28,3 @@ export const VCleanTooltip = {
   bind,
   update: bind,
 };
-
