@@ -11,7 +11,7 @@ export default defineComponent({
     /**
      * The checkbox value.
      */
-    value: {
+    modelValue: {
       type:    [Boolean, Array, String] as PropType<boolean | boolean[] | string>,
       default: false
     },
@@ -132,7 +132,7 @@ export default defineComponent({
      * when value matches `this.valueWhenTrue`.
      */
     isChecked(): boolean {
-      return this.isMulti(this.value) ? this.findTrueValues(this.value) : this.value === this.valueWhenTrue;
+      return this.isMulti(this.modelValue) ? this.findTrueValues(this.modelValue) : this.modelValue === this.valueWhenTrue;
     }
   },
 
@@ -165,7 +165,7 @@ export default defineComponent({
       const click = new CustomEvent('click', customEvent);
 
       // Flip the value
-      const value = cloneDeep(this.value);
+      const value = cloneDeep(this.modelValue);
 
       if (this.isMulti(value)) {
         if (this.isChecked) {
@@ -181,7 +181,7 @@ export default defineComponent({
           this.$emit('input', this.valueWhenTrue);
         }
       } else {
-        this.$emit('input', !value);
+        this.$emit('update:modelValue', !value);
         this.$el.dispatchEvent(click);
       }
     },
@@ -223,7 +223,7 @@ export default defineComponent({
     >
       <input
         :checked="isChecked"
-        :modelValue="valueWhenTrue"
+        :value="valueWhenTrue"
         type="checkbox"
         :tabindex="-1"
         :name="id"
@@ -234,7 +234,7 @@ export default defineComponent({
         :class="{indeterminate: indeterminate}"
         :tabindex="isDisabled ? -1 : 0"
         :aria-label="label"
-        :aria-checked="!!value"
+        :aria-checked="!!modelValue"
         role="checkbox"
       />
       <span

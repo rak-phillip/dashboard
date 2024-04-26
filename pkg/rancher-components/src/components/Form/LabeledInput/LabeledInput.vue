@@ -163,14 +163,14 @@ export default defineComponent({
      * Determines if the Labeled Input should display a cron hint.
      */
     cronHint(): string | undefined {
-      if (this.type !== 'cron' || !this.value) {
+      if (this.type !== 'cron' || !this.modelValue) {
         return;
       }
-      if (typeof this.value === 'string' && !isValidCron(this.value)) {
+      if (typeof this.modelValue === 'string' && !isValidCron(this.modelValue)) {
         return this.t('generic.invalidCron');
       }
       try {
-        const hint = cronstrue.toString(this.value);
+        const hint = cronstrue.toString(this.modelValue);
 
         return hint;
       } catch (e) {
@@ -252,7 +252,7 @@ export default defineComponent({
     delayInput(val: string | Event): void {
       const value = typeof val === 'string' ? val : (val?.target as HTMLInputElement)?.value;
 
-      this.$emit('input', value);
+      this.$emit('update:model-value', value);
     },
 
     /**
@@ -312,11 +312,10 @@ export default defineComponent({
     <slot name="field">
       <TextAreaAutoGrow
         v-if="type === 'multiline' || type === 'multiline-password'"
-        ref="value"
         v-bind="$attrs"
         :maxlength="_maxlength"
         :disabled="isDisabled"
-        :modelValue="value"
+        :model-value="modelValue"
         :placeholder="_placeholder"
         autocapitalize="off"
         :class="{ conceal: type === 'multiline-password' }"
@@ -326,18 +325,17 @@ export default defineComponent({
       />
       <input
         v-else
-        ref="value"
         :class="{ 'no-label': !hasLabel }"
         v-bind="$attrs"
         :maxlength="_maxlength"
         :disabled="isDisabled"
         :type="type === 'cron' ? 'text' : type"
-        :modelValue="value"
+        :value="modelValue"
         :placeholder="_placeholder"
         autocomplete="off"
         autocapitalize="off"
         :data-lpignore="ignorePasswordManagers"
-        @update:modelValue="onInput"
+        @input="onInput"
         @focus="onFocus"
         @blur="onBlur"
         @change="onChange"
@@ -348,13 +346,13 @@ export default defineComponent({
     <LabeledTooltip
       v-if="hasTooltip && !focused"
       :hover="hoverTooltip"
-      :modelValue="tooltipValue"
+      :model-value="tooltipValue"
       :status="status"
     />
     <LabeledTooltip
       v-if="!!validationMessage"
       :hover="hoverTooltip"
-      :modelValue="validationMessage"
+      :model-value="validationMessage"
     />
     <label
       v-if="cronHint"

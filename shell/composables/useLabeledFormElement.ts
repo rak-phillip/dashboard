@@ -3,7 +3,7 @@ import { _VIEW, _EDIT } from '@shell/config/query-params';
 
 interface LabeledFormElementProps {
   mode: string;
-  value: string | number | Record<string, any>
+  modelValue: string | number | Record<string, any>
   required: boolean;
   disabled: boolean;
   rules: Array<any>;
@@ -41,7 +41,7 @@ export const labeledFormElementProps = {
     type:    String,
     default: null
   },
-  value: {
+  modelValue: {
     type:    [String, Number, Object],
     default: ''
   },
@@ -66,7 +66,7 @@ export const labeledFormElementProps = {
 };
 
 export const useLabeledFormElement = (props: LabeledFormElementProps, emit: (event: string, ...args: any[]) => void): UseLabeledFormElement => {
-  const raised = ref(props.mode === _VIEW || !!`${ props.value }`);
+  const raised = ref(props.mode === _VIEW || !!`${ props.modelValue }`);
   const focused = ref(false);
   const blurred = ref<number | null>(null);
 
@@ -85,7 +85,7 @@ export const useLabeledFormElement = (props: LabeledFormElementProps, emit: (eve
   const validationMessage = computed(() => {
     const requiredRule = props.rules.find((rule: any) => rule?.name === 'required') as Function;
     const ruleMessages = [];
-    const value = props.value;
+    const value = props.modelValue;
 
     if (requiredRule && blurred.value && !focused.value) {
       const message = requiredRule(value);
@@ -118,7 +118,7 @@ export const useLabeledFormElement = (props: LabeledFormElementProps, emit: (eve
   const onBlurLabeled = () => {
     focused.value = false;
 
-    if (!props.value) {
+    if (!props.modelValue) {
       raised.value = false;
     }
 

@@ -22,8 +22,8 @@ export default {
     const hasOthers = ref(false);
     const singleProvider = ref('');
 
-    const username = ref('');
-    const password = ref('');
+    const username = ref('user-test');
+    const password = ref('test1234');
     const remember = ref(false);
 
     return {
@@ -63,7 +63,6 @@ export default {
                 <LabeledInput
                   v-if="!firstLogin"
                   id="username"
-                  ref="username"
                   v-model.trim="username"
                   data-testid="local-login-username"
                   :label="t('login.username')"
@@ -73,7 +72,6 @@ export default {
               <div class="">
                 <Password
                   id="password"
-                  ref="password"
                   v-model="password"
                   data-testid="local-login-password"
                   :label="t('login.password')"
