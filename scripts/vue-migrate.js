@@ -103,6 +103,8 @@ const packageUpdatesLibraries = (file, oldContent, parsedJson) => {
     ['@vue/vue2-jest', '@vue/vue3-jest', '^27.0.0-alpha.1'],
     ['@vue/test-utils', '~2.0.0-0'],
     ['core-js', '3.25.3'],
+    ['cache-loader', '^4.1.0'],
+    ['node-polyfill-webpack-plugin', '^3.0.0'],
     ['portal-vue', '~3.0.0'],
     ['require-extension-hooks-babel', '1.0.0'],
     ['require-extension-hooks-vue', '3.0.0'],
