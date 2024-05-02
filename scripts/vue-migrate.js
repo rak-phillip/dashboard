@@ -45,11 +45,10 @@ const packageUpdates = () => {
 
   files.forEach((file) => {
     let content = fs.readFileSync(file, 'utf8');
-    const parsedJson = JSON.parse(content);
     const toReplaceNode = false;
 
     // TODO: Refactor and loop?
-    const [librariesContent, replaceLibraries] = packageUpdatesLibraries(file, content, parsedJson);
+    const [librariesContent, replaceLibraries] = packageUpdatesLibraries(file, content);
 
     if (replaceLibraries.length) {
       content = librariesContent;
@@ -57,7 +56,7 @@ const packageUpdates = () => {
       stats.libraries.push(file);
     }
 
-    const [nodeContent, replaceNode] = packageUpdatesEngine(file, content, parsedJson);
+    const [nodeContent, replaceNode] = packageUpdatesEngine(file, content);
 
     if (replaceNode.length) {
       printContent(file, `Updating node`, replaceNode);
@@ -65,7 +64,7 @@ const packageUpdates = () => {
       stats.node.push(file);
     }
 
-    const [resolutionContent, replaceResolution] = packageUpdatesResolution(file, content, parsedJson);
+    const [resolutionContent, replaceResolution] = packageUpdatesResolution(file, content);
 
     if (replaceResolution.length) {
       printContent(file, `Updating resolution`, replaceResolution);
@@ -82,8 +81,9 @@ const packageUpdates = () => {
 /**
  * Verify package vue related libraries versions
  */
-const packageUpdatesLibraries = (file, oldContent, parsedJson) => {
+const packageUpdatesLibraries = (file, oldContent) => {
   let content = oldContent;
+  let parsedJson = JSON.parse(content);
   const replaceLibraries = [];
   const types = ['dependencies', 'devDependencies', 'peerDependencies'];
   // [Library name, new version or new library, new library version]
@@ -128,16 +128,19 @@ const packageUpdatesLibraries = (file, oldContent, parsedJson) => {
           if (newVersion === removePlaceholder) {
             replaceLibraries.push([library, [parsedJson[type][library], removePlaceholder]]);
             content = content.replaceAll(`"${ library }": "${ parsedJson[type][library] }"`, ``);
+            parsedJson = JSON.parse(content);
             writeContent(file, content);
           } else if (newLibraryVersion) {
             // Replace with a new library if present, due breaking changes in Vue3
             replaceLibraries.push([library, [parsedJson[type][library], newVersion, newLibraryVersion]]);
             content = content.replaceAll(`"${ library }": "${ parsedJson[type][library] }"`, `"${ newVersion }": "${ newLibraryVersion }"`);
+            parsedJson = JSON.parse(content);
             writeContent(file, content);
           } else if (version && semver.lt(version, semver.coerce(newVersion))) {
             // Update library version if outdated
             replaceLibraries.push([library, [parsedJson[type][library], newVersion]]);
             content = content.replaceAll(`"${ library }": "${ parsedJson[type][library] }"`, `"${ library }": "${ newVersion }"`);
+            parsedJson = JSON.parse(content);
             writeContent(file, content);
           }
         }
@@ -151,8 +154,9 @@ const packageUpdatesLibraries = (file, oldContent, parsedJson) => {
 /**
  * Verify package engines node to latest
  */
-const packageUpdatesEngine = (file, oldContent, parsedJson) => {
+const packageUpdatesEngine = (file, oldContent) => {
   let content = oldContent;
+  let parsedJson = JSON.parse(content);
   const replaceNode = [];
 
   // Verify package engines node to latest
@@ -162,6 +166,7 @@ const packageUpdatesEngine = (file, oldContent, parsedJson) => {
     if (outdated) {
       replaceNode.push([parsedJson.engines.node, nodeRequirement]);
       content = content.replaceAll(`"node": "${ parsedJson.engines.node }"`, `"node": ">=${ nodeRequirement }"`);
+      parsedJson = JSON.parse(content);
       writeContent(file, content);
     }
   }
@@ -172,8 +177,9 @@ const packageUpdatesEngine = (file, oldContent, parsedJson) => {
 /**
  * Add resolutions for VueCLI
  */
-const packageUpdatesResolution = (file, oldContent, parsedJson) => {
+const packageUpdatesResolution = (file, oldContent) => {
   let content = oldContent;
+  let parsedJson = JSON.parse(content);
   const replaceResolution = [];
   const resolutions = [
     ['@vue/cli-service/html-webpack-plugin', '^5.0.0'],
@@ -186,11 +192,13 @@ const packageUpdatesResolution = (file, oldContent, parsedJson) => {
       if (newVersion === removePlaceholder) {
         delete parsedJson.resolutions[library];
         content = JSON.stringify(parsedJson, null, 2);
+        parsedJson = JSON.parse(content);
         writeContent(file, content);
       } else if (!parsedJson.resolutions[library]) {
         // Add resolution if not present
         parsedJson.resolutions[library] = newVersion;
         content = JSON.stringify(parsedJson, null, 2);
+        parsedJson = JSON.parse(content);
         writeContent(file, content);
       } else {
         // Ensure resolution version is up to date
@@ -199,6 +207,7 @@ const packageUpdatesResolution = (file, oldContent, parsedJson) => {
         if (outdated) {
           replaceResolution.push([parsedJson.engines.node, nodeRequirement]);
           content = content.replaceAll(`"${ library }": "${ parsedJson.resolutions[library] }"`, `"${ library }": "${ newVersion }"`);
+          parsedJson = JSON.parse(content);
           writeContent(file, content);
         }
       }
