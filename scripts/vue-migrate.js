@@ -88,6 +88,7 @@ const packageUpdatesLibraries = (file, oldContent) => {
   const types = ['dependencies', 'devDependencies', 'peerDependencies'];
   // [Library name, new version or new library, new library version]
   const librariesUpdates = [
+    ['@nuxt/babel-preset-app', removePlaceholder],
     ['@types/jest', '^29.5.2'],
     ['@typescript-eslint/eslint-plugin', '~5.4.0'],
     ['@typescript-eslint/parser', '~5.4.0'],
@@ -124,11 +125,11 @@ const packageUpdatesLibraries = (file, oldContent) => {
       librariesUpdates.forEach(([library, newVersion, newLibraryVersion]) => {
         if (parsedJson[type][library]) {
           const version = semver.coerce(parsedJson[type][library]);
-
           if (newVersion === removePlaceholder) {
+            // Remove library
             replaceLibraries.push([library, [parsedJson[type][library], removePlaceholder]]);
-            content = content.replaceAll(`"${ library }": "${ parsedJson[type][library] }"`, ``);
-            parsedJson = JSON.parse(content);
+            delete parsedJson[type][library];
+            content = JSON.stringify(parsedJson, null, 2);
             writeContent(file, content);
           } else if (newLibraryVersion) {
             // Replace with a new library if present, due breaking changes in Vue3
