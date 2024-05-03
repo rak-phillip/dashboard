@@ -478,23 +478,6 @@ module.exports = function(dir, _appConfig) {
                 cacheIdentifier: 'e93f32da'
               }
             },
-            {
-              loader:  'babel-loader',
-              options: {
-                presets: [
-                  [
-                    require.resolve('@nuxt/babel-preset-app'),
-                    {
-                      corejs:  { version: 3 },
-                      targets: { browsers: ['last 2 versions'] },
-                      modern:  true
-                    }
-                  ],
-                  '@babel/preset-typescript',
-                ],
-                plugins: babelPlugins
-              }
-            }
           ]
         },
         {
