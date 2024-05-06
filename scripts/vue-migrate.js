@@ -357,7 +357,8 @@ const vueSyntaxUpdates = () => {
     [/this\.\$scopedSlots\[(\w+)\]|this\.\$scopedSlots\.(\w+)/, (match, key1, key2) => `this.$slots.${ key1 || key2 }()`, `(many components loop through them) https://v3-migration.vuejs.org/breaking-changes/slots-unification.html`],
     [` $scopedSlots`, ` $slots`, `(many components loop through them) https://v3-migration.vuejs.org/breaking-changes/slots-unification.html`],
     [/slot="(\w+:\w+)"\s+slot-scope="(\w+)"/g, `$1="$2"`, `not mentioned in migration https://vuejs.org/guide/components/slots.html#scoped-slots`],
-    // [/this\.\$slots\['([^']+)'\]/g, `this.$slots[\'$1\']()`, `not mentioned in migration https://vuejs.org/guide/components/slots.html#scoped-slots`],
+    [/this\.\$slots\['([^']+)'\]/g, `this.$slots[\'$1\']()`, `not mentioned in migration https://vuejs.org/guide/components/slots.html#scoped-slots`],
+    [/this\.\$slots\.([^']+)'/g, `this.$slots.$1()`, `not mentioned in migration https://vuejs.org/guide/components/slots.html#scoped-slots`],
     // [/this\.\$slots(?!\s*\(\))(\b|\?|['"\[])/g, `this.$slots()$1`, `https://eslint.vuejs.org/rules/require-slots-as-functions.html`], // TODO: Add exception for existing brackets
 
     // Portals are now Vue3 Teleports
