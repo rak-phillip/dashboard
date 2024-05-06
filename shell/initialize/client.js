@@ -1,6 +1,6 @@
 // Taken from @nuxt/vue-app/template/client.js
 
-import Vue from 'vue';
+import { createApp } from 'vue';
 import fetch from 'unfetch';
 import middleware from '../config/middleware.js';
 import {
@@ -16,18 +16,19 @@ import fetchMixin from '../mixins/fetch.client';
 import { nuxtLinkAlias } from '../components/nuxt/nuxt-link.client.js'; // should be included after ./index.js
 import { updatePageTitle } from '@shell/utils/title';
 import { getVendor } from '@shell/config/private-label';
+const vueApp = createApp({});
 
 // Mimic old @nuxt/vue-app/template/client.js
 const isDev = process.env.dev;
 const debug = isDev;
 
 // Fetch mixin
-Vue.mixin(fetchMixin);
+vueApp.mixin(fetchMixin);
 
 // Component: <NuxtLink>
 // TODO: #9541 Remove for Vue 3 migration
-Vue.component('NuxtLink', nuxtLinkAlias('NuxtLink'));
-Vue.component('NLink', nuxtLinkAlias('NLink'));
+vueApp.component('NuxtLink', nuxtLinkAlias('NuxtLink'));
+vueApp.component('NLink', nuxtLinkAlias('NLink'));
 
 if (!global.fetch) {
   global.fetch = fetch;
@@ -36,17 +37,17 @@ if (!global.fetch) {
 // Global shared references
 let configApp;
 let configRouter;
-let _lastPaths = [];
+const _lastPaths = [];
 const $config = nuxt.publicRuntimeConfig || {}; // eslint-disable-line no-undef
 
 if ($config._app) {
   __webpack_public_path__ = urlJoin($config._app.cdnURL, $config._app.assetsPath); // eslint-disable-line camelcase, no-undef
 }
 
-Object.assign(Vue.config, { silent: false, performance: true });
+Object.assign(vueApp.config, { silent: false, performance: true });
 
 if (debug) {
-  const defaultErrorHandler = Vue.config.errorHandler;
+  const defaultErrorHandler = vueApp.config.errorHandler;
 
   vueApp.config.errorHandler = async(err, vm, info, ...rest) => {
     // Call other handler if exist
@@ -84,7 +85,7 @@ if (debug) {
   };
 }
 
-const errorHandler = Vue.config.errorHandler || console.error; // eslint-disable-line no-console
+const errorHandler = vueApp.config.errorHandler || console.error; // eslint-disable-line no-console
 
 // Create and mount App
 extendApp(NUXT.publicRuntimeConfig).then(mountApp).then(({ store }) => vueApp.use(store)).catch(errorHandler); // eslint-disable-line no-undef
@@ -270,7 +271,7 @@ async function mountApp(__app) {
   configRouter = __app.router;
 
   // Create Vue instance
-  const _app = new Vue(configApp);
+  const _app = createApp(configApp);
 
   // Mounts Vue app to DOM element
   const mount = () => {

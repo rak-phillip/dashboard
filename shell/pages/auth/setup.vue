@@ -161,17 +161,17 @@ export default {
     const isFirstLogin = await calcIsFirstLogin(this.$store);
     const mustChangePassword = await calcMustChangePassword(this.$store);
 
-    this.$set(this, 'productName', productName);
-    this.$set(this, 'haveCurrent', !!current);
-    this.$set(this, 'username', me?.loginName || 'admin');
-    this.$set(this, 'isFirstLogin', isFirstLogin);
-    this.$set(this, 'mustChangePassword', mustChangePassword);
-    this.$set(this, 'current', current);
-    this.$set(this, 'v3User', v3User);
-    this.$set(this, 'serverUrl', serverUrl);
-    this.$set(this, 'mcmEnabled', mcmEnabled);
-    this.$set(this, 'telemetry', telemetry);
-    this.$set(this, 'principals', principals);
+    this['productName'] = productName;
+    this['haveCurrent'] = !!current;
+    this['username'] = me?.loginName || 'admin';
+    this['isFirstLogin'] = isFirstLogin;
+    this['mustChangePassword'] = mustChangePassword;
+    this['current'] = current;
+    this['v3User'] = v3User;
+    this['serverUrl'] = serverUrl;
+    this['mcmEnabled'] = mcmEnabled;
+    this['telemetry'] = telemetry;
+    this['principals'] = principals;
   },
 
   computed: {
@@ -318,7 +318,7 @@ export default {
               type="hidden"
               name="username"
               autocomplete="username"
-              :value="username"
+              :modelValue="username"
             >
             <div class="mb-20">
               <RadioGroup
@@ -393,8 +393,6 @@ export default {
                 <Banner
                   v-for="(err, i) in fvGetPathErrors(['serverUrl'])"
                   :key="i"
-                  color="error"
-                  :label="err"
                 />
                 <LabeledInput
                   v-model="serverUrl"
@@ -402,7 +400,7 @@ export default {
                   data-testid="setup-server-url"
                   :rules="fvGetAndReportPathRules('serverUrl')"
                   :required="true"
-                  @input="onServerUrlChange"
+                  @update:modelValue="onServerUrlChange"
                 />
               </div>
             </template>
@@ -454,9 +452,8 @@ export default {
 
           <div class="setup-errors mt-20">
             <h4
-              v-for="err in errors"
-              :key="err"
-              class="text-error text-center"
+              v-for="(err, i) in errors"
+              :key="i"
             >
               {{ err }}
             </h4>
@@ -523,7 +520,7 @@ export default {
     }
 
     .setup-title {
-      ::v-deep code {
+      :deep() code {
         font-size: 12px;
         padding: 0;
       }

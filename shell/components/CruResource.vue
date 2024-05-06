@@ -275,7 +275,7 @@ export default {
     this.$store.dispatch('cru-resource/setCreateNamespace', false);
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.$store.dispatch('cru-resource/setCreateNamespace', false);
   },
 
@@ -456,9 +456,6 @@ export default {
         <Banner
           v-for="(err, i) in errors"
           :key="i"
-          color="error"
-          :data-testid="`error-banner${i}`"
-          :label="stringify(mappedErrors[err].message)"
           :icon="mappedErrors[err].icon"
           :closable="true"
           @close="closeError(i)"
@@ -473,11 +470,8 @@ export default {
           :subtypes="subtypes"
         >
           <div
-            v-for="subtype in subtypes"
-            :key="subtype.id"
-            class="subtype-banner"
-            :class="{ selected: subtype.id === _selectedSubtype }"
-            :data-testid="`subtype-banner-item-${subtype.id}`"
+            v-for="(subtype, i) in subtypes"
+            :key="i"
             @click="selectType(subtype.id, $event)"
           >
             <slot name="subtype-content">
@@ -564,7 +558,9 @@ export default {
               #stepContainer="{activeStep}"
               class="step-container"
             >
-              <template v-for="step in steps">
+              <template  v-for="(step, i) in steps"
+                         :key="i"
+              >
                 <div
                   v-if="step.name === activeStep.name || step.hidden"
                   :key="step.name"
@@ -589,8 +585,8 @@ export default {
                 >
                   <!-- Pass down templates provided by the caller -->
                   <template
-                    v-for="(_, slot) of $scopedSlots"
-                    v-slot:[slot]="scope"
+                    v-for="(_, slot) of $slots"
+                    :key="slot"
                   >
                     <slot
                       :name="slot"
@@ -670,8 +666,8 @@ export default {
           >
             <!-- Pass down templates provided by the caller -->
             <template
-              v-for="(_, slot) of $scopedSlots"
-              v-slot:[slot]="scope"
+              v-for="(_, slot) of $slots"
+              :key="slot"
             >
               <slot
                 :name="slot"
@@ -711,7 +707,7 @@ export default {
       >
         <ResourceYaml
           ref="resourceyaml"
-          :value="resource"
+          :modelValue="resource"
           :mode="mode"
           :initial-yaml-for-diff="initialYaml"
           :yaml="resourceYaml"

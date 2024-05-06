@@ -149,18 +149,18 @@ export default defineComponent({
       this.normanCluster = await store.dispatch('rancher/create', { type: NORMAN.CLUSTER, ...defaultCluster }, { root: true });
     }
     if (!this.normanCluster.aksConfig) {
-      this.$set(this.normanCluster, 'aksConfig', { ...defaultAksConfig });
+      this.normanCluster['aksConfig'] = { ...defaultAksConfig };
     }
     if (!this.normanCluster.aksConfig.nodePools) {
-      this.$set(this.normanCluster.aksConfig, 'nodePools', [{ ...defaultNodePool }]);
+      this.normanCluster.aksConfig['nodePools'] = [{ ...defaultNodePool }];
     }
     this.config = this.normanCluster.aksConfig;
     this.nodePools = this.normanCluster.aksConfig.nodePools;
     this.containerMonitoring = !!(this.config.logAnalyticsWorkspaceGroup || this.config.logAnalyticsWorkspaceName);
     this.setAuthorizedIPRanges = !!(this.config?.authorizedIpRanges || []).length;
     this.nodePools.forEach((pool: AKSNodePool) => {
-      this.$set(pool, '_id', randomStr());
-      this.$set(pool, '_isNewOrUnprovisioned', this.isNewOrUnprovisioned);
+      pool['_id'] = randomStr();
+      pool['_isNewOrUnprovisioned'] = this.isNewOrUnprovisioned;
     });
   },
 
@@ -311,13 +311,13 @@ export default defineComponent({
 
             this.nodePools.forEach((pool: AKSNodePool) => {
               if (!this.vmSizeOptions.find((opt: String) => opt === pool.vmSize)) {
-                this.$set(pool, '_validSize', false);
+                pool['_validSize'] = false;
                 const { name } = pool;
 
                 badPools.push(name);
                 allAvailable = false;
               } else {
-                this.$set(pool, '_validSize', true);
+                pool['_validSize'] = true;
               }
             });
             if (!allAvailable) {
@@ -335,11 +335,11 @@ export default defineComponent({
             const name = pool.name || '';
 
             if (!name.match(/^[a-z]+[a-z0-9]*$/)) {
-              this.$set(pool, '_validName', false);
+              pool['_validName'] = false;
 
               allAvailable = false;
             } else {
-              this.$set(pool, '_validName', true);
+              pool['_validName'] = true;
             }
           });
           if (!allAvailable) {
@@ -440,7 +440,7 @@ export default defineComponent({
       const sorted = sortBy(filteredAndSortable, 'sort', true);
 
       if (!this.config.kubernetesVersion) {
-        this.$set(this.config, 'kubernetesVersion', sorted[0]?.value);
+        this.config['kubernetesVersion'] = sorted[0]?.value;
       }
 
       return sorted;
@@ -491,9 +491,9 @@ export default defineComponent({
       },
       set(neu: string): void {
         if (neu === _NONE) {
-          this.$set(this.config, 'networkPolicy', null);
+          this.config['networkPolicy'] = null;
         } else {
-          this.$set(this.config, 'networkPolicy', neu);
+          this.config['networkPolicy'] = neu;
         }
       }
     },
@@ -530,21 +530,21 @@ export default defineComponent({
   watch: {
     canEditLoadBalancerSKU(neu) {
       if (!neu) {
-        this.$set(this.config, 'loadBalancerSku', 'Standard');
+        this.config['loadBalancerSku'] = 'Standard';
       }
     },
 
     hasAzureCNI(neu) {
       if (!neu) {
         if (this.config.networkPolicy === 'azure') {
-          this.$set(this.config, 'networkPolicy', undefined);
+          this.config['networkPolicy'] = undefined;
         }
       }
     },
 
     setAuthorizedIpRanges(neu) {
       if (neu) {
-        this.$set(this.config, 'privateCluster', false);
+        this.config['privateCluster'] = false;
         delete this.config.managedIdentity;
         delete this.config.privateDnsZone;
         delete this.config.userAssignedIdentity;
@@ -553,7 +553,7 @@ export default defineComponent({
 
     canEnableNetworkPolicy(neu) {
       if (!neu) {
-        this.$set(this.value, 'enableNetworkPolicy', false);
+        this.value['enableNetworkPolicy'] = false;
       }
     },
 
@@ -603,7 +603,7 @@ export default defineComponent({
       this.vmSizeOptions = [];
       this.virtualNetworkOptions = [];
       delete this.config?.kubernetesVersion;
-      this.$set(this, 'errors', []);
+      this['errors'] = [];
     },
 
     async getLocations(): Promise<void> {
@@ -612,7 +612,7 @@ export default defineComponent({
       }
       this.loadingLocations = true;
       // this will force the resourceLocation watcher to re-run every time new locations are fetched even if the default one selected hasn't changed
-      this.$set(this.config, 'resourceLocation', '');
+      this.config['resourceLocation'] = '';
 
       const { azureCredentialSecret } = this.config;
 
@@ -633,9 +633,9 @@ export default defineComponent({
         this.locationOptions = [{ displayName: this.t('aks.location.withAZ'), kind: 'group' }, ...withAZ, { displayName: this.t('aks.location.withoutAZ'), kind: 'group' }, ...withoutAZ];
         if (!this.config?.resourceLocation) {
           if (res.find((r: any) => r.name === DEFAULT_REGION)) {
-            this.$set(this.config, 'resourceLocation', DEFAULT_REGION);
+            this.config['resourceLocation'] = DEFAULT_REGION;
           } else {
-            this.$set(this.config, 'resourceLocation', res[0]?.name);
+            this.config['resourceLocation'] = res[0]?.name;
           }
         }
         this.loadingLocations = false;
@@ -748,21 +748,21 @@ export default defineComponent({
 
     selectNetwork(network: any): void {
       if (network.name === this.t('generic.none') || network === this.t('generic.none')) {
-        this.$set(this.config, 'virtualNetwork', null);
-        this.$set(this.config, 'virtualNetworkResourceGroup', null);
+        this.config['virtualNetwork'] = null;
+        this.config['virtualNetworkResourceGroup'] = null;
       } else {
-        this.$set(this.config, 'virtualNetwork', network.name);
-        this.$set(this.config, 'virtualNetworkResourceGroup', network.resourceGroup);
+        this.config['virtualNetwork'] = network.name;
+        this.config['virtualNetworkResourceGroup'] = network.resourceGroup;
       }
     },
 
     setClusterName(name: string): void {
-      this.$set(this.normanCluster, 'name', name);
-      this.$set(this.config, 'clusterName', name);
+      this.normanCluster['name'] = name;
+      this.config['clusterName'] = name;
     },
 
     onMembershipUpdate(update: any): void {
-      this.$set(this, 'membershipUpdate', update);
+      this['membershipUpdate'] = update;
     },
 
     async saveRoleBindings(): Promise<void> {
@@ -789,7 +789,7 @@ export default defineComponent({
       if (upstreamConfig) {
         const diff = diffUpstreamSpec(upstreamConfig, this.config);
 
-        this.$set(this.normanCluster, 'aksConfig', diff);
+        this.normanCluster['aksConfig'] = diff;
       }
     },
 
@@ -840,12 +840,12 @@ export default defineComponent({
       <div class="row mb-10">
         <div class="col span-3">
           <LabeledInput
-            :value="normanCluster.name"
+            :modelValue="normanCluster.name"
             :mode="mode"
             label-key="generic.name"
             required
             :rules="fvGetAndReportPathRules('name')"
-            @input="setClusterName"
+            @update:modelValue="setClusterName"
           />
         </div>
         <div class="col span-3">
@@ -908,10 +908,7 @@ export default defineComponent({
         >
           <Tab
             v-for="(pool, i) in nodePools"
-            :key="pool._id"
-            :name="pool.name"
-            :label="pool.name || t('aks.nodePools.notNamed')"
-            :error="pool._validSize === false || pool._validAZ === false || pool._validName===false"
+            :key="i"
           >
             <AksNodePool
               :mode="mode"
@@ -1094,7 +1091,7 @@ export default defineComponent({
               class="col span-3"
             >
               <LabeledSelect
-                :value="config.virtualNetwork || t('generic.none')"
+                :modelValue="config.virtualNetwork || t('generic.none')"
                 label-key="aks.virtualNetwork.label"
                 :mode="mode"
                 :options="virtualNetworkOptions"
@@ -1187,7 +1184,7 @@ export default defineComponent({
                 value-placeholder="10.0.0.0/14"
                 :label="t('aks.authorizedIpRanges.label')"
                 :rules="fvGetAndReportPathRules('authorizedIpRanges')"
-                @input="$emit('validationChanged')"
+                @update:modelValue="$emit('validationChanged')"
               >
                 <template #title>
                   <div class="text-label">

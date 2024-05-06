@@ -17,15 +17,18 @@ const defaultStore = {
 describe('topLevelMenu', () => {
   it('should display clusters', () => {
     const wrapper: Wrapper<InstanceType<typeof TopLevelMenu>> = mount(TopLevelMenu, {
-      mocks: {
-        $store: {
-          getters: {
-            'management/all': () => [{ name: 'whatever' }],
-            ...defaultStore
+      global: {
+        mocks: {
+          $store: {
+            getters: {
+              'management/all': () => [{ name: 'whatever' }],
+              ...defaultStore
+            },
           },
         },
+
+        stubs: ['BrandImage', 'router-link'],
       },
-      stubs: ['BrandImage', 'router-link']
     });
 
     const cluster = wrapper.find('[data-testid="top-level-menu-cluster-0"]');
@@ -38,57 +41,61 @@ describe('topLevelMenu', () => {
       data: () => {
         return { hasProvCluster: true, showPinClusters: true };
       },
-      mocks: {
-        $store: {
-          getters: {
-            // these objs are doubling as a prov clusters
-            // from which the "description" field comes from
-            // This is triggered by the "hasProvCluster" above
-            // (check all "management/all" getters on the component code)
-            // https://github.com/rancher/dashboard/issues/10441
-            'management/all': () => [
-              // pinned ready cluster
-              {
-                name:        'whatever',
-                id:          'an-id1',
-                mgmt:        { id: 'an-id1' },
-                description: 'some-description1',
-                nameDisplay: 'some-label',
-                isReady:     true,
-                pinned:      true
-              },
-              // pinned NOT ready cluster
-              {
-                name:        'whatever',
-                id:          'an-id2',
-                mgmt:        { id: 'an-id2' },
-                description: 'some-description2',
-                nameDisplay: 'some-label',
-                pinned:      true
-              },
-              // unpinned ready cluster
-              {
-                name:        'whatever',
-                id:          'an-id3',
-                mgmt:        { id: 'an-id3' },
-                description: 'some-description3',
-                nameDisplay: 'some-label',
-                isReady:     true
-              },
-              // unpinned NOT ready cluster
-              {
-                name:        'whatever',
-                id:          'an-id4',
-                mgmt:        { id: 'an-id4' },
-                description: 'some-description4',
-                nameDisplay: 'some-label'
-              },
-            ],
-            ...defaultStore
+
+      global: {
+        mocks: {
+          $store: {
+            getters: {
+              // these objs are doubling as a prov clusters
+              // from which the "description" field comes from
+              // This is triggered by the "hasProvCluster" above
+              // (check all "management/all" getters on the component code)
+              // https://github.com/rancher/dashboard/issues/10441
+              'management/all': () => [
+                // pinned ready cluster
+                {
+                  name:        'whatever',
+                  id:          'an-id1',
+                  mgmt:        { id: 'an-id1' },
+                  description: 'some-description1',
+                  nameDisplay: 'some-label',
+                  isReady:     true,
+                  pinned:      true
+                },
+                // pinned NOT ready cluster
+                {
+                  name:        'whatever',
+                  id:          'an-id2',
+                  mgmt:        { id: 'an-id2' },
+                  description: 'some-description2',
+                  nameDisplay: 'some-label',
+                  pinned:      true
+                },
+                // unpinned ready cluster
+                {
+                  name:        'whatever',
+                  id:          'an-id3',
+                  mgmt:        { id: 'an-id3' },
+                  description: 'some-description3',
+                  nameDisplay: 'some-label',
+                  isReady:     true
+                },
+                // unpinned NOT ready cluster
+                {
+                  name:        'whatever',
+                  id:          'an-id4',
+                  mgmt:        { id: 'an-id4' },
+                  description: 'some-description4',
+                  nameDisplay: 'some-label'
+                },
+              ],
+              ...defaultStore
+            },
           },
         },
+
+        stubs: ['BrandImage', 'router-link'],
       },
-      stubs: ['BrandImage', 'router-link']
     });
 
     const description1 = wrapper.find('[data-testid="pinned-menu-cluster-an-id1"] .description');
@@ -107,52 +114,56 @@ describe('topLevelMenu', () => {
       data: () => {
         return { hasProvCluster: false, showPinClusters: true };
       },
-      mocks: {
-        $store: {
-          getters: {
-            // "hasProvCluster" as false will make this getter
-            // a mgmt cluster only return, therefore covering the
-            // scenario where descriptions come from RKE1/ember world clusters
-            // https://github.com/rancher/dashboard/issues/10441
-            'management/all': () => [
-              // pinned ready cluster
-              {
-                name:        'whatever',
-                id:          'an-id1',
-                description: 'some-description1',
-                nameDisplay: 'some-label',
-                isReady:     true,
-                pinned:      true
-              },
-              // pinned NOT ready cluster
-              {
-                name:        'whatever',
-                id:          'an-id2',
-                description: 'some-description2',
-                nameDisplay: 'some-label',
-                pinned:      true
-              },
-              // unpinned ready cluster
-              {
-                name:        'whatever',
-                id:          'an-id3',
-                description: 'some-description3',
-                nameDisplay: 'some-label',
-                isReady:     true
-              },
-              // unpinned NOT ready cluster
-              {
-                name:        'whatever',
-                id:          'an-id4',
-                description: 'some-description4',
-                nameDisplay: 'some-label'
-              },
-            ],
-            ...defaultStore
+
+      global: {
+        mocks: {
+          $store: {
+            getters: {
+              // "hasProvCluster" as false will make this getter
+              // a mgmt cluster only return, therefore covering the
+              // scenario where descriptions come from RKE1/ember world clusters
+              // https://github.com/rancher/dashboard/issues/10441
+              'management/all': () => [
+                // pinned ready cluster
+                {
+                  name:        'whatever',
+                  id:          'an-id1',
+                  description: 'some-description1',
+                  nameDisplay: 'some-label',
+                  isReady:     true,
+                  pinned:      true
+                },
+                // pinned NOT ready cluster
+                {
+                  name:        'whatever',
+                  id:          'an-id2',
+                  description: 'some-description2',
+                  nameDisplay: 'some-label',
+                  pinned:      true
+                },
+                // unpinned ready cluster
+                {
+                  name:        'whatever',
+                  id:          'an-id3',
+                  description: 'some-description3',
+                  nameDisplay: 'some-label',
+                  isReady:     true
+                },
+                // unpinned NOT ready cluster
+                {
+                  name:        'whatever',
+                  id:          'an-id4',
+                  description: 'some-description4',
+                  nameDisplay: 'some-label'
+                },
+              ],
+              ...defaultStore
+            },
           },
         },
+
+        stubs: ['BrandImage', 'router-link'],
       },
-      stubs: ['BrandImage', 'router-link']
     });
 
     const description1 = wrapper.find('[data-testid="pinned-menu-cluster-an-id1"] .description');
@@ -168,28 +179,31 @@ describe('topLevelMenu', () => {
 
   it('should not "crash" the component if the structure of banner settings is in an old format', () => {
     const wrapper: Wrapper<InstanceType<typeof TopLevelMenu>> = mount(TopLevelMenu, {
-      mocks: {
-        $store: {
-          getters: {
-            'management/all': () => [{ name: 'whatever' },
-              // object based on https://github.com/rancher/dashboard/issues/10140#issuecomment-1883252402
-              {
-                id:    SETTING.BANNERS,
-                value: JSON.stringify({
-                  banner: {
-                    color:      '#78c9cf',
-                    background: '#27292e',
-                    text:       'Hello World!'
-                  },
-                  showHeader: 'true',
-                  showFooter: 'true'
-                })
-              }],
-            ...defaultStore
+      global: {
+        mocks: {
+          $store: {
+            getters: {
+              'management/all': () => [{ name: 'whatever' },
+                // object based on https://github.com/rancher/dashboard/issues/10140#issuecomment-1883252402
+                {
+                  id:    SETTING.BANNERS,
+                  value: JSON.stringify({
+                    banner: {
+                      color:      '#78c9cf',
+                      background: '#27292e',
+                      text:       'Hello World!'
+                    },
+                    showHeader: 'true',
+                    showFooter: 'true'
+                  })
+                }],
+              ...defaultStore
+            },
           },
         },
+
+        stubs: ['BrandImage', 'router-link'],
       },
-      stubs: ['BrandImage', 'router-link']
     });
 
     expect(wrapper.vm.globalBannerSettings).toStrictEqual({
@@ -203,15 +217,19 @@ describe('topLevelMenu', () => {
       it('given no matching clusters', () => {
         const wrapper: Wrapper<InstanceType<typeof TopLevelMenu>> = mount(TopLevelMenu, {
           data:  () => ({ clusterFilter: 'whatever' }),
-          mocks: {
-            $store: {
-              getters: {
-                'management/all': () => [{ nameDisplay: 'something else' }],
-                ...defaultStore
+
+          global: {
+            mocks: {
+              $store: {
+                getters: {
+                  'management/all': () => [{ nameDisplay: 'something else' }],
+                  ...defaultStore
+                },
               },
             },
+
+            stubs: ['BrandImage', 'router-link'],
           },
-          stubs: ['BrandImage', 'router-link']
         });
 
         const noResults = wrapper.find('[data-testid="top-level-menu-no-results"]');
@@ -222,15 +240,19 @@ describe('topLevelMenu', () => {
       it('given no matched pinned clusters', () => {
         const wrapper: Wrapper<InstanceType<typeof TopLevelMenu>> = mount(TopLevelMenu, {
           data:  () => ({ clusterFilter: 'whatever' }),
-          mocks: {
-            $store: {
-              getters: {
-                'management/all': () => [{ nameDisplay: 'something else', pinned: true }],
-                ...defaultStore
+
+          global: {
+            mocks: {
+              $store: {
+                getters: {
+                  'management/all': () => [{ nameDisplay: 'something else', pinned: true }],
+                  ...defaultStore
+                },
               },
             },
+
+            stubs: ['BrandImage', 'router-link'],
           },
-          stubs: ['BrandImage', 'router-link']
         });
 
         const noResults = wrapper.find('[data-testid="top-level-menu-no-results"]');
@@ -244,15 +266,19 @@ describe('topLevelMenu', () => {
         const search = 'you found me';
         const wrapper: Wrapper<InstanceType<typeof TopLevelMenu>> = mount(TopLevelMenu, {
           data:  () => ({ clusterFilter: search }),
-          mocks: {
-            $store: {
-              getters: {
-                'management/all': () => [{ nameDisplay: search }],
-                ...defaultStore
+
+          global: {
+            mocks: {
+              $store: {
+                getters: {
+                  'management/all': () => [{ nameDisplay: search }],
+                  ...defaultStore
+                },
               },
             },
+
+            stubs: ['BrandImage', 'router-link'],
           },
-          stubs: ['BrandImage', 'router-link']
         });
 
         const noResults = wrapper.find('[data-testid="top-level-menu-no-results"]');
@@ -265,15 +291,19 @@ describe('topLevelMenu', () => {
         const search = 'you found me';
         const wrapper: Wrapper<InstanceType<typeof TopLevelMenu>> = mount(TopLevelMenu, {
           data:  () => ({ clusterFilter: search }),
-          mocks: {
-            $store: {
-              getters: {
-                'management/all': () => [{ nameDisplay: search, pinned: true }],
-                ...defaultStore
+
+          global: {
+            mocks: {
+              $store: {
+                getters: {
+                  'management/all': () => [{ nameDisplay: search, pinned: true }],
+                  ...defaultStore
+                },
               },
             },
+
+            stubs: ['BrandImage', 'router-link'],
           },
-          stubs: ['BrandImage', 'router-link']
         });
 
         const noResults = wrapper.find('[data-testid="top-level-menu-no-results"]');

@@ -385,10 +385,7 @@ export default {
           <component
             :is="providerComponents[idx]"
             v-for="(name, idx) in providers"
-            :key="name"
-            class="mb-10"
-            :focus-on-mount="(idx === 0 && !showLocal)"
-            :name="name"
+            :key="idx"
             :open="!showLocal"
             @showInputs="showLocal = false"
             @error="handleProviderError"
@@ -531,7 +528,7 @@ export default {
         margin-bottom: 0;
         border-left: 0;
 
-        ::v-deep code {
+        :deep() code {
           font-size: 12px;
           padding: 0;
         }

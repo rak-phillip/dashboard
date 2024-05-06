@@ -257,10 +257,7 @@ export default {
     >
       <li
         v-for="(opt, i) in menuOptions"
-        :key="opt.action"
-        :disabled="opt.disabled"
-        :class="{divider: opt.divider}"
-        :data-testid="componentTestid + '-' + i + '-item'"
+        :key="i"
         @click="execute(opt, $event)"
       >
         <IconOrSvg

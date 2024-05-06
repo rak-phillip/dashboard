@@ -192,29 +192,29 @@ export default defineComponent({
     <div class="row mb-10">
       <div class="col span-6">
         <Checkbox
-          :value="publicAccess"
+          :modelValue="publicAccess"
           :mode="mode"
           label-key="eks.publicAccess.label"
-          @input="$emit('update:publicAccess', $event)"
+          @update:modelValue="$emit('update:publicAccess', $event)"
         />
         <Checkbox
-          :value="privateAccess"
+          :modelValue="privateAccess"
           :mode="mode"
           label-key="eks.privateAccess.label"
-          @input="$emit('update:privateAccess', $event)"
+          @update:modelValue="$emit('update:privateAccess', $event)"
         />
       </div>
     </div>
     <div class="row mb-10">
       <div class="col span-6">
         <ArrayList
-          :value="publicAccessSources"
+          :modelValue="publicAccessSources"
           :mode="mode"
           :disabled="!publicAccess"
           :add-allowed="publicAccess"
           :add-label="t('eks.publicAccessSources.addEndpoint')"
           data-testid="eks-public-access-sources"
-          @input="$emit('update:publicAccessSources', $event)"
+          @update:modelValue="$emit('update:publicAccessSources', $event)"
         >
           <template #title>
             {{ t('eks.publicAccessSources.label') }}

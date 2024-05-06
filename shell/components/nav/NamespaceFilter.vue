@@ -384,7 +384,7 @@ export default {
     }
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.removeCloseKeyHandler();
   },
 
@@ -746,8 +746,7 @@ export default {
         </div>
         <div
           v-for="(ns, j) in value"
-          ref="value"
-          :key="ns.id"
+          :key="j"
           :data-testid="`namespaces-value-${j}`"
           class="ns-value"
         >
@@ -835,8 +834,7 @@ export default {
       >
         <div
           v-for="(opt, i) in cachedFiltered"
-          :id="opt.elementId"
-          :key="opt.id"
+          :key="i"
           tabindex="0"
           class="ns-option"
           :disabled="!opt.enabled"

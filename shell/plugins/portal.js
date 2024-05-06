@@ -1,4 +1,5 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import Portal from 'vue-portal';
+const vueApp = createApp({});
 
-Vue.use(Portal);
+vueApp.use(Portal);

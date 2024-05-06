@@ -234,7 +234,7 @@ export default defineComponent({
     >
       <div class="col span-6">
         <LabeledSelect
-          :value="kubernetesVersion"
+          :modelValue="kubernetesVersion"
           :options="versionOptions"
           label-key="eks.version.label"
           :mode="mode"
@@ -242,25 +242,25 @@ export default defineComponent({
           :taggable="true"
           :searchable="true"
           data-testid="eks-version-dropdown"
-          @input="$emit('update:kubernetesVersion', $event)"
+          @update:modelValue="$emit('update:kubernetesVersion', $event)"
         />
       </div>
       <div class="col span-3">
         <Checkbox
           :mode="mode"
           label-key="eks.enableNetworkPolicy.label"
-          :value="enableNetworkPolicy"
+          :modelValue="enableNetworkPolicy"
           :disabled="!isNewOrUnprovisioned"
-          @input="$emit('update:enableNetworkPolicy', $event)"
+          @update:modelValue="$emit('update:enableNetworkPolicy', $event)"
         />
       </div>
       <div class="col span-3">
         <Checkbox
           :mode="mode"
           label-key="eks.ebsCSIDriver.label"
-          :value="ebsCSIDriver"
+          :modelValue="ebsCSIDriver"
           :disabled="!isNewOrUnprovisioned"
-          @input="$emit('update:ebsCSIDriver', $event)"
+          @update:modelValue="$emit('update:ebsCSIDriver', $event)"
         />
       </div>
     </div>
@@ -278,7 +278,7 @@ export default defineComponent({
       <div class="col span-6">
         <LabeledSelect
           v-if="customServiceRole"
-          :value="serviceRole"
+          :modelValue="serviceRole"
           :mode="mode"
           :disabled="mode!=='create'"
           :options="eksRoles"
@@ -287,7 +287,7 @@ export default defineComponent({
           label-key="eks.serviceRole.label"
           :loading="loadingIam"
           data-testid="eks-service-role-dropdown"
-          @input="$emit('update:serviceRole', $event.RoleName)"
+          @update:modelValue="$emit('update:serviceRole', $event.RoleName)"
         />
       </div>
     </div>
@@ -312,24 +312,24 @@ export default defineComponent({
       >
         <LabeledSelect
           v-if="canReadKms"
-          :value="kmsKey"
+          :modelValue="kmsKey"
           :mode="mode"
           :options="kmsOptions"
           :loading="loadingKms"
           :label="t('cluster.machineConfig.amazonEc2.kmsKey.label')"
           data-testid="eks-kms-dropdown"
           :disabled="mode!=='create'"
-          @input="$emit('update:kmsKey', $event)"
+          @update:modelValue="$emit('update:kmsKey', $event)"
         />
         <template v-else>
           <LabeledInput
-            :value="kmsKey"
+            :modelValue="kmsKey"
             :mode="mode"
             :label="t('cluster.machineConfig.amazonEc2.kmsKey.label')"
             :tooltip="t('cluster.machineConfig.amazonEc2.kmsKey.text')"
             data-testid="eks-kms-input"
             :disabled="mode!=='create'"
-            @input="$emit('update:kmsKey', $event)"
+            @update:modelValue="$emit('update:kmsKey', $event)"
           />
         </template>
       </div>
@@ -337,12 +337,12 @@ export default defineComponent({
 
     <div class="col span-6">
       <KeyValue
-        :value="tags"
+        :modelValue="tags"
         :mode="mode"
         :title="t('eks.tags.label')"
         :as-map="true"
         :read-allowed="false"
-        @input="$emit('update:tags', $event)"
+        @update:modelValue="$emit('update:tags', $event)"
       >
         <template #title>
           <label class="text-label">{{ t('eks.tags.label') }}</label>
