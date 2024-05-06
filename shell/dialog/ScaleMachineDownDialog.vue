@@ -131,7 +131,7 @@ export default {
         >
           <span class="mb-20">{{ t('promptScaleMachineDown.retainedMachine1') }}</span>
           <span
-            v-for="(i, i) in ignored"
+            v-for="(i) in ignored"
             :key="i"
           />
         </div>
