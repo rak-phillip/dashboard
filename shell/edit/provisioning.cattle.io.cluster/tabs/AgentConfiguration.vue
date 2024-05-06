@@ -255,7 +255,7 @@ export default {
 
       <PodAffinity
         v-if="canEditAffinity"
-        v-model="value"
+        :modelValue="value"
         field="overrideAffinity"
         :mode="mode"
         class="mt-0 mb-20"

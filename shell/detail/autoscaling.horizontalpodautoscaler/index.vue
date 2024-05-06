@@ -87,7 +87,7 @@ export default {
 
 <template>
   <ResourceTabs
-    v-model="value"
+    :modelValue="value"
     :mode="mode"
   >
     <Tab

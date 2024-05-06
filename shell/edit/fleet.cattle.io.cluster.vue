@@ -80,7 +80,7 @@ export default {
     @cancel="done"
   >
     <NameNsDescription
-      v-model="value"
+      :modelValue="value"
       :mode="mode"
       :namespaced="isNamespaced"
     />

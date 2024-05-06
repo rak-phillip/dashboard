@@ -215,7 +215,7 @@ export default {
     </div>
     <div class="spacer" />
     <ResourceTabs
-      v-model="value"
+      :modelValue="value"
       :mode="mode"
     >
       <Tab

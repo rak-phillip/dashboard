@@ -234,7 +234,7 @@ export default {
     />
 
     <ResourceTabs
-      v-model="value"
+      :modelValue="value"
       :mode="mode"
       :side-tabs="true"
       :default-tab="defaultTab"

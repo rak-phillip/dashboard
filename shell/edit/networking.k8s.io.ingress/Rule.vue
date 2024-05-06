@@ -148,11 +148,10 @@ export default {
       <div class="col" />
     </div>
     <template v-for="(path, i) in paths"
-              :key="i"
+        :key="path.id"
     >
       <RulePath
         ref="paths"
-        :key="path.id"
         v-model="paths[i]"
         class="row mb-10"
         :rule-mode="ruleMode"

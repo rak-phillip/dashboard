@@ -1451,7 +1451,7 @@ export default {
             </div>
           </div>
           <NameNsDescription
-            v-model="value"
+            :modelValue="value"
             :description-hidden="true"
             :mode="mode"
             :name-disabled="nameDisabled"

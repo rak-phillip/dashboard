@@ -90,7 +90,7 @@ export default {
   >
     <Select
       ref="select"
-      v-model="value"
+      :modelValue="value"
       label="label"
       :append-to-body="false"
       :options="options"

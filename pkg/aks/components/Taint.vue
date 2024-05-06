@@ -74,7 +74,7 @@ export default defineComponent({
     </td>
     <td :style="{'width': '40%'}">
       <input
-        v-model="value"
+        :modelValue="value"
         label="value"
         :mode="mode"
         type="text"

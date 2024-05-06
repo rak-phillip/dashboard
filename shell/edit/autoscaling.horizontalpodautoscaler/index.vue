@@ -295,7 +295,7 @@ export default {
             </div>
             <HpaScalingRule
               v-if="hasScaleDownRules"
-              v-model="value"
+              :modelValue="value"
               type="scaleDown"
               :mode="mode"
             />
@@ -313,7 +313,7 @@ export default {
             </div>
             <HpaScalingRule
               v-if="hasScaleUpRules"
-              v-model="value"
+              :modelValue="value"
               type="scaleUp"
               :mode="mode"
             />

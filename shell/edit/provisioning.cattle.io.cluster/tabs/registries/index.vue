@@ -97,7 +97,7 @@ export default {
           @update:modelValue="$emit('registry-host-changed', $event)"
         />
         <SelectOrCreateAuthSecret
-          v-model="registrySecret"
+          :modelValue="registrySecret"
           :register-before-hook="registerBeforeHook"
           :hook-priority="1"
           :mode="mode"
@@ -129,12 +129,12 @@ export default {
             :label-key="value.isK3s ? 'cluster.privateRegistry.docsLinkK3s' : 'cluster.privateRegistry.docsLinkRke2'"
           />
           <RegistryMirrors
-            v-model="value"
+            :modelValue="value"
             class="mt-20"
             :mode="mode"
           />
           <RegistryConfigs
-            v-model="value"
+            :modelValue="value"
             class="mt-20"
             :mode="mode"
             :cluster-register-before-hook="registerBeforeHook"

@@ -2078,7 +2078,7 @@ export default {
     >
       <NameNsDescription
         v-if="!isView"
-        v-model="value"
+        :modelValue="value"
         :mode="mode"
         :namespaced="needsNamespace"
         :namespace-options="allNamespaces"
@@ -2198,7 +2198,7 @@ export default {
           <!-- Basic -->
           <Basics
             ref="tab-Basics"
-            v-model="value"
+            :modelValue="value"
             :live-modelValue="liveValue"
             :mode="mode"
             :provider="provider"
@@ -2234,7 +2234,7 @@ export default {
           :weight="10"
         >
           <MemberRoles
-            v-model="value"
+            :modelValue="value"
             :mode="mode"
             :on-membership-update="onMembershipUpdate"
           />
@@ -2245,7 +2245,7 @@ export default {
           label-key="cluster.tabs.etcd"
         >
           <Etcd
-            v-model="value"
+            :modelValue="value"
             :mode="mode"
             :s3-backup="s3Backup"
             :register-before-hook="registerBeforeHook"
@@ -2262,7 +2262,7 @@ export default {
           label-key="cluster.tabs.networking"
         >
           <Networking
-            v-model="value"
+            :modelValue="value"
             :mode="mode"
             :selected-version="selectedVersion"
             :truncate-limit="truncateLimit"
@@ -2276,7 +2276,7 @@ export default {
           label-key="cluster.tabs.upgrade"
         >
           <Upgrade
-            v-model="value"
+            :modelValue="value"
             :mode="mode"
           />
         </Tab>
@@ -2287,7 +2287,7 @@ export default {
           label-key="cluster.tabs.registry"
         >
           <Registries
-            v-model="value"
+            :modelValue="value"
             :mode="mode"
             :register-before-hook="registerBeforeHook"
             :show-custom-registry-input="showCustomRegistryInput"
@@ -2309,7 +2309,7 @@ export default {
         >
           <AddOnConfig
             ref="tab-addOnConfig"
-            v-model="value"
+            :modelValue="value"
             :mode="mode"
             :version-info="versionInfo"
             :addon-versions="addonVersions"
@@ -2358,7 +2358,7 @@ export default {
           :weight="-1"
         >
           <Advanced
-            v-model="value"
+            :modelValue="value"
             :mode="mode"
             :have-arg-info="haveArgInfo"
             :selected-version="selectedVersion"
@@ -2366,11 +2366,11 @@ export default {
         </Tab>
 
         <AgentEnv
-          v-model="value"
+          :modelValue="value"
           :mode="mode"
         />
         <Labels
-          v-model="value"
+          :modelValue="value"
           :mode="mode"
         />
 

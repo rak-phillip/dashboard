@@ -665,7 +665,7 @@ export default {
             @cancel-confirmed="confirmCancel"
           >
             <!-- Pass down templates provided by the caller -->
-            <template
+            <!-- <template
               v-for="(_, slot) of $slots"
               :key="slot"
             >
@@ -673,7 +673,8 @@ export default {
                 :name="slot"
                 v-bind="scope"
               />
-            </template>
+            </template> -->
+            <!-- FIXME: Just 1 slot allowed -->
 
             <template #default>
               <div v-if="!isView">

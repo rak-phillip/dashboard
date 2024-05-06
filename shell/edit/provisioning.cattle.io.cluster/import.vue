@@ -150,7 +150,7 @@ export default {
 
     <NameNsDescription
       v-if="!isView"
-      v-model="value"
+      :modelValue="value"
       :mode="mode"
       :namespaced="false"
       name-label="cluster.name.label"
@@ -179,11 +179,11 @@ export default {
         />
       </Tab>
       <AgentEnv
-        v-model="value"
+        :modelValue="value"
         :mode="mode"
       />
       <Labels
-        v-model="value"
+        :modelValue="value"
         :mode="mode"
       />
     </Tabbed>

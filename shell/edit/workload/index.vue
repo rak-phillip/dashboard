@@ -363,7 +363,7 @@ export default {
               :weight="tabWeightMap['labels']"
             >
               <Labels
-                v-model="value"
+                :modelValue="value"
                 :mode="mode"
               />
             </Tab>

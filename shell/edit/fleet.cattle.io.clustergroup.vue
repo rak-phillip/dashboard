@@ -139,7 +139,7 @@ export default {
   >
     <NameNsDescription
       v-if="!isView"
-      v-model="value"
+      :modelValue="value"
       :mode="mode"
       :namespaced="false"
       namespace-label="nameNsDescription.workspace.label"

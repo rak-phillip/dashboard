@@ -229,7 +229,7 @@ export default {
   <Loading v-if="$fetchState.pending" />
   <div v-else>
     <ResourceTabs
-      v-model="value"
+      :modelValue="value"
       :mode="mode"
     >
       <Tab

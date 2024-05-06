@@ -354,7 +354,7 @@ export default {
   >
     <NameNsDescription
       v-if="!isView"
-      v-model="value"
+      :modelValue="value"
       :mode="mode"
       :namespaced="value.type !== LOGGING.CLUSTER_FLOW"
     />
