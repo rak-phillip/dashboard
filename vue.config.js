@@ -1,15 +1,25 @@
+const fs = require('fs');
+const path = require('path');
 
-const config = require('./shell/vue.config');
+const { defineConfig } = require('@vue/cli-service')
 
-// Excludes the following plugins if there's no .env file.
-let defaultExcludes = 'rancher-components, harvester';
+const dev = (process.env.NODE_ENV !== 'production');
+const devPorts = dev || process.env.DEV_PORTS === 'true';
 
-if (process.env.RANCHER_ENV === 'harvester') {
-  defaultExcludes = defaultExcludes.replace(', harvester', '');
-}
-const excludes = process.env.EXCLUDES_PKG || defaultExcludes;
-
-module.exports = config(__dirname, {
-  excludes: excludes.replace(/\s/g, '').split(','),
-  // excludes: ['fleet', 'example']
-});
+module.exports = defineConfig({
+  transpileDependencies: true,
+  devServer: {
+    https: (devPorts ? {
+      key:  fs.readFileSync(path.resolve(__dirname, 'shell/server/server.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'shell/server/server.crt'))
+    } : null),
+    port:   (devPorts ? 8005 : 80),
+    host:   '0.0.0.0',
+  },
+  pages: {
+    index: {
+      entry: path.resolve(__dirname, 'src/main.ts'),
+      template: path.resolve(__dirname, 'shell/public/index.html'),
+    }
+  }
+})
