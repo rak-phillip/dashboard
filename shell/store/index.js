@@ -16,7 +16,7 @@ import {
 import { BY_TYPE } from '@shell/plugins/dashboard-store/classify';
 import Steve from '@shell/plugins/steve';
 import { STEVE_MODEL_TYPES } from '@shell/plugins/steve/getters';
-import { CLUSTER as CLUSTER_PREF, LAST_NAMESPACE, NAMESPACE_FILTERS, WORKSPACE } from '@shell/store/prefs';
+import prefs, { CLUSTER as CLUSTER_PREF, LAST_NAMESPACE, NAMESPACE_FILTERS, WORKSPACE } from '@shell/store/prefs';
 import typeMap, { BOTH, CLUSTER_LEVEL, NAMESPACED } from '@shell/store/type-map';
 import { filterBy, findBy } from '@shell/utils/array';
 import { ApiError, ClusterNotFoundError } from '@shell/utils/error';
@@ -40,6 +40,7 @@ import { isDevBuild } from '@shell/utils/version';
 import { createStore } from 'vuex';
 import features from '@shell/store/features';
 import auth from '@shell/store/auth';
+import i18n from '@shell/store/i18n';
 
 // Disables strict mode for all store instances to prevent warning about changing state outside of mutations
 // because it's more efficient to do that sometimes.
@@ -1218,5 +1219,7 @@ export default createStore({
     baseStoreModule,
     features,
     auth,
+    i18n,
+    prefs,
   },
 });
