@@ -13,6 +13,7 @@ export default {
     <div class="dashboard-root">
       <FixedBanner :header="true" />
       <FixedBanner :consent="true" />
+      {{ $route.path }}
       <router-view :key="$route.path" />
       <FixedBanner :footer="true" />
     </div>
