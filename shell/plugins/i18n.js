@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { escapeHtml } from '../utils/string';
 import { watchEffect, ref, h } from 'vue';
-import { useStore } from '../composables/useStore';
+import { useStore } from 'vuex';
 
 function stringFor(store, key, args, raw = false, escapehtml = true) {
   const translation = store.getters['i18n/t'](key, args);
@@ -42,7 +42,7 @@ function directive(el, binding, vnode /*, oldVnode */) {
 
 export function directiveSsr(vnode, binding) {
   // eslint-disable-next-line no-console
-  console.warn('Function `directiveSsr` is deprecated. Please install i18n as a vue plugin: `vueApp.use(i18n)`');
+  console.warn('Function `directiveSsr` is deprecated. Please install i18n as a vue plugin: `Vue.use(i18n)`');
 
   const { context } = vnode;
   const raw = binding.modifiers && binding.modifiers.raw === true;
@@ -56,18 +56,22 @@ export function directiveSsr(vnode, binding) {
 }
 
 const i18n = {
-  install: (vueApp, _options) => {
+  name:    'i18n',
+  install: (app, _options) => {
     _options?.store?.dispatch('i18n/init');
-    if (vueApp.config.globalProperties.t && vueApp.directive('t') && vueApp.component('t')) {
+
+    if (app.config.globalProperties.t && app.directive('t') && app.component('t')) {
       // eslint-disable-next-line no-console
       console.debug('Skipping i18n install. Directive, component, and option already exist.');
     }
 
-    vueApp.config.globalProperties.t = (key, args, raw) => stringFor(this.$store, key, args, raw);
+    app.config.globalProperties.t = function(key, args, raw) {
+      return stringFor(this.$store, key, args, raw);
+    };
 
     // InnerHTML: <some-tag v-t="'some.key'" />
     // As an attribute: <some-tag v-t:title="'some.key'" />
-    vueApp.directive('t', {
+    app.directive('t', {
       bind() {
         directive(...arguments);
       },
@@ -78,7 +82,7 @@ const i18n = {
 
     // Basic (but you might want the directive above): <t k="some.key" />
     // With interpolation: <t k="some.key" count="1" :foo="bar" />
-    vueApp.component('t', {
+    app.component('t', {
       inheritAttrs: false,
       props:        {
         k: {

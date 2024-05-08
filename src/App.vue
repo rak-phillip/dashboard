@@ -20,7 +20,6 @@ onMounted(() => {
 <template>
   <div>
     <router-view />
-    <h1>NOT FAIL {{ $translate('greetings.hello') }}</h1>
     <h2>{{ t('login.howdy') }}</h2>
     <button @click="increment">
       Click this: {{ count }}
