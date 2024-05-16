@@ -1,11 +1,20 @@
-import { createApp } from 'vue';
-const vueApp = createApp({});
-
+/* eslint-disable no-console */
 const components = require.context('@shell/components/formatter', false, /[A-Z]\w+\.(vue)$/);
 
-components.keys().forEach((fileName) => {
-  const componentConfig = components(fileName);
-  const componentName = fileName.split('/').pop().split('.')[0];
+const globalFormatters = {
+  install: (app) => {
+    components.keys().forEach((fileName) => {
+      const componentConfig = components(fileName);
+      const componentName = fileName.split('/').pop().split('.')[0];
 
-  vueApp.component(componentName, componentConfig.default || componentConfig);
-});
+      if (app.component(componentName)) {
+        // eslint-disable-next-line no-console
+        console.debug(`Skipping ${ componentName } install. Component already exists.`);
+      } else {
+        app.component(componentName, componentConfig.default || componentConfig);
+      }
+    });
+  }
+};
+
+export default globalFormatters;

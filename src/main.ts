@@ -6,45 +6,67 @@ import I18n from '../shell/plugins/i18n';
 import { VCleanTooltip } from '../shell/plugins/clean-tooltip-directive';
 import { cleanHtmlDirective } from '../shell/plugins/clean-html-directive';
 import fetchMixin from '../shell/mixins/fetch.client';
-// import defineActionMenu from '../shell/store/action-menu';
-// import defineAuth from '../shell/store/auth';
-// import defineAws from '../shell/store/aws';
-// import defineCatalog from '../shell/store/catalog';
-// import defineDigitalOcean from '../shell/store/digitalocean';
-// import defineGithub from '../shell/store/github';
-// import defineGitlab from '../shell/store/gitlab';
-// import defineGrowl from '../shell/store/growl';
-// import defineI18N from '../shell/store/i18n';
-// import defineLinode from '../shell/store/linode';
-// import definePlugins from '../shell/store/plugins';
-// import definePnap from '../shell/store/pnap';
-// import definePrefs from '../shell/store/prefs';
-// import defineResourceFetch from '../shell/store/resource-fetch';
-// import defineUiplugins from '../shell/store/uiplugins';
-// import defineWm from '../shell/store/wm';
-// import defineCustomisation from '../shell/store/customisation';
+import { installPlugins } from '../shell/initialize/plugins';
+import { setContext, } from '../shell/utils/nuxt';
 
-// const storeActionMenu = createStore(defineActionMenu);
-// const storeAuth = createStore(defineAuth);
-// const storeAws = createStore(defineAws);
-// const storeCatalog = createStore(defineCatalog);
-// const storeDigitalOcean = createStore(defineDigitalOcean);
-// // const storeGithub = createStore(defineGithub);
-// // const storeGitlab = createStore(defineGitlab);
-// const storeGrowl = createStore(defineGrowl);
-// const storeI18N = createStore(defineI18N);
-// const storeLinode = createStore(defineLinode);
-// const storePlugins = createStore(definePlugins);
-// const storePnap = createStore(definePnap);
-// const storePrefs = createStore(definePrefs);
-// const storeResourceFetch = createStore(defineResourceFetch);
-// const storeUiplugins = createStore(defineUiplugins);
-// const storeWm = createStore(defineWm);
-// const storeCustomisation = createStore(defineCustomisation);
+const store = defineIndex;
+const routerDef = router;
 
-createApp(App)
-  .use(router)
-  .use(defineIndex)
+const app = {
+  store,
+  router: routerDef,
+  nuxt: {
+    err:     null,
+    dateErr: null,
+    error(err: any) {
+      // err = err || null;
+      // app.context._errored = Boolean(err);
+      // err = err ? normalizeError(err) : null;
+      // let nuxt = app.nuxt; // to work with @vue/composition-api, see https://github.com/nuxt/nuxt.js/issues/6517#issuecomment-573280207
+
+      // if (this) {
+      //   nuxt = this.nuxt || this.$options.nuxt;
+      // }
+      // nuxt.dateErr = Date.now();
+      // nuxt.err = err;
+
+      return err;
+    }
+  },
+  ...App
+};
+
+// Set context to app.context
+await setContext(app, {
+  store,
+  route: undefined,
+  next: undefined,
+  error:   app.nuxt.error.bind(app),
+  payload: undefined,
+  req:     undefined,
+  res:     undefined
+});
+
+
+const vueApp = createApp(app);
+
+console.log('NOT FAIL')
+console.log('NOT FAIL')
+console.log('NOT FAIL')
+console.log('NOT FAIL')
+console.log('NOT FAIL')
+console.log('APP', { app, vueApp });
+console.log('NOT FAIL')
+console.log('NOT FAIL')
+console.log('NOT FAIL')
+console.log('NOT FAIL')
+console.log('NOT FAIL')
+
+await installPlugins(app, vueApp);
+
+vueApp
+  .use(routerDef)
+  .use(store)
   .use(I18n, { greetings: { hello: 'Bonjour!' } })
   .directive('clean-tooltip', VCleanTooltip)
   .directive('clean-html', cleanHtmlDirective)

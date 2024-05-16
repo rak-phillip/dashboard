@@ -241,8 +241,8 @@ export async function setContext(app, context) {
   app.context._redirected = false;
   app.context._errored = false;
   app.context.isHMR = Boolean(context.isHMR);
-  app.context.params = app.context.route.params || {};
-  app.context.query = app.context.route.query || {};
+  // app.context.params = app.context.route.params || {};
+  // app.context.query = app.context.route.query || {};
 }
 
 export function middlewareSeries(promises, appContext) {

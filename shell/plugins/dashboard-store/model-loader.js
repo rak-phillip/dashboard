@@ -13,6 +13,7 @@ function find(cache, type, rootState) {
   }
 
   try {
+    console.log('model-loader.js', { rootState });
     const pluginModel = rootState.$plugin.getDynamic('models', type);
     let base;
 

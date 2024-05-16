@@ -59,8 +59,8 @@ module.exports = function(dir, _appConfig) {
 
   // If we have a local folder named 'shell' then use that rather than the one in node_modules
   // This will be the case in the main dashboard repository.
-  if (fs.existsSync(path.join(dir, 'shell'))) {
-    SHELL_ABS = path.join(dir, 'shell');
+  if (fs.existsSync(path.resolve(dir, 'shell'))) {
+    SHELL_ABS = path.resolve(dir, 'shell');
     COMPONENTS_DIR = path.join(dir, 'pkg', 'rancher-components', 'src', 'components');
   }
 
