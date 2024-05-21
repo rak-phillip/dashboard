@@ -16,7 +16,7 @@ import i18n from '@shell/plugins/i18n';
 import axios from '@shell/utils/axios';
 import cookieUniversalNuxt from '@shell/utils/cookie-universal-nuxt';
 import config from '@shell/utils/config';
-// import axiosShell from '@shell/plugins/axios';
+import axiosShell from '@shell/plugins/axios';
 // import backButton from '@shell/plugins/back-button';
 // import codeMirror from '@shell/plugins/codemirror-loader';
 // import VueCodemirror from 'vue-codemirror';
@@ -46,7 +46,7 @@ export async function installPlugins(app, Vue) {
     axios,
     plugins,
     // pluginsLoader,
-    // axiosShell,
+    axiosShell,
     // intNumber,
     // codeMirror,
     nuxtClientInit,
@@ -126,7 +126,7 @@ function inject(key, value, context, Vue) {
     if (!Object.prototype.hasOwnProperty.call(Vue.config.globalProperties, key)) {
       Object.defineProperty(Vue.config.globalProperties, key, {
         get() {
-          return this.$root.$options[key];
+          return value;
         }
       });
     }

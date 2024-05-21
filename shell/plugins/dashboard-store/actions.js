@@ -583,6 +583,10 @@ export default {
     const keyField = getters.keyFieldForType(type);
     const id = data?.[keyField] || existing?.[keyField];
 
+    console.log(`DASHBOARD STORE`, {
+      ctx, data, existing
+    });
+
     if ( !id ) {
       console.warn('Attempting to load a resource with no id', data, existing); // eslint-disable-line no-console
 

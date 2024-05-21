@@ -8,6 +8,7 @@ import garbageCollect from '@shell/utils/gc/gc';
 const vueApp = createApp({});
 
 function registerType(state, type) {
+  console.log('MUTATIONS', { state, type });
   let cache = state.types[type];
 
   if ( !cache ) {
@@ -35,10 +36,12 @@ function registerType(state, type) {
        * Used to cancel incremental loads if the page changes during load
        */
       loadCounter:   0,
+
+      map: new Map(),
     };
 
     // Not enumerable so they don't get sent back to the client for SSR
-    Object.defineProperty(cache, 'map', { value: new Map() });
+    // Object.defineProperty(cache, 'map', { value: new Map() });
 
     state.types[type] = cache;
   }
