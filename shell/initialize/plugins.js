@@ -21,7 +21,7 @@ import config from '@shell/utils/config';
 // import codeMirror from '@shell/plugins/codemirror-loader';
 // import VueCodemirror from 'vue-codemirror';
 // import * as intNumber from '@shell/directives/int-number';
-// import nuxtClientInit from '@shell/plugins/nuxt-client-init';
+import nuxtClientInit from '@shell/plugins/nuxt-client-init';
 // import plugin from '@shell/plugins/plugin';
 import plugins from '@shell/core/plugins.js';
 // import pluginsLoader from '@shell/core/plugins-loader.js';
@@ -49,7 +49,7 @@ export async function installPlugins(app, Vue) {
     // axiosShell,
     // intNumber,
     // codeMirror,
-    // nuxtClientInit,
+    nuxtClientInit,
     // replaceAll,
     // backButton,
     // plugin,
@@ -98,11 +98,7 @@ function inject(key, value, context, Vue) {
     throw new Error(`inject('${ key }', value) has no value provided`);
   }
 
-  console.log('NOT FAIL 1');
-
   const { app, store } = context;
-
-  console.log('NOT FAIL 2');
 
   key = `$${ key }`;
   // Add into app
@@ -111,8 +107,6 @@ function inject(key, value, context, Vue) {
   if (!app.context[key]) {
     app.context[key] = value;
   }
-
-  console.log('NOT FAIL 3');
 
   // Add into store
   store[key] = app[key];
@@ -128,7 +122,6 @@ function inject(key, value, context, Vue) {
   window[window.installedPlugins] = true;
   // Call Vue.use() to install the plugin into vm
 
-  console.log('NOT FAIL 4', { app, store });
   Vue.use(() => {
     if (!Object.prototype.hasOwnProperty.call(Vue.config.globalProperties, key)) {
       Object.defineProperty(Vue.config.globalProperties, key, {
@@ -138,5 +131,4 @@ function inject(key, value, context, Vue) {
       });
     }
   });
-  console.log('NOT FAIL 5', { Vue });
 }

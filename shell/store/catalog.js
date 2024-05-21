@@ -669,6 +669,7 @@ export function filterAndArrangeCharts(charts, {
 }
 
 export default {
+  namespaced: true,
   state,
   getters,
   actions,

@@ -49,18 +49,6 @@ await setContext(app, {
 
 const vueApp = createApp(app);
 
-console.log('NOT FAIL');
-console.log('NOT FAIL');
-console.log('NOT FAIL');
-console.log('NOT FAIL');
-console.log('NOT FAIL');
-console.log('APP', { app, vueApp });
-console.log('NOT FAIL');
-console.log('NOT FAIL');
-console.log('NOT FAIL');
-console.log('NOT FAIL');
-console.log('NOT FAIL');
-
 await installPlugins(app, vueApp);
 
 vueApp

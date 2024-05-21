@@ -41,6 +41,7 @@ import { createStore } from 'vuex';
 import features from '@shell/store/features';
 import auth from '@shell/store/auth';
 import i18n from '@shell/store/i18n';
+import catalog from '@shell/store/catalog';
 
 // Disables strict mode for all store instances to prevent warning about changing state outside of mutations
 // because it's more efficient to do that sometimes.
@@ -251,6 +252,9 @@ export const state = () => {
     isRancherInHarvester:    false,
     targetRoute:             null,
     rootProduct:             undefined,
+    $router:                 undefined,
+    $route:                  undefined,
+    $plugin:                 undefined,
   };
 };
 
@@ -717,7 +721,19 @@ export const mutations = {
 
   targetRoute(state, route) {
     state.targetRoute = route;
-  }
+  },
+
+  setRouter(state, router) {
+    state.$router = router;
+  },
+
+  setRoute(state, route) {
+    state.$route = route;
+  },
+
+  setPlugin(state, pluginDefinition) {
+    state.$plugin = pluginDefinition;
+  },
 };
 
 export const actions = {
@@ -1124,11 +1140,10 @@ export const actions = {
     dispatch('prefs/loadCookies');
   },
 
-  nuxtClientInit({ dispatch, rootState }, nuxt) {
-    Object.defineProperty(rootState, '$router', { value: nuxt.app.router });
-    Object.defineProperty(rootState, '$route', { value: nuxt.route });
-    Object.defineProperty(rootState, '$plugin', { value: nuxt.app.$plugin });
-    Object.defineProperty(this, '$plugin', { value: nuxt.app.$plugin });
+  nuxtClientInit({ dispatch, commit, rootState }, nuxt) {
+    commit('setRouter', nuxt.app.router);
+    commit('setRoute', nuxt.route);
+    commit('setPlugin', nuxt.app.$plugin);
 
     dispatch('management/rehydrateSubscribe');
     dispatch('cluster/rehydrateSubscribe');
@@ -1136,6 +1151,8 @@ export const actions = {
     if ( rootState.isRancher ) {
       dispatch('rancher/rehydrateSubscribe');
     }
+
+    console.log('STORE - nuxtClientInit', { that: this });
 
     dispatch('catalog/rehydrate');
 
@@ -1212,14 +1229,15 @@ const baseStoreModule = {
 };
 
 export default createStore({
+  ...baseStoreModule,
   plugins,
   modules: {
     // eslint-disable-next-line
     ['type-map']: typeMap,
-    baseStoreModule,
     features,
     auth,
     i18n,
     prefs,
+    catalog,
   },
 });
