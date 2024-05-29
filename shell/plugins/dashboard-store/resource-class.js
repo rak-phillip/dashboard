@@ -30,11 +30,10 @@ import forIn from 'lodash/forIn';
 import isEmpty from 'lodash/isEmpty';
 import isFunction from 'lodash/isFunction';
 import isString from 'lodash/isString';
-import { createApp } from 'vue';
+import { markRaw } from 'vue';
 
 import { ExtensionPoint, ActionLocation } from '@shell/core/types';
 import { getApplicableExtensionEnhancements } from '@shell/core/plugin-helpers';
-const vueApp = createApp({});
 
 export const DNS_LIKE_TYPES = ['dnsLabel', 'dnsLabelRestricted', 'hostname'];
 
@@ -558,10 +557,10 @@ export default class Resource {
       this[k] = data[k];
     }
 
-    Object.defineProperty(this, '$ctx', {
-      value:      ctx,
-      enumerable: false,
+    console.log('WE IN THE CONSTRUCTOR', {
+      data, ctx, rehydrateNamespace, setClone
     });
+    this.$ctx = markRaw(ctx);
 
     if ( rehydrateNamespace ) {
       Object.defineProperty(this, '__rehydrate', {
