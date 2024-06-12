@@ -146,6 +146,10 @@ export default defineComponent({
     }
   },
 
+  mounted() {
+    console.log('NOT FAIL');
+  },
+
   methods: {
     /**
      * Keyboard left/right event listener to select next/previous option. Emits
