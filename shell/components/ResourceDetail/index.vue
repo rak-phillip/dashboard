@@ -273,6 +273,7 @@ export default {
       model:           null,
       notFound:        null,
       canViewChart:    true,
+      canViewYaml:     null,
     };
   },
 
@@ -420,7 +421,7 @@ export default {
       v-else
       ref="comp"
       v-model:value="value"
-      v-bind="_data"
+      v-bind="$data"
       :done-params="doneParams"
       :done-route="doneRoute"
       :mode="mode"
