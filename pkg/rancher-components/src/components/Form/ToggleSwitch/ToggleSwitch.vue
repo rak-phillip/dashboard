@@ -5,7 +5,7 @@ type StateType = boolean | 'true' | 'false' | undefined;
 
 export default defineComponent({
   props: {
-    value: {
+    modelValue: {
       type:    [Boolean, String, Number],
       default: false
     },
@@ -35,9 +35,9 @@ export default defineComponent({
   },
 
   watch: {
-    value: {
+    modelValue: {
       handler() {
-        this.state = this.value === this.onValue;
+        this.state = this.modelValue === this.onValue;
       },
       immediate: true
     }
@@ -46,7 +46,7 @@ export default defineComponent({
   methods: {
     toggle(neu: StateType | null) {
       this.state = neu === null ? !this.state : neu;
-      this.$emit('input', this.state ? this.onValue : this.offValue);
+      this.$emit('update:modelValue', this.state ? this.onValue : this.offValue);
     }
   }
 });
