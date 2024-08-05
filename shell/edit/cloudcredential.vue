@@ -241,7 +241,7 @@ export default {
         set(this.value, `${ field }credentialConfig`, {});
       }
 
-      this.$set(this.value, '_type', type);
+      this.value['_type'] = type;
       this.$emit('set-subtype', this.typeDisplay(type, driver));
     },
 
@@ -276,7 +276,7 @@ export default {
       @error="e=>errors = e"
     >
       <NameNsDescription
-        v-model="value"
+        v-model:value="value"
         :name-editable="true"
         name-key="_name"
         description-key="description"

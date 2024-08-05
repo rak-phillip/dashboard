@@ -91,7 +91,7 @@ export default {
 </script>
 <template>
   <ResourceTabs
-    v-model="value"
+    v-model:value="value"
     mode="view"
     class="mt-20"
   >
@@ -101,7 +101,7 @@ export default {
       :weight="1"
     >
       <Rules
-        v-model="value"
+        v-model:value="value"
         :mode="mode"
         :service-targets="serviceTargets"
         :certificates="certificates"

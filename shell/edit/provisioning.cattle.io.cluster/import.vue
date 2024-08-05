@@ -110,7 +110,7 @@ export default {
     },
 
     onMembershipUpdate(update) {
-      this.$set(this, 'membershipUpdate', update);
+      this['membershipUpdate'] = update;
     },
 
     hideHarvesterNotice() {
@@ -150,7 +150,7 @@ export default {
 
     <NameNsDescription
       v-if="!isView"
-      v-model="value"
+      v-model:value="value"
       :mode="mode"
       :namespaced="false"
       name-label="cluster.name.label"
@@ -179,11 +179,11 @@ export default {
         />
       </Tab>
       <AgentEnv
-        v-model="value"
+        v-model:value="value"
         :mode="mode"
       />
       <Labels
-        v-model="value"
+        v-model:value="value"
         :mode="mode"
       />
     </Tabbed>

@@ -46,7 +46,7 @@ export default {
       :mode="mode"
     />
     <ResourceTabs
-      v-model="value"
+      v-model:value="value"
       :mode="mode"
     >
       <Tab
@@ -55,7 +55,7 @@ export default {
         :weight="0"
       >
         <Taints
-          v-model="value.spec.taints"
+          v-model:value="value.spec.taints"
           :mode="mode"
         />
       </Tab>

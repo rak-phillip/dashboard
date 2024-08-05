@@ -196,12 +196,12 @@ export default {
   },
 
   created() {
-    this.$set(this.value, 'spec', this.value.spec || {});
-    this.$set(this.value.spec, 'rules', this.value.spec.rules || [{}]);
-    this.$set(this.value.spec, 'backend', this.value.spec.backend || {});
+    this.value['spec'] = this.value.spec || {};
+    this.value.spec['rules'] = this.value.spec.rules || [{}];
+    this.value.spec['backend'] = this.value.spec.backend || {};
 
     if (!this.value.spec.tls || Object.keys(this.value.spec.tls[0] || {}).length === 0) {
-      this.$set(this.value.spec, 'tls', []);
+      this.value.spec['tls'] = [];
     }
 
     this.registerBeforeHook(this.willSave, 'willSave');
@@ -279,7 +279,7 @@ export default {
         :error="tabErrors.rules"
       >
         <Rules
-          v-model="value"
+          v-model:value="value"
           :mode="mode"
           :service-targets="serviceTargets"
           :certificates="certificates"
@@ -293,7 +293,7 @@ export default {
         :error="tabErrors.defaultBackend"
       >
         <DefaultBackend
-          v-model="value"
+          v-model:value="value"
           :service-targets="serviceTargets"
           :mode="mode"
           :rules="defaultBackendPathRules"
@@ -306,7 +306,7 @@ export default {
         :weight="2"
       >
         <Certificates
-          v-model="value"
+          v-model:value="value"
           :mode="mode"
           :certificates="certificates"
           :rules="{host: fvGetAndReportPathRules('spec.tls.hosts')}"
@@ -318,7 +318,7 @@ export default {
         :weight="1"
       >
         <IngressClass
-          v-model="value"
+          v-model:value="value"
           :mode="mode"
           :ingress-classes="ingressClasses"
         />

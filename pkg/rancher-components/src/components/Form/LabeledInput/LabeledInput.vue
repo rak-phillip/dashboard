@@ -319,7 +319,7 @@ export default defineComponent({
         :placeholder="_placeholder"
         autocapitalize="off"
         :class="{ conceal: type === 'multiline-password' }"
-        @input="onInput"
+        @update:value="onInput"
         @focus="onFocus"
         @blur="onBlur"
       />
@@ -336,7 +336,7 @@ export default defineComponent({
         autocomplete="off"
         autocapitalize="off"
         :data-lpignore="ignorePasswordManagers"
-        @input="onInput"
+        @update:value="onInput"
         @focus="onFocus"
         @blur="onBlur"
         @change="onChange"

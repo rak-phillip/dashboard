@@ -56,7 +56,7 @@ export default {
 <template>
   <div class="taints">
     <KeyValue
-      v-model="localValue"
+      v-model:value="localValue"
       data-testid="taints-keyvalue"
       :title="t('tableHeaders.taints')"
       :mode="mode"
@@ -76,12 +76,12 @@ export default {
 
       <template #col:effect="{row, queueUpdate, i}">
         <Select
-          v-model="row.effect"
+          v-model:value="row.effect"
           :data-testid="`taints-effect-row-${i}`"
           :options="effectOptions"
           :disabled="disabled"
           class="compact-select"
-          @input="queueUpdate"
+          @update:value="queueUpdate"
         />
       </template>
     </KeyValue>

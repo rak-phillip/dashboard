@@ -45,12 +45,12 @@ export default {
     <div>
       <div class="row">
         <Probe
-          v-model="readinessProbe"
+          v-model:value="readinessProbe"
           class="col span-12"
           :mode="mode"
           :label="t('workload.container.healthCheck.readinessProbe')"
           :description="t('workload.container.healthCheck.readinessTip')"
-          @input="update"
+          @update:value="update"
         />
       </div>
     </div>
@@ -59,12 +59,12 @@ export default {
     <div>
       <div class="row">
         <Probe
-          v-model="livenessProbe"
+          v-model:value="livenessProbe"
           class="col span-12"
           :mode="mode"
           :label="t('workload.container.healthCheck.livenessProbe')"
           :description="t('workload.container.healthCheck.livenessTip')"
-          @input="update"
+          @update:value="update"
         />
       </div>
     </div>
@@ -72,12 +72,12 @@ export default {
 
     <div class="row">
       <Probe
-        v-model="startupProbe"
+        v-model:value="startupProbe"
         class="col span-12"
         :mode="mode"
         :label="t('workload.container.healthCheck.startupProbe')"
         :description="t('workload.container.healthCheck.startupTip')"
-        @input="update"
+        @update:value="update"
       />
     </div>
   </div>

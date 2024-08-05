@@ -139,7 +139,7 @@ export default {
   >
     <NameNsDescription
       v-if="!isView"
-      v-model="value"
+      v-model:value="value"
       :mode="mode"
       :namespaced="false"
       namespace-label="nameNsDescription.workspace.label"
@@ -151,7 +151,7 @@ export default {
       :mode="mode"
       :value="expressions"
       :show-remove="false"
-      @input="matchChanged($event)"
+      @update:value="matchChanged($event)"
     />
     <Banner
       v-if="matchingClusters"

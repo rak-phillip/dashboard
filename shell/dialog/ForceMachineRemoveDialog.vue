@@ -93,7 +93,7 @@ export default {
       </div>
       <input
         id="confirm"
-        v-model="confirmName"
+        v-model:value="confirmName"
         type="text"
       >
       <div class="text-info mt-20">

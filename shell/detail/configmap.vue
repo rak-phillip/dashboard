@@ -49,15 +49,13 @@ export default {
 </script>
 
 <template>
-  <ResourceTabs v-model="value">
+  <ResourceTabs v-model:value="value">
     <Tab
       name="data"
       label-key="secret.data"
     >
       <div
-        v-for="(row,idx) in parsedRows"
-        :key="idx"
-        class="mb-20"
+        v-for="(row,idx) in parsedRows" :key="idx"class="mb-20"
       >
         <DetailText
           :value="row.value"

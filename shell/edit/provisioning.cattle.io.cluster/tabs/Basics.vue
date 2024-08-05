@@ -439,19 +439,19 @@ export default {
     <div class="row mb-10">
       <div class="col span-6">
         <LabeledSelect
-          v-model="value.spec.kubernetesVersion"
+          v-model:value="value.spec.kubernetesVersion"
           :mode="mode"
           :options="versionOptions"
           data-testid="clusterBasics__kubernetesVersions"
           label-key="cluster.kubernetesVersion.label"
-          @input="$emit('kubernetes-changed', $event)"
+          @update:value="$emit('kubernetes-changed', $event)"
         />
         <Checkbox
           :value="showDeprecatedPatchVersions"
           :label="t('cluster.kubernetesVersion.deprecatedPatches')"
           :tooltip="t('cluster.kubernetesVersion.deprecatedPatchWarning')"
           class="patch-version"
-          @input="$emit('show-deprecated-patch-versions-changed', $event)"
+          @update:value="$emit('show-deprecated-patch-versions-changed', $event)"
         />
       </div>
       <div
@@ -460,7 +460,7 @@ export default {
       >
         <LabeledSelect
           v-if="agentConfig"
-          v-model="agentConfig['cloud-provider-name']"
+          v-model:value="agentConfig['cloud-provider-name']"
           :mode="mode"
           :disabled="canNotEditCloudProvider"
           :options="cloudProviderOptions"
@@ -475,7 +475,7 @@ export default {
     >
       <div class="col span-6">
         <LabeledSelect
-          v-model="serverConfig.cni"
+          v-model:value="serverConfig.cni"
           data-testid="cluster-rke2-cni-select"
           :mode="mode"
           :disabled="isEdit"
@@ -488,13 +488,13 @@ export default {
         class="col"
       >
         <Checkbox
-          v-model="ciliumIpv6"
+          v-model:value="ciliumIpv6"
           data-testid="cluster-rke2-cni-ipv6-checkbox"
           :mode="mode"
           :label="t('cluster.rke2.address.ipv6.enable')"
         />
         <Checkbox
-          v-model="ciliumBandwidthManager"
+          v-model:value="ciliumBandwidthManager"
           data-testid="cluster-rke2-cni-cilium-bandwidth-manager-checkbox"
           :mode="mode"
           :label="t('cluster.rke2.cni.cilium.BandwidthManager.enable')"
@@ -517,7 +517,7 @@ export default {
         <YamlEditor
           v-if="agentConfig"
           ref="yaml"
-          v-model="agentConfig['cloud-provider-config']"
+          v-model:value="agentConfig['cloud-provider-config']"
           :editor-mode="mode === 'view' ? 'VIEW_CODE' : 'EDIT_CODE'"
           initial-yaml-values="# Cloud Provider Config"
           class="yaml-editor"
@@ -545,30 +545,30 @@ export default {
       >
         <LabeledSelect
           v-if="serverArgs && serverArgs.profile && serverConfig"
-          v-model="serverConfig.profile"
+          v-model:value="serverConfig.profile"
           :mode="mode"
           :options="profileOptions"
           :label="t('cluster.rke2.cis.sever')"
-          @input="$emit('cis-changed')"
+          @update:value="$emit('cis-changed')"
         />
         <LabeledSelect
           v-else-if="agentArgs && agentArgs.profile && agentConfig"
-          v-model="agentConfig.profile"
+          v-model:value="agentConfig.profile"
           data-testid="rke2-custom-edit-cis-agent"
           :mode="mode"
           :options="profileOptions"
           :label="t('cluster.rke2.cis.agent')"
-          @input="$emit('cis-changed')"
+          @update:value="$emit('cis-changed')"
         />
       </div>
     </div>
 
     <template v-if="hasCisOverride">
       <Checkbox
-        v-model="cisOverride"
+        v-model:value="cisOverride"
         :mode="mode"
         :label="t('cluster.rke2.cis.override')"
-        @input="$emit('psa-default-changed')"
+        @update:value="$emit('psa-default-changed')"
       />
 
       <Banner
@@ -589,8 +589,7 @@ export default {
       <div class="col span-6">
         <!-- PSA template selector -->
         <LabeledSelect
-          :key="defaultPsaOptionLabel"
-          v-model="value.spec.defaultPodSecurityAdmissionConfigurationTemplateName"
+          v-model:value="value.spec.defaultPodSecurityAdmissionConfigurationTemplateName"
           :mode="mode"
           data-testid="rke2-custom-edit-psa"
           :options="psaOptions"
@@ -604,12 +603,12 @@ export default {
       <div class="col span-12 mt-20">
         <Checkbox
           v-if="serverArgs['secrets-encryption']"
-          v-model="serverConfig['secrets-encryption']"
+          v-model:value="serverConfig['secrets-encryption']"
           :mode="mode"
           :label="t('cluster.rke2.secretEncryption.label')"
         />
         <Checkbox
-          v-model="value.spec.enableNetworkPolicy"
+          v-model:value="value.spec.enableNetworkPolicy"
           :mode="mode"
           :label="t('cluster.rke2.enableNetworkPolicy.label')"
         />
@@ -641,9 +640,7 @@ export default {
           </h3>
         </div>
         <Checkbox
-          v-for="opt in disableOptions"
-          :key="opt.value"
-          v-model="enabledSystemServices"
+           v-for="(opt, i) in disableOptions" :key="i" v-model:value="enabledSystemServices"
           :mode="mode"
           :label="opt.label"
           :value-when-true="opt.value"
