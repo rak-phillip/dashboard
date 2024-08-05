@@ -21,7 +21,7 @@ export default {
         :disabled="disabled"
         :tooltip="displayTooltip"
         :data-testid="`boolean-input-${question.variable}`"
-        @update:value="$emit('input', $event)"
+        @update:value="$emit('update:value', $event)"
       />
     </div>
     <div

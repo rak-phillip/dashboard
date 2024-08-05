@@ -71,7 +71,7 @@ export default {
     :add-allowed="canAdd && !isView"
     :mode="mode"
     :initial-empty-row="initialEmptyRow"
-    @update:value="$emit('input', $event)"
+    @update:value="$emit('update:value', $event)"
     @add="$emit('add')"
     @remove="$emit('remove', $event)"
   >

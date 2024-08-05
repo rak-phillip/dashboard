@@ -20,7 +20,7 @@ export default {
         :disabled="disabled"
         :label="displayLabel"
         :tooltip="displayTooltip"
-        @update:value="$emit('input', $event)"
+        @update:value="$emit('update:value', $event)"
       />
     </div>
     <div
