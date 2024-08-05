@@ -165,7 +165,7 @@ export default defineComponent({
     v-bind="$attrs"
     :spellcheck="spellcheck"
     @paste="$emit('paste', $event)"
-    @update:value="onInput($event)"
+    @input="onInput($event)"
     @focus="$emit('focus', $event)"
     @blur="$emit('blur', $event)"
   />

@@ -616,7 +616,9 @@ export default {
           {{ _valueLabel }}
         </label>
         <label
-           v-for="(c, i) in extraColumns" :key="i" >
+          v-for="(c, i) in extraColumns"
+          :key="i"
+        >
           <slot :name="'label:'+c">{{ c }}</slot>
         </label>
         <slot
@@ -635,8 +637,9 @@ export default {
         </div>
       </template>
       <template
-        v-for="(row,i) in filteredRows" :key="i"
+        v-for="(row,i) in filteredRows"
         v-else
+        :key="i"
       >
         <!-- Key -->
         <div
@@ -670,7 +673,7 @@ export default {
               :disabled="isView || disabled || !keyEditable || isProtected(row.key)"
               :placeholder="_keyPlaceholder"
               :data-testid="`input-kv-item-key-${i}`"
-              @update:value="queueUpdate"
+              @input="queueUpdate"
               @paste="onPaste(i, $event)"
             >
           </slot>
@@ -733,7 +736,7 @@ export default {
                 autocapitalize="off"
                 spellcheck="false"
                 :data-testid="`input-kv-item-value-${i}`"
-                @update:value="queueUpdate"
+                @input="queueUpdate"
               >
               <FileSelector
                 v-if="parseValueFromFile && readAllowed && !isView && isValueFieldEmpty(row[valueName])"
@@ -746,7 +749,9 @@ export default {
           </slot>
         </div>
         <div
-           v-for="(c, i) in extraColumns" :key="i" class="kv-item extra"
+          v-for="(c, i) in extraColumns"
+          :key="i"
+          class="kv-item extra"
         >
           <slot
             :name="'col:' + c"

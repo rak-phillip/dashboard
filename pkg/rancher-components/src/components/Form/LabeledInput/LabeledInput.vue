@@ -336,7 +336,7 @@ export default defineComponent({
         autocomplete="off"
         autocapitalize="off"
         :data-lpignore="ignorePasswordManagers"
-        @update:value="onInput"
+        @input="onInput"
         @focus="onFocus"
         @blur="onBlur"
         @change="onChange"

@@ -144,7 +144,9 @@ export default {
       </thead>
       <tbody>
         <tr
-          v-for="(row, idx) in rows" :key="idx">
+          v-for="(row, idx) in rows"
+          :key="idx"
+        >
           <td
             v-if="padLeft"
             class="left"
@@ -159,7 +161,7 @@ export default {
               min="1"
               max="65535"
               placeholder="e.g. 8080"
-              @update:value="queueUpdate"
+              @input="queueUpdate"
             >
           </td>
           <td class="protocol">
@@ -167,7 +169,7 @@ export default {
             <select
               v-else
               v-model:value="row.protocol"
-              @update:value="queueUpdate"
+              @input="queueUpdate"
             >
               <option value="HTTP">
                 HTTP
@@ -198,7 +200,7 @@ export default {
               min="1"
               max="65535"
               placeholder="e.g. 80"
-              @update:value="queueUpdate"
+              @input="queueUpdate"
             >
           </td>
           <td class="expose">

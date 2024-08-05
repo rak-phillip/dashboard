@@ -577,7 +577,9 @@ export default {
         :search="false"
       />
       <div
-        v-for="(inherited, index) of inheritedRules" :key="index">
+        v-for="(inherited, index) of inheritedRules"
+        :key="index"
+      >
         <div class="spacer" />
         <h3>
           Inherited from {{ inherited.template.nameDisplay }}
@@ -726,7 +728,7 @@ export default {
                     :disabled="isBuiltin"
                     :mode="mode"
                     :data-testid="`grant-resources-api-groups${props.i}`"
-                    @update:value="setRule('apiGroups', props.row.value, $event.target.value)"
+                    @input="setRule('apiGroups', props.row.value, $event.target.value)"
                   >
                 </div>
                 <div
@@ -738,7 +740,7 @@ export default {
                     :disabled="isBuiltin"
                     :mode="mode"
                     :data-testid="`grant-resources-non-resource-urls${props.i}`"
-                    @update:value="setRule('nonResourceURLs', props.row.value, $event.target.value)"
+                    @input="setRule('nonResourceURLs', props.row.value, $event.target.value)"
                   >
                 </div>
               </div>
