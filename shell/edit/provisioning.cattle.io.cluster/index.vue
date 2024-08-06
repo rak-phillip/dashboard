@@ -477,6 +477,15 @@ export default {
     firstCustomClusterItem() {
       return this.groupedSubTypes.findIndex((obj) => ['custom', 'custom1', 'custom2'].includes(obj.name));
     },
+
+    localValue: {
+      get() {
+        return this.value;
+      },
+      set(newValue) {
+        this.$emit('update:value', newValue);
+      }
+    },
   },
 
   methods: {
@@ -641,7 +650,7 @@ export default {
 
     <Import
       v-if="isImport"
-      v-model:value="value"
+      v-model:value="localValue"
       :mode="mode"
       :provider="subType"
     />
@@ -650,7 +659,7 @@ export default {
       <component
         :is="selectedSubType.component"
         v-if="selectedSubType && selectedSubType.component"
-        v-model:value="value"
+        v-model:value="localValue"
         :initial-value="initialValue"
         :live-value="liveValue"
         :mode="mode"
@@ -659,7 +668,7 @@ export default {
       />
       <Rke2Config
         v-else
-        v-model:value="value"
+        v-model:value="localValue"
         :initial-value="initialValue"
         :live-value="liveValue"
         :mode="mode"
