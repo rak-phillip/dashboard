@@ -2120,9 +2120,7 @@ export default {
         description-placeholder="cluster.description.placeholder"
         :rules="{ name: fvGetAndReportPathRules('metadata.name') }"
       >
-        <template
-          slot="customize"
-        >
+        <template #customize>
           <ClusterAppearance
             :name="clusterName"
             :currentCluster="currentCluster"
