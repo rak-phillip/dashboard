@@ -53,6 +53,8 @@ export default {
 
   emits: ['set-subtype'],
 
+  inheritAttrs: false,
+
   props: {
     realMode: {
       type:     String,
