@@ -117,7 +117,7 @@ describe('component: rke2', () => {
   ])('should allow creation of RKE2 cluster with provider %p if pool machines are missing (%p)', (provider, result) => {
     const k8s = 'v1.25.0+rke2r1';
     const wrapper = mount(rke2, {
-      propsData: {
+      props: {
         mode:  _CREATE,
         value: {
           spec: {
@@ -130,12 +130,17 @@ describe('component: rke2', () => {
         selectedVersion: { agentArgs: mockAgentArgs },
         provider,
       },
+
       computed: defaultComputed,
-      mocks:    {
-        ...defaultMocks,
-        $store: { dispatch: () => jest.fn(), getters: defaultGetters },
+
+      global: {
+        mocks: {
+          ...defaultMocks,
+          $store: { dispatch: () => jest.fn(), getters: defaultGetters },
+        },
+
+        stubs: defaultStubs,
       },
-      stubs: defaultStubs
     });
 
     expect((wrapper.vm as any).validationPassed).toBe(result);
@@ -144,7 +149,7 @@ describe('component: rke2', () => {
   it('should allow creation of K3 clusters if pool machines are missing', () => {
     const k8s = 'v1.25.0+k3s1';
     const wrapper = mount(rke2, {
-      propsData: {
+      props: {
         mode:  _CREATE,
         value: {
           spec: {
@@ -155,13 +160,18 @@ describe('component: rke2', () => {
         },
         provider: 'custom'
       },
+
       data:     () => ({ credentialId: 'I am authenticated' }),
       computed: defaultComputed,
-      mocks:    {
-        ...defaultMocks,
-        $store: { dispatch: () => jest.fn(), getters: defaultGetters },
+
+      global: {
+        mocks: {
+          ...defaultMocks,
+          $store: { dispatch: () => jest.fn(), getters: defaultGetters },
+        },
+
+        stubs: defaultStubs,
       },
-      stubs: defaultStubs
     });
 
     expect((wrapper.vm as any).validationPassed).toBe(true);
@@ -170,7 +180,7 @@ describe('component: rke2', () => {
   it('should initialize machine pools with drain before delete true', async() => {
     const k8s = 'v1.25.0+k3s1';
     const wrapper = mount(rke2, {
-      propsData: {
+      props: {
         mode:  _CREATE,
         value: {
           spec: {
@@ -181,13 +191,18 @@ describe('component: rke2', () => {
         },
         provider: 'custom'
       },
+
       data:     () => ({ credentialId: 'I am authenticated' }),
       computed: defaultComputed,
-      mocks:    {
-        ...defaultMocks,
-        $store: { dispatch: () => jest.fn(), getters: defaultGetters },
+
+      global: {
+        mocks: {
+          ...defaultMocks,
+          $store: { dispatch: () => jest.fn(), getters: defaultGetters },
+        },
+
+        stubs: defaultStubs,
       },
-      stubs: defaultStubs
     });
 
     await wrapper.vm.initSpecs();
@@ -206,7 +221,7 @@ describe('component: rke2', () => {
     newSpec.rkeConfig.dataDirectories = { k8sDistro: 'my-k8s-distro-path' };
 
     const wrapper = mount(rke2, {
-      propsData: {
+      props: {
         mode:  _CREATE,
         value: {
           spec: {
@@ -218,27 +233,33 @@ describe('component: rke2', () => {
         },
         provider: 'custom'
       },
+
       data: () => ({
         credentialId: 'I am authenticated',
         credential:   { decodedData: { clusterId: 'some-cluster-id' } },
         machinePools: [],
       }),
+
       computed: defaultComputed,
-      mocks:    {
-        ...defaultMocks,
-        $store: {
-          // mock secret creation on "createKubeconfigSecret"
-          dispatch: (action: any, opts: any) => {
-            if (action === 'management/create' && opts.type === SECRET) {
-              return { save: () => jest.fn };
-            } else {
-              return jest.fn();
-            }
+
+      global: {
+        mocks: {
+          ...defaultMocks,
+          $store: {
+            // mock secret creation on "createKubeconfigSecret"
+            dispatch: (action: any, opts: any) => {
+              if (action === 'management/create' && opts.type === SECRET) {
+                return { save: () => jest.fn };
+              } else {
+                return jest.fn();
+              }
+            },
+            getters: defaultGetters
           },
-          getters: defaultGetters
         },
+
+        stubs: defaultStubs,
       },
-      stubs: defaultStubs
     });
 
     // we need to mock the "save" method from the create-edit-view-mixin
@@ -255,7 +276,7 @@ describe('component: rke2', () => {
   describe.skip('should initialize agent configuration values', () => {
     it('adding default values if none', async() => {
       const wrapper = shallowMount(rke2, {
-        propsData: {
+        props: {
           mode:  'create',
           value: {
             spec:        { ...defaultSpec },
@@ -263,19 +284,24 @@ describe('component: rke2', () => {
           },
           provider: 'custom'
         },
+
         computed: defaultComputed,
-        mocks:    {
-          ...defaultMocks,
-          $store: {
-            getters:  defaultGetters,
-            dispatch: {
-              'management/request': jest.fn(),
-              'management/find':    jest.fn(),
-              'management/findAll': () => ([]),
-            }
+
+        global: {
+          mocks: {
+            ...defaultMocks,
+            $store: {
+              getters:  defaultGetters,
+              dispatch: {
+                'management/request': jest.fn(),
+                'management/find':    jest.fn(),
+                'management/findAll': () => ([]),
+              }
+            },
           },
+
+          stubs: defaultStubs,
         },
-        stubs: defaultStubs
       });
       const defaultAgentConfig = {
         clusterAgentDeploymentCustomization: {
@@ -300,7 +326,7 @@ describe('component: rke2', () => {
 
     it('should display agent configuration tab', async() => {
       const wrapper = shallowMount(rke2, {
-        propsData: {
+        props: {
           mode:  'create',
           value: {
             spec:        { ...defaultSpec },
@@ -308,19 +334,24 @@ describe('component: rke2', () => {
           },
           provider: 'custom'
         },
+
         computed: defaultComputed,
-        mocks:    {
-          ...defaultMocks,
-          $store: {
-            getters:  defaultGetters,
-            dispatch: {
-              'management/request': jest.fn(),
-              'management/find':    jest.fn(),
-              'management/findAll': () => ([]),
-            }
+
+        global: {
+          mocks: {
+            ...defaultMocks,
+            $store: {
+              getters:  defaultGetters,
+              dispatch: {
+                'management/request': jest.fn(),
+                'management/find':    jest.fn(),
+                'management/findAll': () => ([]),
+              }
+            },
           },
+
+          stubs: defaultStubs,
         },
-        stubs: defaultStubs
       });
       const agent = wrapper.find('[data-testid="rke2-cluster-agent-config"]');
 
