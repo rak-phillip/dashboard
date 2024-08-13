@@ -1141,7 +1141,7 @@ export default {
             >
               <input
                 ref="advancedSearchQuery"
-                v-model:value="advFilterSearchTerm"
+                v-model="advFilterSearchTerm"
                 type="search"
                 class="advanced-search-box"
                 :placeholder="t('sortableTable.filterFor')"
@@ -1182,7 +1182,7 @@ export default {
           <input
             v-else-if="search"
             ref="searchQuery"
-            v-model:value="eventualSearchQuery"
+            v-model="eventualSearchQuery"
             type="search"
             class="input-sm search-box"
             :placeholder="t('sortableTable.search')"

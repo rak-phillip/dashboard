@@ -129,7 +129,7 @@ export default {
     >
       <input
         ref="first"
-        v-model:value="path"
+        v-model="path"
         :placeholder="t('ingress.rules.path.placeholder', undefined, true)"
         @input="queueUpdate"
       >

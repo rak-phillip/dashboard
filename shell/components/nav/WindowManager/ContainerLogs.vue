@@ -646,7 +646,7 @@ export default {
 
         <div class="log-action log-action-group ml-5">
           <input
-            v-model:value="search"
+            v-model="search"
             class="input-sm"
             type="search"
             :placeholder="t('wm.containerLogs.search')"

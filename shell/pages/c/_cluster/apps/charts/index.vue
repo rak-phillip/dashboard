@@ -456,7 +456,7 @@ export default {
       <div class="filter-block">
         <input
           ref="searchQuery"
-          v-model:value="searchQuery"
+          v-model="searchQuery"
           type="search"
           class="input-sm"
           :placeholder="t('catalog.charts.search')"

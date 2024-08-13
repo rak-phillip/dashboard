@@ -527,7 +527,7 @@ export default {
               >
                 <input
                   ref="clusterFilter"
-                  v-model:value="clusterFilter"
+                  v-model="clusterFilter"
                   :placeholder="t('nav.search.placeholder')"
                 >
                 <i

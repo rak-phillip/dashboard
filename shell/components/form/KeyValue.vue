@@ -669,7 +669,7 @@ export default {
             <input
               v-else
               ref="key"
-              v-model:value="row[keyName]"
+              v-model="row[keyName]"
               :disabled="isView || disabled || !keyEditable || isProtected(row.key)"
               :placeholder="_keyPlaceholder"
               :data-testid="`input-kv-item-key-${i}`"
@@ -728,7 +728,7 @@ export default {
               />
               <input
                 v-else
-                v-model:value="row[valueName]"
+                v-model="row[valueName]"
                 :disabled="isView || disabled || isProtected(row.key)"
                 :type="valueConcealed ? 'password' : 'text'"
                 :placeholder="_valuePlaceholder"

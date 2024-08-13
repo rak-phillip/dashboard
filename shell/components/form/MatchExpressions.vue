@@ -299,7 +299,7 @@ export default {
         </div>
         <input
           v-else-if="!hasKeySelectOptions"
-          v-model:value="row.key"
+          v-model="row.key"
           :mode="mode"
           :data-testid="`input-match-expression-key-control-${index}`"
           @input="update"
@@ -346,7 +346,7 @@ export default {
         </div>
         <input
           v-else
-          v-model:value="row.values"
+          v-model="row.values"
           :mode="mode"
           :disabled="row.operator==='Exists' || row.operator==='DoesNotExist'"
           :data-testid="`input-match-expression-values-control-${index}`"

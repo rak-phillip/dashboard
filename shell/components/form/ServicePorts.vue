@@ -218,7 +218,7 @@ export default {
           <span v-if="isView">{{ row.targetPort }}</span>
           <input
             v-else
-            v-model:value="row.targetPort"
+            v-model="row.targetPort"
             :placeholder="t('servicePorts.rules.target.placeholder')"
             @input="queueUpdate"
           >
