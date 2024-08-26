@@ -37,6 +37,7 @@ jobs:
 
     - name: Publish to npm
       run: |
+        echo "$GITHUB_REF_NAME"
         if [[ $GITHUB_REF_NAME == components-v*alpha.* ]]; then
           yarn publish:lib --tag alpha --dry-run
         elif [[ $GITHUB_REF_NAME == components-v*beta.* ]]; then 
