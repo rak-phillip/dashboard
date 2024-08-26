@@ -39,11 +39,11 @@ jobs:
       run: |
         echo "$GITHUB_REF_NAME"
         if [[ $GITHUB_REF_NAME == components-v*alpha.* ]]; then
-          yarn publish:lib --tag alpha --dry-run
+          yarn publish:lib --tag alpha
         elif [[ $GITHUB_REF_NAME == components-v*beta.* ]]; then
-          yarn publish:lib --tag beta --dry-run
+          yarn publish:lib --tag beta
         else
-          yarn publish:lib --dry-run
+          yarn publish:lib
         fi
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
