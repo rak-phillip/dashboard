@@ -36,6 +36,12 @@ jobs:
       run: yarn test:ci ./pkg/rancher-components
 
     - name: Publish to npm
-      run: yarn publish:lib
+      run: |
+        if [[ $GITHUB_REF_NAME == components-v*alpha.* ]]; then
+          yarn publish:lib --tag alpha
+        elif [[ $GITHUB_REF_NAME == components-v*beta.* ]]; then 
+          yarn publish:lib --tag beta
+        else
+          yarn publish:lib
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
