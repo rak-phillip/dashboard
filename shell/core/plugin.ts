@@ -98,6 +98,7 @@ export class Plugin implements IPlugin {
   }
 
   addRoutes(routes: PluginRouteRecordRaw[] | RouteRecordRaw[]) {
+    console.log('SHELL/CORE - ADD ROUTES', { routes });
     routes.forEach((r: PluginRouteRecordRaw | RouteRecordRaw) => {
       if (Object.keys(r).includes('parent')) {
         const pConfig = r as PluginRouteRecordRaw;

@@ -63,13 +63,17 @@ export default function(context, inject, vueApp) {
 
       // Load a plugin from a UI package
       loadAsync(id, mainFile) {
+        console.log('LOAD ASYNC', { id, mainFile });
+
         return new Promise((resolve, reject) => {
-        // The plugin is already loaded so we should avoid loading it again.
-        // This will primarily affect plugins that load prior to authentication and we attempt to load again after authentication.
+          // The plugin is already loaded so we should avoid loading it again.
+          // This will primarily affect plugins that load prior to authentication and we attempt to load again after authentication.
+          console.log('A');
           if (document.getElementById(id)) {
             return resolve();
           }
           const moduleUrl = mainFile;
+          console.log('B')
           const element = document.createElement('script');
 
           element.src = moduleUrl;
@@ -83,14 +87,17 @@ export default function(context, inject, vueApp) {
 
           let removed = Promise.resolve();
 
+          console.log('C', { oldPlugin });
           if (oldPlugin) {
           // Uninstall existing plugin if there is one. This ensures that last loaded plugin is not always used
           // (nav harv1-->harv2-->harv1 and harv2 would be shown)
+            console.log('D');
             removed = this.removePlugin(oldPlugin.name).then(() => {
               delete window[oldPlugin.id];
 
               delete plugins[oldPlugin.id];
 
+              console.log('E');
               const oldElement = document.getElementById(oldPlugin.id);
 
               oldElement.parentElement.removeChild(oldElement);
@@ -98,7 +105,9 @@ export default function(context, inject, vueApp) {
           }
 
           removed.then(() => {
+            console.log('F', { element });
             element.onload = () => {
+              console.log('G');
               if (!window[id]) {
                 return reject(new Error('Could not load plugin code'));
               }
@@ -111,6 +120,17 @@ export default function(context, inject, vueApp) {
               const plugin = new Plugin(id);
 
               plugins[id] = plugin;
+
+              console.log(
+                'WORKING WITH PLUGIN', {
+                  id,
+                  plugins,
+                  window,
+                  plugin,
+                  pluginsId: plugins[id],
+                  something: window[id],
+                }
+              );
 
               // Initialize the plugin
               window[id].default(plugin, this.internal());
@@ -137,7 +157,9 @@ export default function(context, inject, vueApp) {
               reject(new Error(errorMessage)); // This is more useful where it's used
             };
 
+            console.log('HERE BE ERROR', { element });
             document.head.appendChild(element);
+            console.log('^^^HERE BE ERROR^^^');
           }).catch((e) => {
             const errorMessage = `Failed to unload old plugin${ oldPlugin?.id }`;
 
@@ -258,6 +280,7 @@ export default function(context, inject, vueApp) {
 
       // Apply the plugin based on its metadata
       applyPlugin(plugin) {
+        console.log('WILL APPLY PLUGIN', { plugin });
       // Types
         Object.keys(plugin.types).forEach((typ) => {
           Object.keys(plugin.types[typ]).forEach((name) => {

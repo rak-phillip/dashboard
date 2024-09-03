@@ -23,6 +23,7 @@ export class PluginRoutes {
   }
 
   public addRoutes(plugin: any, newRouteInfos: RouteInfo[]) {
+    console.log('PLUGIN-ROUTES', { plugin, newRouteInfos });
     const allRoutes = [
       ...(this.router.options.routes || [])
     ];

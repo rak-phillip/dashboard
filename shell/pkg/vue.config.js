@@ -6,6 +6,15 @@ const VirtualModulesPlugin = require('webpack-virtual-modules');
 const { generateTypeImport } = require('./auto-import');
 
 module.exports = function(dir) {
+  console.log('NOT FAIL');
+  console.log('NOT FAIL');
+  console.log('NOT FAIL');
+  console.log('NOT FAIL');
+  console.log('USING SHELL/PKG/VUE.CONFIG', { dir });
+  console.log('NOT FAIL');
+  console.log('NOT FAIL');
+  console.log('NOT FAIL');
+  console.log('NOT FAIL');
   const maindir = path.resolve(dir, '..', '..');
   // The shell code must be sym-linked into the .shell folder
   const SHELL = path.join(dir, '.shell');
@@ -26,22 +35,40 @@ module.exports = function(dir) {
 
   return {
     css: {
-      // Inclue the css with the javascript, rather than having separate CSS files
       extract:       false,
       loaderOptions: { sass: { additionalData: `@use 'sass:math'; @import '${ SHELL }/assets/styles/base/_variables.scss'; @import '${ SHELL }/assets/styles/base/_functions.scss'; @import '${ SHELL }/assets/styles/base/_mixins.scss'; ` } }
     },
 
-    chainWebpack: (context) => {
-      // Add in the webpack-bundle-analyzer so we can see what is included in the bundles that are generated
+    chainWebpack: (config) => {
       const options = {
         analyzerMode: 'static',
         openAnalyzer: false,
       };
 
-      context
+      config
         .plugin('webpack-bundle-analyzer')
         .use(BundleAnalyzerPlugin)
         .init((Plugin) => new Plugin(options));
+
+      // Add support for TypeScript
+      config.module
+        .rule('ts')
+        .test(/\.tsx?$/)
+        .use('ts-loader')
+        .loader('ts-loader')
+        .options({
+          appendTsSuffixTo: [/\.vue$/],
+          transpileOnly:    true
+        });
+
+      // Update Vue loader for Vue 3
+      config.module
+        .rule('vue')
+        .use('vue-loader')
+        .tap((options) => ({
+          ...options,
+          compilerOptions: { isCustomElement: (tag) => tag.startsWith('rancher-') }
+        }));
     },
 
     configureWebpack: (config) => {
@@ -102,43 +129,24 @@ module.exports = function(dir) {
         ]
       });
 
-      // Yaml files - used for i18n translations
-      config.module.rules.unshift({
+      config.resolve.extensions.push('.ts', '.tsx');
+
+      config.module.rules.push({
         test:    /\.ya?ml$/i,
         loader:  'js-yaml-loader',
         options: { name: '[path][name].[ext]' },
       });
 
-      // The shell code is in node_modules, so we need to make sure it will get transpiled
       // Update the webpack config to transpile @rancher/shell
-      config.module.rules.forEach((p) => {
-        if (p.use) {
-          p.use.forEach((u) => {
-            if (u.loader.includes('babel-loader')) {
-              p.exclude = /node_modules\/(?!@rancher\/shell\/).*/;
+      config.module.rules.forEach((rule) => {
+        if (Array.isArray(rule.use)) {
+          rule.use.forEach((loader) => {
+            if (loader.loader === 'babel-loader') {
+              rule.exclude = /node_modules\/(?!@rancher\/shell\/).*/;
             }
           });
         }
       });
-
-      // Optimization - TODO
-      // config.optimization.splitChunks = {
-      //   chunks:             'async',
-      //   minSize:            0,
-      //   cacheGroups:        {
-      //     components: {
-      //       test: /components/,
-      //       name(module) {
-      //         // Place everything from the components folder in one chunk named 'components'
-      //         const pathParts = module.context.split('/');
-      //         const name = pathParts[pathParts.length - 1];
-      //         const dotParts = name.split('.');
-
-      //         return `components-${ dotParts[0] }`;
-      //       },
-      //     },
-      //   },
-      // };
     }
   };
 };
