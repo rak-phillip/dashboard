@@ -2,7 +2,7 @@
 import Brand from '@shell/mixins/brand';
 
 export default {
-  name:   'NuxtError',
+  name:   'AppError',
   mixins: [Brand],
 
   data() {

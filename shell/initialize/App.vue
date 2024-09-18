@@ -1,6 +1,6 @@
 <script>
-import NuxtError from '@shell/components/templates/error.vue';
-import NuxtLoading from '@shell/components/nav/GlobalLoading.vue';
+import AppError from '@shell/components/templates/error.vue';
+import AppLoading from '@shell/components/nav/GlobalLoading.vue';
 
 import '@shell/assets/styles/app.scss';
 
@@ -20,7 +20,7 @@ export default {
     window.addEventListener('online', this.refreshOnlineStatus);
     window.addEventListener('offline', this.refreshOnlineStatus);
 
-    // Add $nuxt.context
+    // Add Dashboard context
     this.context = this.$options.context;
   },
 
@@ -47,17 +47,17 @@ export default {
     },
   },
 
-  components: { NuxtLoading, NuxtError }
+  components: { AppLoading, AppError }
 };
 </script>
 <template>
   <div id="__nuxt">
-    <NuxtLoading ref="loading" />
+    <AppLoading ref="loading" />
     <div
       id="__layout"
       :key="showErrorPage"
     >
-      <NuxtError v-if="showErrorPage" />
+      <AppError v-if="showErrorPage" />
       <router-view v-else />
     </div>
   </div>
