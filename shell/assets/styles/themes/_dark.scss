@@ -1,3 +1,5 @@
+@import '../base/colors';
+
 .theme-dark {
   // Local variables for reused colors
 
@@ -21,7 +23,7 @@
 
   // dark main text
   $lightest: #ffffff;
-  $keyboard-focus: #00ddff;
+  $keyboard-focus: $waterhole-60;
 
   // menu cluster description active+hover
   $desc-light: #EEEFF4;

@@ -1,3 +1,5 @@
+@import '../base/colors';
+
 // Local variables for reused colors
 //light main text
 $darkest   : #141419;
@@ -26,7 +28,7 @@ $disabled  : $medium;
 $primary         : #3D98D3;
 $secondary       : $darker;
 $link            : #3D98D3;
-$keyboard-focus  : #3300ff;
+$keyboard-focus  : $waterhole;
 
 // Status colors
 $success         : #5D995D;
