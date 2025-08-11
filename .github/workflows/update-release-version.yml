@@ -51,7 +51,7 @@ jobs:
           NEW_BRANCH="update-e2e-test-version-${BRANCH_NAME}"
 
           git checkout -b $NEW_BRANCH
-          git add package.json scripts/e2e-docker-start
+          git add .
           git commit -m "Update e2e test version for ${BRANCH_NAME}"
           git push -u origin $NEW_BRANCH
 
