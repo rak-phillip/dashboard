@@ -59,4 +59,4 @@ jobs:
             --base "${BRANCH_NAME}" \
             --head "$NEW_BRANCH" \
             --title "Update e2e test version for ${BRANCH_NAME}" \
-            --body "This is an automated request to perform release maintenance by @${GITHUB_ACTOR}\n\n  This updates the e2e test version in `package.json` and `scripts/e2e-docker-start`."
+            --body "This is an automated request to e2e test version by @${GITHUB_ACTOR}."
