@@ -376,6 +376,10 @@ export default defineComponent({
     onBlur(event: string | FocusEvent): void {
       this.$emit('blur', event);
       this.onBlurLabeled();
+
+      if (this.name && event instanceof Event) {
+        this.handleBlur(event, true);
+      }
     },
 
     escapeHtml
@@ -437,7 +441,7 @@ export default defineComponent({
         :aria-required="requiredField"
         @update:value="handleChange"
         @focus="onFocus"
-        @blur="handleBlur"
+        @blur="onBlur"
       />
       <input
         v-else
@@ -460,7 +464,7 @@ export default defineComponent({
         :aria-required="requiredField"
         @input="handleChange"
         @focus="onFocus"
-        @blur="handleBlur"
+        @blur="onBlur"
         @change="onChange"
       >
     </slot>
