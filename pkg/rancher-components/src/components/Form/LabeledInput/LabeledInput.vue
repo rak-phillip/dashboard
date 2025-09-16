@@ -8,6 +8,7 @@ import { isValidCron } from 'cron-validator';
 import { debounce } from 'lodash';
 import { useLabeledFormElement, labeledFormElementProps } from '@shell/composables/useLabeledFormElement';
 import { useCompactInput } from '@shell/composables/useCompactInput';
+import { useTestId } from './useTestId';
 
 interface NonReactiveProps {
   onInput: (event: Event) => void | ((event: Event) => void);
@@ -114,6 +115,11 @@ export default defineComponent({
     ariaLabel: {
       type:    String,
       default: ''
+    },
+
+    dataTestId: {
+      type:    String,
+      default: undefined,
     }
   },
 
@@ -132,6 +138,8 @@ export default defineComponent({
 
     const onInput = inject('onInput', provideProps.onInput);
 
+    const testId = useTestId(props, 'RcLabeledInput');
+
     return {
       focused,
       onFocusLabeled,
@@ -141,6 +149,7 @@ export default defineComponent({
       validationMessage,
       requiredField,
       isCompact,
+      testId,
     };
   },
 
@@ -398,6 +407,7 @@ export default defineComponent({
         :class="{ conceal: type === 'multiline-password' }"
         :aria-describedby="ariaDescribedBy"
         :aria-required="requiredField"
+        :data-testId="testId"
         @update:value="onInput"
         @focus="onFocus"
         @blur="onBlur"
@@ -421,6 +431,7 @@ export default defineComponent({
         :data-lpignore="ignorePasswordManagers"
         :aria-describedby="ariaDescribedBy"
         :aria-required="requiredField"
+        :data-testId="testId"
         @input="onInput"
         @focus="onFocus"
         @blur="onBlur"
