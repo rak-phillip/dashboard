@@ -22,8 +22,13 @@ export default {
   data() {
     return { selectedName: null, errors: [] };
   },
-  computed: { ...mapGetters({ t: 'i18n/t' }) },
-  methods:  {
+  computed: {
+    ...mapGetters({ t: 'i18n/t' }),
+    someValue() {
+      return JSON.stringify(this.value);
+    }
+  },
+  methods: {
     changed(tab) {
       const key = this.idKey;
 
@@ -75,6 +80,10 @@ export default {
 </script>
 
 <template>
+  <h1>WORKLOAD</h1>
+  <pre>
+    {{ someValue }}
+  </pre>
   <Loading v-if="$fetchState.pending" />
   <form
     v-else

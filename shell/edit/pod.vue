@@ -1,13 +1,9 @@
 <script>
-import CreateEditView from '@shell/mixins/create-edit-view';
-import FormValidation from '@shell/mixins/form-validation';
-import WorkLoadMixin from '@shell/edit/workload/mixins/workload';
-import Workload from '@shell/edit/workload/index.vue';
+import Pod from '@shell/edit/workload/Pod.vue';
 
 export default {
   name:       'WorkloadDeployments',
-  components: { Workload },
-  mixins:     [CreateEditView, FormValidation, WorkLoadMixin],
+  components: { Pod },
   props:      {
     value: {
       type:     Object,
@@ -19,9 +15,17 @@ export default {
       default: 'create',
     },
   },
+  computed: {
+    someValue() {
+      return JSON.stringify(this.value);
+    }
+  },
 };
 </script>
 
 <template>
-  <Workload v-bind="$props" />
+  <Pod />
+  <pre>
+    {{ someValue }}
+  </pre>
 </template>

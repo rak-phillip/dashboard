@@ -36,7 +36,6 @@ import paginationUtils from '@shell/utils/pagination-utils';
 import ResourceTable from '@shell/components/ResourceTable.vue';
 import Preset from '@shell/mixins/preset';
 import { PaginationFeatureHomePageClusterConfig } from '@shell/types/resources/settings';
-import init, { hello } from 'rancher_yaml';
 
 export default defineComponent({
   name:       'Home',
@@ -55,16 +54,6 @@ export default defineComponent({
   },
 
   mixins: [PageHeaderActions, Preset],
-
-  setup() {
-    const world = ref('');
-
-    init().then((_wasm) => {
-      world.value = hello();
-    });
-
-    return { world };
-  },
 
   data() {
     const options = this.$store.getters[`type-map/optionsFor`](CAPI.RANCHER_CLUSTER)?.custom || {};
@@ -615,7 +604,6 @@ export default defineComponent({
     v-if="managementReady"
     class="home-page"
   >
-    <h1>NOT FAIL: {{ world }}</h1>
     <TabTitle
       :show-child="false"
       :breadcrumb="false"
