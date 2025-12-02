@@ -22,13 +22,8 @@ export default {
   data() {
     return { selectedName: null, errors: [] };
   },
-  computed: {
-    ...mapGetters({ t: 'i18n/t' }),
-    someValue() {
-      return JSON.stringify(this.value);
-    }
-  },
-  methods: {
+  computed: { ...mapGetters({ t: 'i18n/t' }) },
+  methods:  {
     changed(tab) {
       const key = this.idKey;
 
@@ -81,9 +76,6 @@ export default {
 
 <template>
   <h1>WORKLOAD</h1>
-  <pre>
-    {{ someValue }}
-  </pre>
   <Loading v-if="$fetchState.pending" />
   <form
     v-else

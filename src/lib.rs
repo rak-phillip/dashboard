@@ -51,27 +51,38 @@ struct Port {
     container_port: u16,
 }
 
+impl PodTemplate  {
+    fn new() -> PodTemplate {
+        PodTemplate {
+            api_version: "v1".to_string(),
+            kind: "Pod".to_string(),
+            metadata: Metadata {
+                name: "<pod-name>".to_string(),
+                labels: Labels {
+                    app: "<app-name>".to_string(),
+                }
+            },
+            spec: Spec {
+                containers: vec![Container {
+                    name: "<container-name>".to_string(),
+                    image: "<image-name".to_string(),
+                    ports: vec![Port {
+                        container_port: 80,
+                    }]
+                }],
+            }
+        }
+    }
+}
+
 #[wasm_bindgen]
 pub fn new_pod() -> Result<JsValue, JsValue> {
-    let template = PodTemplate {
-        api_version: "v1".to_string(),
-        kind: "Pod".to_string(),
-        metadata: Metadata {
-            name: "<pod-name>".to_string(),
-            labels: Labels {
-                app: "<app-name>".to_string(),
-            }
-        },
-        spec: Spec {
-            containers: vec![Container {
-                name: "<container-name>".to_string(),
-                image: "<image-name".to_string(),
-                ports: vec![Port {
-                    container_port: 80,
-                }]
-            }],
-        }
-    };
+    Ok(serde_wasm_bindgen::to_value(&PodTemplate::new())?.into())
+}
 
-    Ok(serde_wasm_bindgen::to_value(&template)?)
+#[wasm_bindgen]
+pub fn json_to_yaml(input: JsValue) -> Result<String, JsValue> {
+    let json_value = serde_wasm_bindgen::from_value::<serde_json::Value>(input)?;
+    let yaml = serde_yaml::to_string(&json_value).map_err(|e| JsValue::from(e.to_string()))?;
+    Ok(yaml)
 }

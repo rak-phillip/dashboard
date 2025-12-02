@@ -15,17 +15,9 @@ export default {
       default: 'create',
     },
   },
-  computed: {
-    someValue() {
-      return JSON.stringify(this.value);
-    }
-  },
 };
 </script>
 
 <template>
   <Pod />
-  <pre>
-    {{ someValue }}
-  </pre>
 </template>
