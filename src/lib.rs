@@ -20,14 +20,23 @@ struct PodTemplate {
 #[derive(Serialize, TS)]
 #[ts(export)]
 struct Metadata {
+    namespace: String,
     name: String,
     labels: Labels,
+    annotations: Annotations
 }
 
 #[derive(Serialize, TS)]
 #[ts(export)]
 struct Labels {
     app: String,
+}
+
+#[derive(Serialize, TS)]
+#[ts(export)]
+struct Annotations {
+    #[serde(rename = "field.cattle.io/description")]
+    description: Option<String>,
 }
 
 #[derive(Serialize, TS)]
@@ -57,10 +66,12 @@ impl PodTemplate  {
             api_version: "v1".to_string(),
             kind: "Pod".to_string(),
             metadata: Metadata {
+                namespace: "default".to_string(),
                 name: "".to_string(),
                 labels: Labels {
                     app: "".to_string(),
-                }
+                },
+                annotations: Annotations { description: None },
             },
             spec: Spec {
                 containers: vec![Container {
