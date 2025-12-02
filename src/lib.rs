@@ -1,12 +1,14 @@
 use wasm_bindgen::prelude::*;
 use wee_alloc::WeeAlloc;
 use serde::Serialize;
+use ts_rs::TS;
 
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 struct PodTemplate {
     #[serde(rename = "apiVersion")]
     api_version: String,
@@ -15,30 +17,35 @@ struct PodTemplate {
     spec: Spec,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 struct Metadata {
     name: String,
     labels: Labels,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 struct Labels {
     app: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 struct Spec {
     containers: Vec<Container>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 struct Container {
     name: String,
     image: String,
     ports: Vec<Port>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 struct Port {
     #[serde(rename = "containerPort")]
     container_port: u16,
