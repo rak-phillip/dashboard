@@ -57,15 +57,15 @@ impl PodTemplate  {
             api_version: "v1".to_string(),
             kind: "Pod".to_string(),
             metadata: Metadata {
-                name: "<pod-name>".to_string(),
+                name: "".to_string(),
                 labels: Labels {
-                    app: "<app-name>".to_string(),
+                    app: "".to_string(),
                 }
             },
             spec: Spec {
                 containers: vec![Container {
-                    name: "<container-name>".to_string(),
-                    image: "<image-name".to_string(),
+                    name: "".to_string(),
+                    image: "".to_string(),
                     ports: vec![Port {
                         container_port: 80,
                     }]
