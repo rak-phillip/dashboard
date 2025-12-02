@@ -117,3 +117,8 @@ docusaurus/yarn.lock
 
 # GitHub actions scripts output
 codecov
+
+
+# Added by cargo
+
+/target
