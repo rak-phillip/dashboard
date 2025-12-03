@@ -5,8 +5,16 @@ import { set } from 'lodash';
 
 import { LabeledInput } from '@components/Form/LabeledInput';
 import { PodTemplate } from '~/bindings/PodTemplate';
+import { Container } from '~/bindings/Container';
 
-const podSpec = ref<PodTemplate>({
+type UIContainer = Container & { templateId: string }
+type UIPodTemplate = Omit<PodTemplate, 'spec'> & {
+  spec: Omit<PodTemplate['spec'], 'containers'> & {
+    containers: UIContainer[];
+  }
+}
+
+const podSpec = ref<UIPodTemplate>({
   apiVersion: '',
   kind:       '',
   metadata:   {
@@ -15,7 +23,16 @@ const podSpec = ref<PodTemplate>({
     labels:      { app: '' },
     annotations: { 'field.cattle.io/description': null },
   },
-  spec: { containers: [] },
+  spec: {
+    containers: [
+      {
+        templateId: crypto.randomUUID(),
+        name:       '',
+        image:      '',
+        ports:      []
+      }
+    ]
+  },
 });
 const podSpecYaml = ref();
 
@@ -31,8 +48,7 @@ const updateSpec = (key: string, value: string) => {
 </script>
 
 <template>
-  <h1>POD NOT FAIL</h1>
-  <pre>{{ podSpec }}</pre>
+  <pre v-if="false">{{ podSpec }}</pre>
   <div class="namespace-form">
     <LabeledInput
       label="Namespace"
@@ -49,6 +65,25 @@ const updateSpec = (key: string, value: string) => {
       :value="podSpec.metadata.annotations['field.cattle.io/description']"
       @update:value="(e: string) => updateSpec(`metadata.annotations['field.cattle.io/description']`, e)"
     />
+  </div>
+  <div>
+    <template
+      v-for="(container, idx) in podSpec.spec.containers"
+      :key="container.templateId"
+    >
+      General
+      <LabeledInput
+        label="Container Name"
+        :value="container.name"
+        @update:value="(e: string) => updateSpec(`spec.containers[${idx}].name`, e)"
+      />
+      Image
+      <LabeledInput
+        label="Container Image"
+        :value="container.image"
+        @update:value="(e: string) => updateSpec(`spec.containers[${idx}].image`, e)"
+      />
+    </template>
   </div>
   <pre>{{ podSpecYaml }}</pre>
 </template>
