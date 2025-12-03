@@ -84,6 +84,43 @@ struct ContainerYaml {
     ports: Vec<Port>,
 }
 
+#[derive(Serialize)]
+struct PodPayload {
+    metadata: PodMetadataPayload,
+    spec: PodSpecPayload,
+}
+
+#[derive(Serialize)]
+struct PodMetadataPayload {
+    namespace: String,
+    name: String,
+    labels: serde_json::Value,
+    annotations: serde_json::Value,
+}
+
+#[derive(Serialize)]
+struct PodSpecPayload {
+    containers: Vec<PodContainerPayload>,
+    #[serde(default)]
+    initContainers: Vec<serde_json::Value>,
+    #[serde(default)]
+    imagePullSecrets: Vec<serde_json::Value>,
+    #[serde(default)]
+    volumes: Vec<serde_json::Value>,
+    #[serde(default)]
+    affinity: serde_json::Value,
+}
+
+#[derive(Serialize)]
+struct PodContainerPayload {
+    name: String,
+    image: String,
+    #[serde(default)]
+    imagePullPolicy: String,
+    #[serde(default)]
+    volumeMounts: Vec<serde_json::Value>,
+}
+
 impl PodTemplate  {
     fn new() -> PodTemplate {
         PodTemplate {
@@ -163,4 +200,54 @@ pub fn yaml_to_json(input: &str) -> Result<JsValue, JsValue> {
 
     let json= serde_wasm_bindgen::to_value(&pod_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
     Ok(json)
+}
+
+#[wasm_bindgen]
+pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, JsValue> {
+    let client = reqwest::Client::new();
+
+    let url = format!("{}/{}", url, "v1/pods".to_string());
+
+    let json_value: PodTemplate = serde_wasm_bindgen::from_value(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let namespace = json_value.metadata.namespace.clone();
+    let name = json_value.metadata.name.clone();
+
+    let pod = PodPayload {
+        metadata: PodMetadataPayload {
+            namespace: json_value.metadata.namespace,
+            name: json_value.metadata.name,
+            labels: serde_json::json!({
+                "workload.user.cattle.io/workloadselector": format!(
+                    "pod-{}-{}",
+                    namespace,
+                    name
+                ),
+            }),
+            annotations: serde_json::json!({}),
+        },
+        spec: PodSpecPayload {
+            containers: json_value.spec.containers.into_iter().map(|c| {
+                PodContainerPayload {
+                    name: c.name,
+                    image: c.image,
+                    imagePullPolicy: "Always".to_string(),
+                    volumeMounts: vec![],
+                }
+            }).collect(),
+            initContainers: vec![],
+            imagePullSecrets: vec![],
+            volumes: vec![],
+            affinity: serde_json::json!({}),
+        },
+    };
+
+    let _response = client.post(&url)
+        .header("Accept", "application/json")
+        .header("x-api-csrf", &csrf)
+        .json(&pod)
+        .send()
+        .await
+        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+
+    Ok(JsValue::UNDEFINED)
 }

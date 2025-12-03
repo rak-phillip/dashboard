@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import init, { new_pod, json_to_yaml, yaml_to_json } from 'rancher_yaml';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import init, { new_pod, json_to_yaml, yaml_to_json, save } from 'rancher_yaml';
 import { set } from 'lodash';
 
+import { CSRF } from '@shell/config/cookies';
 import CodeMirror from '@shell/components/CodeMirror';
 import { LabeledInput } from '@components/Form/LabeledInput';
 import { RcButton } from '@components/RcButton';
@@ -79,6 +82,30 @@ const removeContainer = (containerId: string) => {
   });
   podSpecYaml.value = json_to_yaml(podSpec.value);
 };
+
+const store = useStore();
+const router = useRouter();
+const options = { parseJSON: false };
+const csrf = store.getters['cookies/get']({ key: CSRF, options });
+
+const savePod = async() => {
+  try {
+    await save(podSpec.value, 'https://127.0.0.1:8005', csrf);
+  } catch (err) {
+    console.error('FAIL', { err });
+  } finally {
+    router.push(
+      {
+        name:   'c-cluster-product-resource',
+        params: {
+          cluster:  'local',
+          product:  'explorer',
+          resource: 'pod',
+        }
+      }
+    );
+  }
+};
 </script>
 
 <template>
@@ -146,12 +173,18 @@ const removeContainer = (containerId: string) => {
       />
     </div>
   </div>
+  <div class="wasm-footer">
+    <rc-button @click="savePod">
+      Save
+    </rc-button>
+  </div>
 </template>
 
 <style scoped lang="scss">
 .form-container {
   display: flex;
   gap: 1rem;
+  flex-grow: 1;
 }
 
 .form {
@@ -195,5 +228,12 @@ const removeContainer = (containerId: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.wasm-footer {
+  display: flex;
+  flex-direction: row-reverse;
+  position: sticky;
+  bottom: 1rem;
 }
 </style>
