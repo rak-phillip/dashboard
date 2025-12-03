@@ -49,48 +49,55 @@ const updateSpec = (key: string, value: string) => {
 
 <template>
   <pre v-if="false">{{ podSpec }}</pre>
-  <div class="form">
-    <div class="namespace-form">
-      <LabeledInput
-        label="Namespace"
-        :value="podSpec.metadata.namespace"
-        @update:value="(e: string) => updateSpec('metadata.namespace', e)"
-      />
-      <LabeledInput
-        label="Name"
-        :value="podSpec.metadata.name"
-        @update:value="(e: string) => updateSpec('metadata.name', e)"
-      />
-      <LabeledInput
-        label="Description"
-        :value="podSpec.metadata.annotations['field.cattle.io/description']"
-        @update:value="(e: string) => updateSpec(`metadata.annotations['field.cattle.io/description']`, e)"
-      />
-    </div>
-    <div class="container-form">
-      <template
-        v-for="(container, idx) in podSpec.spec.containers"
-        :key="container.templateId"
-      >
-        General
+  <div class="form-container">
+    <div class="form">
+      <div class="namespace-form">
         <LabeledInput
-          label="Container Name"
-          :value="container.name"
-          @update:value="(e: string) => updateSpec(`spec.containers[${idx}].name`, e)"
+          label="Namespace"
+          :value="podSpec.metadata.namespace"
+          @update:value="(e: string) => updateSpec('metadata.namespace', e)"
         />
-        Image
         <LabeledInput
-          label="Container Image"
-          :value="container.image"
-          @update:value="(e: string) => updateSpec(`spec.containers[${idx}].image`, e)"
+          label="Name"
+          :value="podSpec.metadata.name"
+          @update:value="(e: string) => updateSpec('metadata.name', e)"
         />
-      </template>
+        <LabeledInput
+          label="Description"
+          :value="podSpec.metadata.annotations['field.cattle.io/description']"
+          @update:value="(e: string) => updateSpec(`metadata.annotations['field.cattle.io/description']`, e)"
+        />
+      </div>
+      <div class="container-form">
+        <template
+          v-for="(container, idx) in podSpec.spec.containers"
+          :key="container.templateId"
+        >
+          General
+          <LabeledInput
+            label="Container Name"
+            :value="container.name"
+            @update:value="(e: string) => updateSpec(`spec.containers[${idx}].name`, e)"
+          />
+          Image
+          <LabeledInput
+            label="Container Image"
+            :value="container.image"
+            @update:value="(e: string) => updateSpec(`spec.containers[${idx}].image`, e)"
+          />
+        </template>
+      </div>
     </div>
+    <pre class="yaml-spec">{{ podSpecYaml }}</pre>
   </div>
-  <pre>{{ podSpecYaml }}</pre>
 </template>
 
 <style scoped lang="scss">
+.form-container {
+  display: flex;
+  gap: 1rem;
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -106,5 +113,9 @@ const updateSpec = (key: string, value: string) => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.yaml-spec {
+  flex-grow: 1;
 }
 </style>
