@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import init, { new_pod, json_to_yaml } from 'rancher_yaml';
+import init, { new_pod, json_to_yaml, yaml_to_json } from 'rancher_yaml';
 import { set } from 'lodash';
 
+import CodeMirror from '@shell/components/CodeMirror';
 import { LabeledInput } from '@components/Form/LabeledInput';
 import { PodTemplate } from '~/bindings/PodTemplate';
 import { Container } from '~/bindings/Container';
@@ -44,6 +45,11 @@ init().then((_wasm) => {
 const updateSpec = (key: string, value: string) => {
   set(podSpec.value, key, value);
   podSpecYaml.value = json_to_yaml(podSpec.value);
+};
+
+const updateYaml = (value: string) => {
+  podSpecYaml.value = value;
+  podSpec.value = yaml_to_json(podSpecYaml.value);
 };
 </script>
 
@@ -88,7 +94,13 @@ const updateSpec = (key: string, value: string) => {
         </template>
       </div>
     </div>
-    <pre class="yaml-spec">{{ podSpecYaml }}</pre>
+    <div class="yaml-spec">
+      <code-mirror
+        :value="podSpecYaml"
+        @onInput="updateYaml"
+      />
+      <pre>{{ podSpecYaml }}</pre>
+    </div>
   </div>
 </template>
 

@@ -1,13 +1,13 @@
 use wasm_bindgen::prelude::*;
 use wee_alloc::WeeAlloc;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
 
-#[derive(Serialize, TS)]
+#[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 struct PodTemplate {
     #[serde(rename = "apiVersion")]
@@ -17,7 +17,7 @@ struct PodTemplate {
     spec: Spec,
 }
 
-#[derive(Serialize, TS)]
+#[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 struct Metadata {
     namespace: String,
@@ -26,26 +26,26 @@ struct Metadata {
     annotations: Annotations
 }
 
-#[derive(Serialize, TS)]
+#[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 struct Labels {
     app: String,
 }
 
-#[derive(Serialize, TS)]
+#[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 struct Annotations {
     #[serde(rename = "field.cattle.io/description")]
     description: Option<String>,
 }
 
-#[derive(Serialize, TS)]
+#[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 struct Spec {
     containers: Vec<Container>,
 }
 
-#[derive(Serialize, TS)]
+#[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 struct Container {
     name: String,
@@ -53,7 +53,7 @@ struct Container {
     ports: Vec<Port>,
 }
 
-#[derive(Serialize, TS)]
+#[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 struct Port {
     #[serde(rename = "containerPort")]
@@ -96,4 +96,11 @@ pub fn json_to_yaml(input: JsValue) -> Result<String, JsValue> {
     let json_value = serde_wasm_bindgen::from_value::<serde_json::Value>(input)?;
     let yaml = serde_yaml::to_string(&json_value).map_err(|e| JsValue::from(e.to_string()))?;
     Ok(yaml)
+}
+
+#[wasm_bindgen]
+pub fn yaml_to_json(input: &str) -> Result<JsValue, JsValue> {
+    let pod_yaml: PodTemplate = serde_yaml::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let json= serde_wasm_bindgen::to_value(&pod_yaml).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    Ok(json)
 }
