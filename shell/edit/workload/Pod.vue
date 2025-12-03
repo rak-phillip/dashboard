@@ -5,6 +5,8 @@ import { set } from 'lodash';
 
 import CodeMirror from '@shell/components/CodeMirror';
 import { LabeledInput } from '@components/Form/LabeledInput';
+import { RcButton } from '@components/RcButton';
+
 import { PodTemplate } from '~/bindings/PodTemplate';
 import { Container } from '~/bindings/Container';
 
@@ -42,14 +44,40 @@ init().then((_wasm) => {
   podSpecYaml.value = json_to_yaml(podSpec.value);
 });
 
+const shouldUpdateYaml = ref(true);
 const updateSpec = (key: string, value: string) => {
+  shouldUpdateYaml.value = false;
+
   set(podSpec.value, key, value);
   podSpecYaml.value = json_to_yaml(podSpec.value);
 };
 
 const updateYaml = (value: string) => {
+  if (!shouldUpdateYaml.value) {
+    shouldUpdateYaml.value = true;
+
+    return;
+  }
+
   podSpecYaml.value = value;
   podSpec.value = yaml_to_json(podSpecYaml.value);
+};
+
+const addContainer = () => {
+  podSpec.value.spec.containers.push({
+    templateId: crypto.randomUUID(),
+    name:       `container-${ crypto.randomUUID().split('-')[0] }`,
+    image:      '',
+    ports:      []
+  });
+  podSpecYaml.value = json_to_yaml(podSpec.value);
+};
+
+const removeContainer = (containerId: string) => {
+  podSpec.value.spec.containers = podSpec.value.spec.containers.filter((container) => {
+    return container.templateId !== containerId;
+  });
+  podSpecYaml.value = json_to_yaml(podSpec.value);
 };
 </script>
 
@@ -75,17 +103,34 @@ const updateYaml = (value: string) => {
         />
       </div>
       <div class="container-form">
+        <div class="wasm-container">
+          <span class="wasm-header">Containers</span>
+          <rc-button
+            secondary
+            @click="addContainer"
+          >
+            Add
+          </rc-button>
+        </div>
         <template
           v-for="(container, idx) in podSpec.spec.containers"
           :key="container.templateId"
         >
-          General
+          <div class="wasm-container">
+            <span class="wasm-header-sm">Container: {{ container.name }}</span>
+            <rc-button
+              tertiary
+              @click="removeContainer(container.templateId)"
+            >
+              Delete
+            </rc-button>
+          </div>
           <LabeledInput
             label="Container Name"
             :value="container.name"
             @update:value="(e: string) => updateSpec(`spec.containers[${idx}].name`, e)"
           />
-          Image
+          <span class="wasm-header-xs">Image</span>
           <LabeledInput
             label="Container Image"
             :value="container.image"
@@ -99,7 +144,6 @@ const updateYaml = (value: string) => {
         :value="podSpecYaml"
         @onInput="updateYaml"
       />
-      <pre>{{ podSpecYaml }}</pre>
     </div>
   </div>
 </template>
@@ -113,7 +157,8 @@ const updateYaml = (value: string) => {
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem
+  gap: 1rem;
+  min-width: 42rem;
 }
 
 .namespace-form {
@@ -129,5 +174,26 @@ const updateYaml = (value: string) => {
 
 .yaml-spec {
   flex-grow: 1;
+}
+
+.wasm-header {
+  font-size: 1.5rem;
+  line-height: calc(2 / 1.5);
+}
+
+.wasm-header-sm {
+  font-size: 1.25rem;
+  line-height: calc(1.75 / 1.25);
+}
+
+.wasm-header-xs {
+  font-size: 1.125rem;
+  line-height: calc(1.75 / 1.125);
+}
+
+.wasm-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
