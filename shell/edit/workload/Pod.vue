@@ -33,24 +33,29 @@ const updateSpec = (key: string, value: string) => {
 <template>
   <h1>POD NOT FAIL</h1>
   <pre>{{ podSpec }}</pre>
-  <LabeledInput
-    label="Namespace"
-    :value="podSpec.metadata.namespace"
-    @update:value="(e: string) => updateSpec('metadata.namespace', e)"
-  />
-  <LabeledInput
-    label="Name"
-    :value="podSpec.metadata.name"
-    @update:value="(e: string) => updateSpec('metadata.name', e)"
-  />
-  <LabeledInput
-    label="Description"
-    :value="podSpec.metadata.annotations['field.cattle.io/description']"
-    @update:value="(e: string) => updateSpec(`metadata.annotations['field.cattle.io/description']`, e)"
-  />
+  <div class="namespace-form">
+    <LabeledInput
+      label="Namespace"
+      :value="podSpec.metadata.namespace"
+      @update:value="(e: string) => updateSpec('metadata.namespace', e)"
+    />
+    <LabeledInput
+      label="Name"
+      :value="podSpec.metadata.name"
+      @update:value="(e: string) => updateSpec('metadata.name', e)"
+    />
+    <LabeledInput
+      label="Description"
+      :value="podSpec.metadata.annotations['field.cattle.io/description']"
+      @update:value="(e: string) => updateSpec(`metadata.annotations['field.cattle.io/description']`, e)"
+    />
+  </div>
   <pre>{{ podSpecYaml }}</pre>
 </template>
 
 <style scoped lang="scss">
-
+.namespace-form {
+  display: flex;
+  gap: 1rem;
+}
 </style>
