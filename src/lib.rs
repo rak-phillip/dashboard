@@ -6,31 +6,11 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use uuid::Uuid;
 use crate::models::ui;
+use crate::models::yaml;
 
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
-
-#[derive(Serialize, Deserialize)]
-struct PodTemplateYaml {
-    #[serde(rename = "apiVersion")]
-    api_version: String,
-    kind: String,
-    metadata: ui::Metadata,
-    spec: SpecYaml,
-}
-
-#[derive(Serialize, Deserialize)]
-struct SpecYaml {
-    containers: Vec<ContainerYaml>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct ContainerYaml {
-    name: String,
-    image: String,
-    ports: Vec<ui::Port>,
-}
 
 #[derive(Serialize)]
 struct PodPayload {
@@ -78,14 +58,14 @@ pub fn new_pod() -> Result<JsValue, JsValue> {
 pub fn json_to_yaml(input: JsValue) -> Result<String, JsValue> {
     let json_value: ui::PodTemplate = serde_wasm_bindgen::from_value(input)?;
 
-    let pod_yaml = PodTemplateYaml {
+    let pod_yaml = yaml::PodTemplateYaml {
         api_version: json_value.api_version,
         kind: json_value.kind,
         metadata: json_value.metadata,
-        spec: SpecYaml {
+        spec: yaml::SpecYaml {
             containers: json_value.spec.containers
                 .into_iter()
-                .map(|container| ContainerYaml {
+                .map(|container| yaml::ContainerYaml {
                     name: container.name,
                     image: container.image,
                     ports: container.ports,
@@ -100,7 +80,7 @@ pub fn json_to_yaml(input: JsValue) -> Result<String, JsValue> {
 
 #[wasm_bindgen]
 pub fn yaml_to_json(input: &str) -> Result<JsValue, JsValue> {
-    let pod_yaml: PodTemplateYaml = serde_yaml::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let pod_yaml: yaml::PodTemplateYaml = serde_yaml::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
     let pod_json = ui::PodTemplate {
         api_version: pod_yaml.api_version,
