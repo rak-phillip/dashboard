@@ -7,47 +7,11 @@ use ts_rs::TS;
 use uuid::Uuid;
 use crate::models::ui;
 use crate::models::yaml;
+use crate::models::api;
 
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
-
-#[derive(Serialize)]
-struct PodPayload {
-    metadata: PodMetadataPayload,
-    spec: PodSpecPayload,
-}
-
-#[derive(Serialize)]
-struct PodMetadataPayload {
-    namespace: String,
-    name: String,
-    labels: serde_json::Value,
-    annotations: serde_json::Value,
-}
-
-#[derive(Serialize)]
-struct PodSpecPayload {
-    containers: Vec<PodContainerPayload>,
-    #[serde(default)]
-    initContainers: Vec<serde_json::Value>,
-    #[serde(default)]
-    imagePullSecrets: Vec<serde_json::Value>,
-    #[serde(default)]
-    volumes: Vec<serde_json::Value>,
-    #[serde(default)]
-    affinity: serde_json::Value,
-}
-
-#[derive(Serialize)]
-struct PodContainerPayload {
-    name: String,
-    image: String,
-    #[serde(default)]
-    imagePullPolicy: String,
-    #[serde(default)]
-    volumeMounts: Vec<serde_json::Value>,
-}
 
 #[wasm_bindgen]
 pub fn new_pod() -> Result<JsValue, JsValue> {
@@ -113,8 +77,8 @@ pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, 
     let namespace = json_value.metadata.namespace.clone();
     let name = json_value.metadata.name.clone();
 
-    let pod = PodPayload {
-        metadata: PodMetadataPayload {
+    let pod = api::PodPayload {
+        metadata: api::PodMetadataPayload {
             namespace: json_value.metadata.namespace,
             name: json_value.metadata.name,
             labels: serde_json::json!({
@@ -126,9 +90,9 @@ pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, 
             }),
             annotations: serde_json::json!({}),
         },
-        spec: PodSpecPayload {
+        spec: api::PodSpecPayload {
             containers: json_value.spec.containers.into_iter().map(|c| {
-                PodContainerPayload {
+                api::PodContainerPayload {
                     name: c.name,
                     image: c.image,
                     imagePullPolicy: "Always".to_string(),
