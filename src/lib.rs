@@ -1,74 +1,22 @@
+mod models;
+
 use wasm_bindgen::prelude::*;
 use wee_alloc::WeeAlloc;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use uuid::Uuid;
+use crate::models::ui;
 
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
-
-#[derive(Serialize, Deserialize, TS)]
-#[ts(export)]
-struct PodTemplate {
-    #[serde(rename = "apiVersion")]
-    api_version: String,
-    kind: String,
-    metadata: Metadata,
-    spec: Spec,
-}
-
-#[derive(Serialize, Deserialize, TS)]
-#[ts(export)]
-struct Metadata {
-    namespace: String,
-    name: String,
-    labels: Labels,
-    annotations: Annotations
-}
-
-#[derive(Serialize, Deserialize, TS)]
-#[ts(export)]
-struct Labels {
-    app: String,
-}
-
-#[derive(Serialize, Deserialize, TS)]
-#[ts(export)]
-struct Annotations {
-    #[serde(rename = "field.cattle.io/description")]
-    description: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, TS)]
-#[ts(export)]
-struct Spec {
-    containers: Vec<Container>,
-}
-
-#[derive(Serialize, Deserialize, TS)]
-#[ts(export)]
-struct Container {
-    name: String,
-    image: String,
-    ports: Vec<Port>,
-    #[serde(rename = "templateId")]
-    template_id: String,
-}
-
-#[derive(Serialize, Deserialize, TS)]
-#[ts(export)]
-struct Port {
-    #[serde(rename = "containerPort")]
-    container_port: u16,
-}
 
 #[derive(Serialize, Deserialize)]
 struct PodTemplateYaml {
     #[serde(rename = "apiVersion")]
     api_version: String,
     kind: String,
-    metadata: Metadata,
+    metadata: ui::Metadata,
     spec: SpecYaml,
 }
 
@@ -81,7 +29,7 @@ struct SpecYaml {
 struct ContainerYaml {
     name: String,
     image: String,
-    ports: Vec<Port>,
+    ports: Vec<ui::Port>,
 }
 
 #[derive(Serialize)]
@@ -121,41 +69,14 @@ struct PodContainerPayload {
     volumeMounts: Vec<serde_json::Value>,
 }
 
-impl PodTemplate  {
-    fn new() -> PodTemplate {
-        PodTemplate {
-            api_version: "v1".to_string(),
-            kind: "Pod".to_string(),
-            metadata: Metadata {
-                namespace: "default".to_string(),
-                name: "".to_string(),
-                labels: Labels {
-                    app: "".to_string(),
-                },
-                annotations: Annotations { description: None },
-            },
-            spec: Spec {
-                containers: vec![Container {
-                    name: format!("container-{}", Uuid::new_v4().to_string().split_at(8).0).to_string(),
-                    image: "".to_string(),
-                    ports: vec![Port {
-                        container_port: 80,
-                    }],
-                    template_id: Uuid::new_v4().to_string(),
-                }],
-            }
-        }
-    }
-}
-
 #[wasm_bindgen]
 pub fn new_pod() -> Result<JsValue, JsValue> {
-    Ok(serde_wasm_bindgen::to_value(&PodTemplate::new())?.into())
+    Ok(serde_wasm_bindgen::to_value(&ui::PodTemplate::new())?.into())
 }
 
 #[wasm_bindgen]
 pub fn json_to_yaml(input: JsValue) -> Result<String, JsValue> {
-    let json_value: PodTemplate = serde_wasm_bindgen::from_value(input)?;
+    let json_value: ui::PodTemplate = serde_wasm_bindgen::from_value(input)?;
 
     let pod_yaml = PodTemplateYaml {
         api_version: json_value.api_version,
@@ -181,14 +102,14 @@ pub fn json_to_yaml(input: JsValue) -> Result<String, JsValue> {
 pub fn yaml_to_json(input: &str) -> Result<JsValue, JsValue> {
     let pod_yaml: PodTemplateYaml = serde_yaml::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
-    let pod_json = PodTemplate {
+    let pod_json = ui::PodTemplate {
         api_version: pod_yaml.api_version,
         kind: pod_yaml.kind,
         metadata: pod_yaml.metadata,
-        spec: Spec {
+        spec: ui::Spec {
             containers: pod_yaml.spec.containers
                 .into_iter()
-                .map(|container| Container {
+                .map(|container| ui::Container {
                     name: container.name,
                     image: container.image,
                     ports: container.ports,
@@ -208,7 +129,7 @@ pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, 
 
     let url = format!("{}/{}", url, "v1/pods".to_string());
 
-    let json_value: PodTemplate = serde_wasm_bindgen::from_value(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let json_value: ui::PodTemplate = serde_wasm_bindgen::from_value(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let namespace = json_value.metadata.namespace.clone();
     let name = json_value.metadata.name.clone();
 
