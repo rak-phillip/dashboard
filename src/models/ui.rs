@@ -17,21 +17,21 @@ pub struct PodTemplate {
 pub struct Metadata {
     pub namespace: String,
     pub name: String,
-    labels: Labels,
-    annotations: Annotations
+    pub labels: Labels,
+    pub annotations: Annotations
 }
 
 #[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
-struct Labels {
-    app: String,
+pub struct Labels {
+    pub app: String,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, Default, TS)]
 #[ts(export)]
-struct Annotations {
+pub struct Annotations {
     #[serde(rename = "field.cattle.io/description")]
-    description: Option<String>,
+    pub description: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, TS)]
@@ -54,7 +54,7 @@ pub struct Container {
 #[ts(export)]
 pub struct Port {
     #[serde(rename = "containerPort")]
-    container_port: u16,
+    pub container_port: u16,
 }
 
 impl PodTemplate  {

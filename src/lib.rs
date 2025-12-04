@@ -116,3 +116,64 @@ pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, 
 
     Ok(JsValue::UNDEFINED)
 }
+
+#[wasm_bindgen]
+pub async fn get(url: String, namespace: String, name: String, csrf: String) -> Result<JsValue, JsValue> {
+    let client = reqwest::Client::new();
+    let url = format!("{}/v1/pods/{}/{}", url, namespace, name);
+
+    let response = client
+        .get(&url)
+        .header("Accept", "application/json")
+        .header("x-api-csrf", &csrf)
+        .send()
+        .await
+        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+
+    let text = response.text().await.map_err(|e| JsValue::from_str(&e.to_string()))?;
+
+    web_sys::console::log_1(&text.clone().into());
+
+    let pod_response: api::PodResponse =
+        serde_json::from_str(&text).map_err(|e| JsValue::from_str(&e.to_string()))?;
+
+    let pod_json = ui::PodTemplate {
+        api_version: pod_response.api_version,
+        kind: pod_response.kind,
+        metadata: ui::Metadata {
+            namespace: pod_response.metadata.namespace,
+            name: pod_response.metadata.name,
+            labels: ui::Labels {
+                app: pod_response.metadata.labels
+                    .get("workload.user.cattle.io/workloadselector")
+                    .cloned()
+                    .unwrap_or_default(),
+            },
+            annotations: pod_response.metadata.annotations,
+        },
+        spec: ui::Spec {
+            containers: pod_response
+                .spec
+                .containers
+                .into_iter()
+                .map(|container| ui::Container {
+                    name: container.name,
+                    image: container.image,
+                    template_id: Uuid::new_v4().to_string(),
+                    ports: container
+                        .ports
+                        .into_iter()
+                        .map(|port| ui::Port {
+                            container_port: port.container_port,
+                        })
+                        .collect(),
+                })
+                .collect(),
+        },
+    };
+
+    let json = serde_wasm_bindgen::to_value(&pod_json)
+        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+
+    Ok(json)
+}

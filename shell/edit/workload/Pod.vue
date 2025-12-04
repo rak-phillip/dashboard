@@ -2,7 +2,9 @@
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import init, { new_pod, json_to_yaml, yaml_to_json, save } from 'rancher_yaml';
+import init, {
+  new_pod, json_to_yaml, yaml_to_json, save, get
+} from 'rancher_yaml';
 import { set } from 'lodash';
 
 import { CSRF } from '@shell/config/cookies';
@@ -12,6 +14,7 @@ import { RcButton } from '@components/RcButton';
 
 import { PodTemplate } from '~/bindings/PodTemplate';
 import { Container } from '~/bindings/Container';
+import { _EDIT } from '@shell/config/query-params';
 
 type UIContainer = Container & { templateId: string }
 type UIPodTemplate = Omit<PodTemplate, 'spec'> & {
@@ -19,6 +22,8 @@ type UIPodTemplate = Omit<PodTemplate, 'spec'> & {
     containers: UIContainer[];
   }
 }
+
+const props = defineProps<{ mode: String }>();
 
 const podSpec = ref<UIPodTemplate>({
   apiVersion: '',
@@ -43,7 +48,13 @@ const podSpec = ref<UIPodTemplate>({
 const podSpecYaml = ref();
 
 init().then((_wasm) => {
-  podSpec.value = new_pod();
+  if (props.mode === _EDIT) {
+    getPod().then((result) => {
+      podSpec.value = result;
+    });
+  } else {
+    podSpec.value = new_pod();
+  }
   podSpecYaml.value = json_to_yaml(podSpec.value);
 });
 
@@ -92,7 +103,7 @@ const savePod = async() => {
   try {
     await save(podSpec.value, 'https://127.0.0.1:8005', csrf);
   } catch (err) {
-    console.error('FAIL', { err });
+    console.error('FAIL POST', { err });
   } finally {
     router.push(
       {
@@ -104,6 +115,16 @@ const savePod = async() => {
         }
       }
     );
+  }
+};
+
+const getPod = async() => {
+  try {
+    const result = await get('https://127.0.0.1:8005', 'default', 'prak-test1', csrf);
+
+    return result;
+  } catch (err) {
+    console.error('FAIL GET', { err });
   }
 };
 </script>
