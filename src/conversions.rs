@@ -77,10 +77,11 @@ impl From<PodResponse> for PodTemplate {
                 namespace: pod_response.metadata.namespace,
                 name: pod_response.metadata.name,
                 labels: ui::Labels {
-                    app: pod_response.metadata.labels
+                    workload_selector: pod_response.metadata.labels
                         .get("workload.user.cattle.io/workloadselector")
                         .cloned()
-                        .unwrap_or_default(),
+                        .unwrap_or_default()
+                        .into(),
                 },
                 annotations: pod_response.metadata.annotations,
                 resource_version: Some(pod_response.metadata.resource_version),
@@ -137,25 +138,23 @@ impl From<PodTemplate> for PodPayload {
             api_version: Some(pod_template.api_version),
             kind: Some(pod_template.kind),
             metadata: api::PodMetadataPayload {
+                fields: pod_template.metadata.fields,
                 namespace: pod_template.metadata.namespace,
                 name: pod_template.metadata.name,
                 labels: serde_json::to_value(pod_template.metadata.labels).unwrap_or_default(),
                 annotations: serde_json::to_value(pod_template.metadata.annotations).unwrap_or_default(),
                 resource_version: pod_template.metadata.resource_version,
-                fields: pod_template.metadata.fields,
             },
             spec: api::PodSpecPayload {
-                containers: pod_template.spec.containers.into_iter().map(|c| {
-                    api::PodContainerPayload {
-                        name: c.name,
-                        image: c.image,
-                        image_pull_policy: c.image_pull_policy.unwrap_or_default(),
-                        volume_mounts: c.volume_mounts,
-                        resources: c.resources,
-                        termination_message_path: c.termination_message_path,
-                        termination_message_policy: c.termination_message_policy,
-                        ports: Some(c.ports),
-                    }
+                containers: pod_template.spec.containers.into_iter().map(|c| api::PodContainerPayload {
+                    name: c.name,
+                    image: c.image,
+                    image_pull_policy: c.image_pull_policy.unwrap_or_else(|| "Always".to_string()),
+                    volume_mounts: c.volume_mounts,
+                    resources: Some(c.resources.unwrap_or_default()),
+                    termination_message_path: Some(c.termination_message_path.unwrap_or_default()),
+                    termination_message_policy: Some(c.termination_message_policy.unwrap_or_else(|| "File".to_string())),
+                    ports: Some(c.ports),
                 }).collect(),
                 initContainers: pod_template.spec.init_containers,
                 imagePullSecrets: pod_template.spec.image_pull_secrets,
@@ -168,7 +167,7 @@ impl From<PodTemplate> for PodPayload {
                 priority: pod_template.spec.priority,
                 restart_policy: pod_template.spec.restart_policy,
                 scheduler_name: pod_template.spec.scheduler_name,
-                security_context: pod_template.spec.security_context,
+                security_context: Some(pod_template.spec.security_context.unwrap_or_default()),
                 service_account: pod_template.spec.service_account,
                 service_account_name: pod_template.spec.service_account_name,
                 termination_grace_period_seconds: pod_template.spec.termination_grace_period_seconds,

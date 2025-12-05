@@ -38,59 +38,14 @@ pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, 
 
     let url = format!("{}/{}", url, "v1/pods".to_string());
 
-    let json_value: ui::PodTemplate = serde_wasm_bindgen::from_value(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let namespace = json_value.metadata.namespace.clone();
-    let name = json_value.metadata.name.clone();
+    let mut json_value: ui::PodTemplate = serde_wasm_bindgen::from_value(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    json_value.metadata.labels.workload_selector = format!(
+        "pod-{}-{}",
+        json_value.metadata.namespace,
+        json_value.metadata.name,
+    ).into();
 
-    let pod = api::PodPayload {
-        id: None,
-        api_version: None,
-        kind: None,
-        metadata: api::PodMetadataPayload {
-            fields: None,
-            namespace: json_value.metadata.namespace,
-            name: json_value.metadata.name,
-            labels: serde_json::json!({
-                "workload.user.cattle.io/workloadselector": format!(
-                    "pod-{}-{}",
-                    namespace,
-                    name
-                ),
-            }),
-            annotations: serde_json::from_value(serde_json::to_value(json_value.metadata.annotations).unwrap_or_default()).unwrap(),
-            resource_version: None,
-        },
-        spec: api::PodSpecPayload {
-            containers: json_value.spec.containers.into_iter().map(|c| {
-                api::PodContainerPayload {
-                    name: c.name,
-                    image: c.image,
-                    image_pull_policy: "Always".to_string(),
-                    volume_mounts: vec![],
-                    resources: None,
-                    termination_message_path: None,
-                    termination_message_policy: None,
-                    ports: None,
-                }
-            }).collect(),
-            initContainers: vec![],
-            imagePullSecrets: vec![],
-            volumes: vec![],
-            affinity: serde_json::json!({}),
-            dns_policy: None,
-            enable_service_links: None,
-            node_name: None,
-            preemption_policy: None,
-            priority: None,
-            restart_policy: None,
-            scheduler_name: None,
-            security_context: None,
-            service_account: None,
-            service_account_name: None,
-            termination_grace_period_seconds: None,
-            tolerations: None,
-        },
-    };
+    let pod: api::PodPayload = json_value.into();
 
     let _response = client.post(&url)
         .header("Accept", "application/json")

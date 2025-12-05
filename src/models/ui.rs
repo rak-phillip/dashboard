@@ -32,7 +32,8 @@ pub struct Metadata {
 #[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct Labels {
-    pub app: String,
+    #[serde(rename = "workload.user.cattle.io/workloadselector")]
+    pub workload_selector: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Default, TS)]
@@ -137,7 +138,7 @@ impl PodTemplate  {
                 namespace: "default".to_string(),
                 name: "".to_string(),
                 labels: Labels {
-                    app: "".to_string(),
+                    workload_selector: None,
                 },
                 annotations: Annotations { description: None },
                 resource_version: None,
