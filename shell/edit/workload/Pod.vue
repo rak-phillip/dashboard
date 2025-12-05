@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import init, {
-  new_pod, json_to_yaml, yaml_to_json, save, get
+  new_pod, json_to_yaml, yaml_to_json, save, get, update
 } from 'rancher_yaml';
 import { set } from 'lodash';
 
@@ -58,7 +58,7 @@ const podSpec = ref<PodTemplate>({
     tolerations:                   [],
     volumes:                       [],
     imagePullSecrets:              [],
-    initContainers:                []
+    initContainers:                [],
   },
 });
 const podSpecYaml = ref();
@@ -122,6 +122,12 @@ const csrf = store.getters['cookies/get']({ key: CSRF, options });
 
 const savePod = async() => {
   try {
+    if (props.mode === _EDIT) {
+      await update(podSpec.value, 'https://127.0.0.1:8005', 'default', 'prak-test1', csrf);
+
+      return;
+    }
+
     await save(podSpec.value, 'https://127.0.0.1:8005', csrf);
   } catch (err) {
     console.error('FAIL POST', { err });

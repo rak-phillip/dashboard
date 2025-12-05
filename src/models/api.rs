@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use crate::models::pod::Port;
 use crate::models::ui;
 
 #[derive(Serialize)]
@@ -95,7 +94,7 @@ pub struct PodContainerPayload {
     pub termination_message_policy: Option<String>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ports: Option<Vec<Port>>,
+    pub ports: Option<Vec<ui::Port>>,
 }
 
 #[derive(Serialize, Deserialize)]
