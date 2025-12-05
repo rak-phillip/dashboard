@@ -98,7 +98,11 @@ pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, 
     let name = json_value.metadata.name.clone();
 
     let pod = api::PodPayload {
+        id: None,
+        api_version: None,
+        kind: None,
         metadata: api::PodMetadataPayload {
+            fields: None,
             namespace: json_value.metadata.namespace,
             name: json_value.metadata.name,
             labels: serde_json::json!({
@@ -116,14 +120,30 @@ pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, 
                 api::PodContainerPayload {
                     name: c.name,
                     image: c.image,
-                    imagePullPolicy: "Always".to_string(),
-                    volumeMounts: vec![],
+                    image_pull_policy: "Always".to_string(),
+                    volume_mounts: vec![],
+                    resources: None,
+                    termination_message_path: None,
+                    termination_message_policy: None,
+                    ports: None,
                 }
             }).collect(),
             initContainers: vec![],
             imagePullSecrets: vec![],
             volumes: vec![],
             affinity: serde_json::json!({}),
+            dns_policy: None,
+            enable_service_links: None,
+            node_name: None,
+            preemption_policy: None,
+            priority: None,
+            restart_policy: None,
+            scheduler_name: None,
+            security_context: None,
+            service_account: None,
+            service_account_name: None,
+            termination_grace_period_seconds: None,
+            tolerations: None,
         },
     };
 
