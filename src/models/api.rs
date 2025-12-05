@@ -13,6 +13,9 @@ pub struct PodMetadataPayload {
     pub name: String,
     pub labels: serde_json::Value,
     pub annotations: serde_json::Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "resourceVersion")]
+    pub resource_version: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -99,6 +102,12 @@ pub struct PodSpecResponse {
     pub termination_grace_period_seconds: i64,
     pub tolerations: Vec<serde_json::Value>,
     pub volumes: Vec<serde_json::Value>,
+    #[serde(rename = "imagePullSecrets")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub image_pull_secrets: Option<Vec<serde_json::Value>>,
+    #[serde(rename = "initContainers")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub init_containers: Option<Vec<serde_json::Value>>,
 }
 
 #[derive(Serialize, Deserialize)]

@@ -2,4 +2,4 @@
 import type { Metadata } from "./Metadata";
 import type { Spec } from "./Spec";
 
-export type PodTemplate = { apiVersion: string, kind: string, metadata: Metadata, spec: Spec, };
+export type PodTemplate = { id: string | null, apiVersion: string, kind: string, metadata: Metadata, spec: Spec, };

@@ -13,36 +13,52 @@ import { LabeledInput } from '@components/Form/LabeledInput';
 import { RcButton } from '@components/RcButton';
 
 import { PodTemplate } from '~/bindings/PodTemplate';
-import { Container } from '~/bindings/Container';
 import { _EDIT } from '@shell/config/query-params';
-
-type UIContainer = Container & { templateId: string }
-type UIPodTemplate = Omit<PodTemplate, 'spec'> & {
-  spec: Omit<PodTemplate['spec'], 'containers'> & {
-    containers: UIContainer[];
-  }
-}
 
 const props = defineProps<{ mode: String }>();
 
-const podSpec = ref<UIPodTemplate>({
+const podSpec = ref<PodTemplate>({
+  id:         null,
   apiVersion: '',
   kind:       '',
   metadata:   {
-    namespace:   '',
-    name:        '',
-    labels:      { app: '' },
-    annotations: { 'field.cattle.io/description': null },
+    namespace:       '',
+    name:            '',
+    labels:          { app: '' },
+    annotations:     { 'field.cattle.io/description': null },
+    fields:          [],
+    resourceVersion: null
   },
   spec: {
     containers: [
       {
-        templateId: crypto.randomUUID(),
-        name:       '',
-        image:      '',
-        ports:      []
+        templateId:               crypto.randomUUID(),
+        name:                     '',
+        image:                    '',
+        ports:                    [],
+        imagePullPolicy:          null,
+        resources:                undefined,
+        terminationMessagePath:   null,
+        terminationMessagePolicy: null,
+        volumeMounts:             []
       }
-    ]
+    ],
+    affinity:                      undefined,
+    dnsPolicy:                     null,
+    enableServiceLinks:            null,
+    nodeName:                      null,
+    preemptionPolicy:              null,
+    priority:                      null,
+    restartPolicy:                 null,
+    schedulerName:                 null,
+    securityContext:               undefined,
+    serviceAccount:                null,
+    serviceAccountName:            null,
+    terminationGracePeriodSeconds: null,
+    tolerations:                   [],
+    volumes:                       [],
+    imagePullSecrets:              [],
+    initContainers:                []
   },
 });
 const podSpecYaml = ref();
@@ -79,10 +95,15 @@ const updateYaml = (value: string) => {
 
 const addContainer = () => {
   podSpec.value.spec.containers.push({
-    templateId: crypto.randomUUID(),
-    name:       `container-${ crypto.randomUUID().split('-')[0] }`,
-    image:      '',
-    ports:      []
+    templateId:               crypto.randomUUID(),
+    name:                     `container-${ crypto.randomUUID().split('-')[0] }`,
+    image:                    '',
+    ports:                    [],
+    imagePullPolicy:          null,
+    resources:                undefined,
+    terminationMessagePath:   null,
+    terminationMessagePolicy: null,
+    volumeMounts:             []
   });
   podSpecYaml.value = json_to_yaml(podSpec.value);
 };

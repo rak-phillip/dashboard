@@ -2,8 +2,6 @@ mod models;
 
 use wasm_bindgen::prelude::*;
 use wee_alloc::WeeAlloc;
-use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 use uuid::Uuid;
 use crate::models::ui;
 use crate::models::yaml;
@@ -47,6 +45,7 @@ pub fn yaml_to_json(input: &str) -> Result<JsValue, JsValue> {
     let pod_yaml: yaml::PodTemplateYaml = serde_yaml::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
     let pod_json = ui::PodTemplate {
+        id: None,
         api_version: pod_yaml.api_version,
         kind: pod_yaml.kind,
         metadata: pod_yaml.metadata,
@@ -58,8 +57,29 @@ pub fn yaml_to_json(input: &str) -> Result<JsValue, JsValue> {
                     image: container.image,
                     ports: container.ports,
                     template_id: Uuid::new_v4().to_string(),
+                    image_pull_policy: None,
+                    resources: None,
+                    termination_message_path: None,
+                    termination_message_policy: None,
+                    volume_mounts: vec![],
                 })
                 .collect(),
+            affinity: serde_json::json!({}),
+            dns_policy: None,
+            enable_service_links: None,
+            node_name: None,
+            preemption_policy: None,
+            priority: None,
+            restart_policy: None,
+            scheduler_name: None,
+            security_context: None,
+            service_account: None,
+            service_account_name: None,
+            termination_grace_period_seconds: None,
+            tolerations: None,
+            volumes: vec![],
+            image_pull_secrets: vec![],
+            init_containers: vec![],
         },
     };
 
@@ -88,7 +108,8 @@ pub async fn save(input: JsValue, url: String, csrf: String) -> Result<JsValue, 
                     name
                 ),
             }),
-            annotations: serde_json::json!({}),
+            annotations: serde_json::from_value(serde_json::to_value(json_value.metadata.annotations).unwrap_or_default()).unwrap(),
+            resource_version: None,
         },
         spec: api::PodSpecPayload {
             containers: json_value.spec.containers.into_iter().map(|c| {
@@ -138,6 +159,7 @@ pub async fn get(url: String, namespace: String, name: String, csrf: String) -> 
         serde_json::from_str(&text).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
     let pod_json = ui::PodTemplate {
+        id: Some(pod_response.id),
         api_version: pod_response.api_version,
         kind: pod_response.kind,
         metadata: ui::Metadata {
@@ -150,6 +172,8 @@ pub async fn get(url: String, namespace: String, name: String, csrf: String) -> 
                     .unwrap_or_default(),
             },
             annotations: pod_response.metadata.annotations,
+            resource_version: Some(pod_response.metadata.resource_version),
+            fields: Some(pod_response.metadata.fields),
         },
         spec: ui::Spec {
             containers: pod_response
@@ -167,8 +191,29 @@ pub async fn get(url: String, namespace: String, name: String, csrf: String) -> 
                             container_port: port.container_port,
                         })
                         .collect(),
+                    image_pull_policy: Some(container.image_pull_policy),
+                    resources: Some(container.resources),
+                    termination_message_path: Some(container.termination_message_path),
+                    termination_message_policy: Some(container.termination_message_policy),
+                    volume_mounts: container.volume_mounts,
                 })
                 .collect(),
+            affinity: Some(pod_response.spec.affinity).unwrap_or_default(),
+            dns_policy: Some(pod_response.spec.dns_policy),
+            enable_service_links: Some(pod_response.spec.enable_service_links),
+            node_name: Some(pod_response.spec.node_name),
+            preemption_policy: Some(pod_response.spec.preemption_policy),
+            priority: Some(pod_response.spec.priority),
+            restart_policy: Some(pod_response.spec.restart_policy),
+            scheduler_name: Some(pod_response.spec.scheduler_name),
+            security_context: Some(pod_response.spec.security_context),
+            service_account: Some(pod_response.spec.service_account),
+            service_account_name: Some(pod_response.spec.service_account_name),
+            termination_grace_period_seconds: Some(pod_response.spec.termination_grace_period_seconds),
+            tolerations: Some(pod_response.spec.tolerations),
+            volumes: Some(pod_response.spec.volumes).unwrap_or_default(),
+            image_pull_secrets: pod_response.spec.image_pull_secrets.unwrap_or_default(),
+            init_containers: pod_response.spec.init_containers.unwrap_or_default(),
         },
     };
 
