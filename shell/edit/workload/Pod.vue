@@ -2,9 +2,7 @@
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import init, {
-  new_pod, json_to_yaml, yaml_to_json, save, get, update
-} from 'rancher_yaml';
+import init, { PodTemplate as Pod } from 'rancher_yaml';
 import { set } from 'lodash';
 
 import { CSRF } from '@shell/config/cookies';
@@ -69,9 +67,9 @@ init().then((_wasm) => {
       podSpec.value = result;
     });
   } else {
-    podSpec.value = new_pod();
+    podSpec.value = Pod.new_pod();
   }
-  podSpecYaml.value = json_to_yaml(podSpec.value);
+  podSpecYaml.value = Pod.json_to_yaml(podSpec.value);
 });
 
 const shouldUpdateYaml = ref(true);
@@ -79,7 +77,7 @@ const updateSpec = (key: string, value: string) => {
   shouldUpdateYaml.value = false;
 
   set(podSpec.value, key, value);
-  podSpecYaml.value = json_to_yaml(podSpec.value);
+  podSpecYaml.value = Pod.json_to_yaml(podSpec.value);
 };
 
 const updateYaml = (value: string) => {
@@ -90,7 +88,7 @@ const updateYaml = (value: string) => {
   }
 
   podSpecYaml.value = value;
-  podSpec.value = yaml_to_json(podSpecYaml.value);
+  podSpec.value = Pod.yaml_to_json(podSpecYaml.value);
 };
 
 const addContainer = () => {
@@ -105,14 +103,14 @@ const addContainer = () => {
     terminationMessagePolicy: null,
     volumeMounts:             []
   });
-  podSpecYaml.value = json_to_yaml(podSpec.value);
+  podSpecYaml.value = Pod.json_to_yaml(podSpec.value);
 };
 
 const removeContainer = (containerId: string) => {
   podSpec.value.spec.containers = podSpec.value.spec.containers.filter((container) => {
     return container.templateId !== containerId;
   });
-  podSpecYaml.value = json_to_yaml(podSpec.value);
+  podSpecYaml.value = Pod.json_to_yaml(podSpec.value);
 };
 
 const store = useStore();
@@ -123,12 +121,12 @@ const csrf = store.getters['cookies/get']({ key: CSRF, options });
 const savePod = async() => {
   try {
     if (props.mode === _EDIT) {
-      await update(podSpec.value, 'https://127.0.0.1:8005', 'default', 'prak-test1', csrf);
+      await Pod.update(podSpec.value, 'https://127.0.0.1:8005', 'default', 'prak-test1', csrf);
 
       return;
     }
 
-    await save(podSpec.value, 'https://127.0.0.1:8005', csrf);
+    await Pod.save(podSpec.value, 'https://127.0.0.1:8005', csrf);
   } catch (err) {
     console.error('FAIL POST', { err });
   } finally {
@@ -147,7 +145,7 @@ const savePod = async() => {
 
 const getPod = async() => {
   try {
-    const result = await get('https://127.0.0.1:8005', 'default', 'prak-test1', csrf);
+    const result = await Pod.get('https://127.0.0.1:8005', 'default', 'prak-test1', csrf);
 
     return result;
   } catch (err) {
