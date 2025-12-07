@@ -25,10 +25,11 @@ impl PodTemplate {
         Ok(yaml)
     }
 
-    pub fn yaml_to_json(input: &str) -> Result<JsValue, JsValue> {
+    pub fn yaml_to_json(current: JsValue, input: &str) -> Result<JsValue, JsValue> {
+        let mut pod: ui::PodTemplate = serde_wasm_bindgen::from_value(current)?;
         let pod_yaml: yaml::PodTemplateYaml = serde_yaml::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-        let pod_json: ui::PodTemplate = pod_yaml.into();
-        let json= serde_wasm_bindgen::to_value(&pod_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
+        pod.apply_yaml_patch(pod_yaml);
+        let json= serde_wasm_bindgen::to_value(&pod).map_err(|e| JsValue::from_str(&e.to_string()))?;
         Ok(json)
     }
 

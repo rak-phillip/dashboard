@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, toValue } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import init, { PodTemplate as Pod } from 'rancher_yaml';
@@ -88,7 +88,7 @@ const updateYaml = (value: string) => {
   }
 
   podSpecYaml.value = value;
-  podSpec.value = Pod.yaml_to_json(podSpecYaml.value);
+  podSpec.value = Pod.yaml_to_json(toValue(podSpec), toValue(podSpecYaml));
 };
 
 const addContainer = () => {

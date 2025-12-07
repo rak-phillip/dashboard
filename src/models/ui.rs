@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use uuid::Uuid;
+use crate::models::yaml;
 
 #[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
@@ -174,6 +175,20 @@ impl PodTemplate  {
                 service_account_name: None,
                 termination_grace_period_seconds: None,
                 tolerations: None,
+            }
+        }
+    }
+
+    pub fn apply_yaml_patch(&mut self, patch: yaml::PodTemplateYaml) {
+        self.metadata.namespace = patch.metadata.namespace;
+        self.metadata.name = patch.metadata.name;
+        self.metadata.labels = patch.metadata.labels;
+        self.metadata.annotations = patch.metadata.annotations;
+        for (i, container) in patch.spec.containers.into_iter().enumerate() {
+            if let Some(pod_template_container) = self.spec.containers.get_mut(i) {
+                pod_template_container.name = container.name;
+                pod_template_container.image = container.image;
+                pod_template_container.ports = container.ports;
             }
         }
     }
