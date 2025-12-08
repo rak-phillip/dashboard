@@ -120,11 +120,13 @@ const store = useStore();
 const router = useRouter();
 const options = { parseJSON: false };
 const csrf = store.getters['cookies/get']({ key: CSRF, options });
+const namespace = router.currentRoute.value.params.namespace;
+const id = router.currentRoute.value.params.id;
 
 const savePod = async() => {
   try {
     if (props.mode === _EDIT) {
-      await update(podSpec.value, 'https://127.0.0.1:8005', 'default', 'prak-test1', csrf);
+      await update(podSpec.value, 'https://127.0.0.1:8005', namespace, id, csrf);
 
       return;
     }
@@ -148,12 +150,16 @@ const savePod = async() => {
 
 const getPod = async() => {
   try {
-    const result = await get('https://127.0.0.1:8005', 'default', 'prak-test1', csrf);
+    const result = await get('https://127.0.0.1:8005', namespace, id, csrf);
 
     return result;
   } catch (err) {
     console.error('FAIL GET', { err });
   }
+};
+
+const cancel = () => {
+  router.back();
 };
 </script>
 
@@ -226,6 +232,12 @@ const getPod = async() => {
     <rc-button @click="savePod">
       Save
     </rc-button>
+    <rc-button
+      secondary
+      @click="cancel"
+    >
+      Cancel
+    </rc-button>
   </div>
 </template>
 
@@ -284,5 +296,6 @@ const getPod = async() => {
   flex-direction: row-reverse;
   position: sticky;
   bottom: 1rem;
+  gap: 1rem;
 }
 </style>
