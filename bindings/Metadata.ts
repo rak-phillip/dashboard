@@ -2,4 +2,4 @@
 import type { Annotations } from "./Annotations";
 import type { Labels } from "./Labels";
 
-export type Metadata = { fields: (any | undefined)[], namespace: string, name: string, labels: Labels, annotations: Annotations, resourceVersion: string | null, };
+export type Metadata = { fields: (any | undefined)[], namespace: string, name: string, labels: Labels, annotations: Annotations, resourceVersion: string | null, uid: string | null, managedFields: any[], creationTimestamp: string | null, generation: bigint | null, };

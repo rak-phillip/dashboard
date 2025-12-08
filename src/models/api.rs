@@ -187,4 +187,5 @@ pub struct PodContainerResponse {
 pub struct PortResponse {
     #[serde(rename = "containerPort")]
     pub container_port: u16,
+    pub protocol: Option<String>,
 }

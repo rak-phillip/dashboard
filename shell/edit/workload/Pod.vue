@@ -67,11 +67,12 @@ init().then((_wasm) => {
   if (props.mode === _EDIT) {
     getPod().then((result) => {
       podSpec.value = result;
+      podSpecYaml.value = json_to_yaml(podSpec.value);
     });
   } else {
     podSpec.value = new_pod();
+    podSpecYaml.value = json_to_yaml(podSpec.value);
   }
-  podSpecYaml.value = json_to_yaml(podSpec.value);
 });
 
 const shouldUpdateYaml = ref(true);
@@ -157,7 +158,7 @@ const getPod = async() => {
 </script>
 
 <template>
-  <pre v-if="true">{{ podSpec }}</pre>
+  <pre v-if="false">{{ podSpec }}</pre>
   <div class="form-container">
     <div class="form">
       <div class="namespace-form">

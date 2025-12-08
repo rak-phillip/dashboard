@@ -1,4 +1,5 @@
 use uuid::Uuid;
+use std::collections::HashMap;
 use crate::models::ui::PodTemplate;
 use crate::models::{api, ui, yaml};
 use crate::models::api::{PodPayload, PodResponse};
@@ -6,19 +7,82 @@ use crate::models::yaml::PodTemplateYaml;
 
 impl From<PodTemplate> for PodTemplateYaml {
     fn from(pod_template: PodTemplate) -> Self {
+        let labels = {
+            let mut map = HashMap::new();
+            if let Some(selector) = pod_template
+                .metadata
+                .labels
+                .workload_selector
+                .clone() {
+                    map.insert("workload.user.cattle.io/workloadselector".to_string(), selector);
+                }
+            if map.is_empty() { None } else { Some(map) }
+        };
+
+        let annotations = {
+            let mut map = HashMap::new();
+            if let Some(desc) = pod_template
+                .metadata
+                .annotations
+                .description
+                .clone()
+                {
+                    map.insert("field.cattle.io/description".to_string(), desc);
+                }
+            if map.is_empty() { None } else { Some(map) }
+        };
+
         PodTemplateYaml {
             api_version: pod_template.api_version,
             kind: pod_template.kind,
-            metadata: pod_template.metadata,
+            metadata: yaml::MetadataYaml {
+                fields: pod_template.metadata.fields,
+                namespace: pod_template.metadata.namespace,
+                name: pod_template.metadata.name,
+                labels,
+                annotations,
+                resource_version: pod_template.metadata.resource_version,
+                creation_timestamp: pod_template.metadata.creation_timestamp,
+                generation: pod_template.metadata.generation,
+                managed_fields: pod_template.metadata.managed_fields,
+                uid: pod_template.metadata.uid,
+            },
             spec: yaml::SpecYaml {
                 containers: pod_template.spec.containers
                     .into_iter()
                     .map(|container| yaml::ContainerYaml {
                         name: container.name,
                         image: container.image,
-                        ports: container.ports,
+                        ports: container.ports
+                            .into_iter()
+                            .map(|port|yaml::PortYaml {
+                                container_port: port.container_port,
+                                protocol: port.protocol,
+                            })
+                            .collect(),
+                        image_pull_policy: container.image_pull_policy,
+                        resources: container.resources,
+                        termination_message_path: container.termination_message_path,
+                        termination_message_policy: container.termination_message_policy,
+                        volume_mounts: container.volume_mounts.into(),
                     })
                     .collect(),
+                affinity: pod_template.spec.affinity.into(),
+                dns_policy: pod_template.spec.dns_policy,
+                enable_service_links: pod_template.spec.enable_service_links,
+                node_name: pod_template.spec.node_name,
+                preemption_policy: pod_template.spec.preemption_policy,
+                priority: pod_template.spec.priority,
+                restart_policy: pod_template.spec.restart_policy,
+                scheduler_name: pod_template.spec.scheduler_name,
+                security_context: pod_template.spec.security_context,
+                service_account: pod_template.spec.service_account,
+                service_account_name: pod_template.spec.service_account_name,
+                termination_grace_period_seconds: pod_template.spec.termination_grace_period_seconds,
+                tolerations: pod_template.spec.tolerations,
+                volumes: pod_template.spec.volumes.into(),
+                image_pull_secrets: pod_template.spec.image_pull_secrets.into(),
+                init_containers: pod_template.spec.init_containers.into(),
             },
         }
     }
@@ -30,38 +94,67 @@ impl From<PodTemplateYaml> for PodTemplate {
             id: None,
             api_version: pod_template_yaml.api_version,
             kind: pod_template_yaml.kind,
-            metadata: pod_template_yaml.metadata,
+            metadata: ui::Metadata {
+                namespace: pod_template_yaml.metadata.namespace,
+                name: pod_template_yaml.metadata.name,
+                labels: ui::Labels {
+                    workload_selector: pod_template_yaml.metadata.labels
+                        .as_ref()
+                        .and_then(|labels| labels.get("workload.user.cattle.io/workloadselector").cloned())
+                        .unwrap_or_default()
+                        .into()
+                },
+                annotations: ui::Annotations {
+                    description: pod_template_yaml.metadata.annotations
+                        .as_ref()
+                        .and_then(|annotations| annotations.get("field.cattle.io/description").cloned())
+                        .unwrap_or_default()
+                        .into()
+                },
+                resource_version: Some(pod_template_yaml.metadata.resource_version).unwrap_or_default(),
+                fields: Some(pod_template_yaml.metadata.fields).unwrap_or_default(),
+                uid: pod_template_yaml.metadata.uid,
+                managed_fields: pod_template_yaml.metadata.managed_fields,
+                creation_timestamp: pod_template_yaml.metadata.creation_timestamp,
+                generation: pod_template_yaml.metadata.generation,
+            },
             spec: ui::Spec {
                 containers: pod_template_yaml.spec.containers
                     .into_iter()
                     .map(|container| ui::Container {
                         name: container.name,
                         image: container.image,
-                        ports: container.ports,
+                        ports: container.ports
+                            .into_iter()
+                            .map(|port| ui::Port {
+                                container_port: port.container_port,
+                                protocol: port.protocol,
+                            })
+                            .collect(),
                         template_id: Uuid::new_v4().to_string(),
-                        image_pull_policy: None,
-                        resources: None,
-                        termination_message_path: None,
-                        termination_message_policy: None,
-                        volume_mounts: vec![],
+                        image_pull_policy: container.image_pull_policy,
+                        resources: container.resources,
+                        termination_message_path: container.termination_message_path,
+                        termination_message_policy: container.termination_message_policy,
+                        volume_mounts: container.volume_mounts.unwrap_or_default(),
                     })
                     .collect(),
-                affinity: serde_json::json!({}),
-                dns_policy: None,
-                enable_service_links: None,
-                node_name: None,
-                preemption_policy: None,
-                priority: None,
-                restart_policy: None,
-                scheduler_name: None,
-                security_context: None,
-                service_account: None,
-                service_account_name: None,
-                termination_grace_period_seconds: None,
-                tolerations: None,
-                volumes: vec![],
-                image_pull_secrets: vec![],
-                init_containers: vec![],
+                affinity: pod_template_yaml.spec.affinity.unwrap_or_default(),
+                dns_policy: pod_template_yaml.spec.dns_policy,
+                enable_service_links: pod_template_yaml.spec.enable_service_links,
+                node_name: pod_template_yaml.spec.node_name,
+                preemption_policy: pod_template_yaml.spec.preemption_policy,
+                priority: pod_template_yaml.spec.priority,
+                restart_policy: pod_template_yaml.spec.restart_policy,
+                scheduler_name: pod_template_yaml.spec.scheduler_name,
+                security_context: pod_template_yaml.spec.security_context,
+                service_account: pod_template_yaml.spec.service_account,
+                service_account_name: pod_template_yaml.spec.service_account_name,
+                termination_grace_period_seconds: pod_template_yaml.spec.termination_grace_period_seconds,
+                tolerations: pod_template_yaml.spec.tolerations,
+                volumes: pod_template_yaml.spec.volumes.unwrap_or_default(),
+                image_pull_secrets: pod_template_yaml.spec.image_pull_secrets.unwrap_or_default(),
+                init_containers: pod_template_yaml.spec.init_containers.unwrap_or_default(),
             },
         }
     }
@@ -74,6 +167,10 @@ impl From<PodResponse> for PodTemplate {
             api_version: pod_response.api_version,
             kind: pod_response.kind,
             metadata: ui::Metadata {
+                uid: Some(pod_response.metadata.uid),
+                managed_fields: pod_response.metadata.managed_fields.into(),
+                creation_timestamp: Some(pod_response.metadata.creation_timestamp),
+                generation: Some(pod_response.metadata.generation),
                 namespace: pod_response.metadata.namespace,
                 name: pod_response.metadata.name,
                 labels: ui::Labels {
@@ -101,6 +198,7 @@ impl From<PodResponse> for PodTemplate {
                             .into_iter()
                             .map(|port| ui::Port {
                                 container_port: port.container_port,
+                                protocol: port.protocol,
                             })
                             .collect(),
                         image_pull_policy: Some(container.image_pull_policy),

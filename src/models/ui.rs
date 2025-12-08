@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use uuid::Uuid;
-use crate::models::yaml;
+use crate::models::{ui, yaml};
 
 #[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
@@ -28,6 +28,14 @@ pub struct Metadata {
     #[serde(rename = "resourceVersion")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resource_version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uid: Option<String>,
+    #[serde(rename = "managedFields")]
+    #[ts(type = "any[]")]
+    pub managed_fields: Option<Vec<serde_json::Value>>,
+    #[serde(rename = "creationTimestamp")]
+    pub creation_timestamp: Option<String>,
+    pub generation: Option<i64>,
 }
 
 #[derive(Serialize, Deserialize, TS)]
@@ -127,6 +135,7 @@ pub struct Container {
 pub struct Port {
     #[serde(rename = "containerPort")]
     pub container_port: u16,
+    pub protocol: Option<String>,
 }
 
 impl PodTemplate  {
@@ -136,6 +145,10 @@ impl PodTemplate  {
             api_version: "v1".to_string(),
             kind: "Pod".to_string(),
             metadata: Metadata {
+                uid: None,
+                managed_fields: None,
+                creation_timestamp: None,
+                generation: None,
                 namespace: "default".to_string(),
                 name: "".to_string(),
                 labels: Labels {
@@ -151,6 +164,7 @@ impl PodTemplate  {
                     image: "".to_string(),
                     ports: vec![Port {
                         container_port: 80,
+                        protocol: None,
                     }],
                     template_id: Uuid::new_v4().to_string(),
                     volume_mounts: vec![],
@@ -182,13 +196,31 @@ impl PodTemplate  {
     pub fn apply_yaml_patch(&mut self, patch: yaml::PodTemplateYaml) {
         self.metadata.namespace = patch.metadata.namespace;
         self.metadata.name = patch.metadata.name;
-        self.metadata.labels = patch.metadata.labels;
-        self.metadata.annotations = patch.metadata.annotations;
+        self.metadata.labels = ui::Labels {
+            workload_selector: patch.metadata.labels
+                .as_ref()
+                .and_then(|labels| labels.get("workload.user.cattle.io/workloadselector").cloned())
+                .unwrap_or_default()
+                .into()
+        };
+        self.metadata.annotations = ui::Annotations {
+            description: patch.metadata.annotations
+                .as_ref()
+                .and_then(|annotations| annotations.get("field.cattle.io/description").cloned())
+                .unwrap_or_default()
+                .into()
+        };
         for (i, container) in patch.spec.containers.into_iter().enumerate() {
             if let Some(pod_template_container) = self.spec.containers.get_mut(i) {
                 pod_template_container.name = container.name;
                 pod_template_container.image = container.image;
-                pod_template_container.ports = container.ports;
+                pod_template_container.ports = container.ports
+                    .into_iter()
+                    .map(|port| ui::Port {
+                        container_port: port.container_port,
+                        protocol: port.protocol,
+                    })
+                    .collect();
             }
         }
     }
