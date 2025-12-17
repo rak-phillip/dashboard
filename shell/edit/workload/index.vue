@@ -75,6 +75,7 @@ export default {
 </script>
 
 <template>
+  <h1>WORKLOAD</h1>
   <Loading v-if="$fetchState.pending" />
   <form
     v-else

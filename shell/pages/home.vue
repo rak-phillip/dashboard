@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { mapPref, AFTER_LOGIN_ROUTE, HIDE_HOME_PAGE_CARDS } from '@shell/store/prefs';
 import BannerGraphic from '@shell/components/BannerGraphic.vue';
 import IndentedPanel from '@shell/components/IndentedPanel.vue';
