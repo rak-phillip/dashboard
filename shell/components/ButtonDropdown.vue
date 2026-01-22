@@ -1,14 +1,21 @@
 <script>
-import { createPopper } from '@popperjs/core';
 import { get } from '@shell/utils/object';
 import isString from 'lodash/isString';
-import VueSelectOverrides from '@shell/mixins/vue-select-overrides';
+import { RcDropdown, RcDropdownTrigger, RcDropdownItem, RcDropdownLabel } from '@components/RcDropdown';
+import { RcIcon } from '@components/RcIcon';
 
 export default {
   emits: ['dd-button-action', 'click-action'],
 
-  mixins: [VueSelectOverrides],
-  props:  {
+  components: {
+    RcDropdown,
+    RcDropdownTrigger,
+    RcDropdownItem,
+    RcIcon,
+    RcDropdownLabel,
+  },
+
+  props: {
     buttonLabel: {
       default: '',
       type:    String,
@@ -61,63 +68,21 @@ export default {
       type: Function
     },
   },
+
   data() {
-    return { focused: false };
+    return {
+      focused: false,
+      isOpen:  false
+    };
+  },
+
+  computed: {
+    isSmall() {
+      return this.size === 'sm';
+    }
   },
 
   methods: {
-    withPopper(dropdownList, component, { width }) {
-      /**
-       * We need to explicitly define the dropdown width since
-       * it is usually inherited from the parent with CSS.
-       */
-      const componentWidth = component.$refs.search.clientWidth;
-      const dropWidth = dropdownList.clientWidth;
-
-      if (dropWidth < componentWidth) {
-        dropdownList.style.width = `${ componentWidth }px`;
-      } else {
-        dropdownList.style.width = 'min-content';
-      }
-
-      /**
-       * Here we position the dropdownList relative to the $refs.toggle Element.
-       *
-       * The 'offset' modifier aligns the dropdown so that the $refs.toggle and
-       * the dropdownList overlap by 1 pixel.
-       *
-       * The 'toggleClass' modifier adds a 'drop-up' class to the Vue Select
-       * wrapper so that we can set some styles for when the dropdown is placed
-       * above.
-       */
-      const popper = createPopper(component.$refs.toggle, dropdownList, {
-        placement: this.placement || 'bottom-start',
-        modifiers: [
-          {
-            name:    'offset',
-            options: { offset: [-2, 2] },
-          },
-          {
-            name:    'toggleClass',
-            enabled: true,
-            phase:   'write',
-            fn({ state }) {
-              component.$el.setAttribute('x-placement', state.placement);
-            },
-          },
-        ],
-      });
-
-      /**
-       * To prevent memory leaks Popper needs to be destroyed.
-       * If you return function, it will be called just before dropdown is removed from DOM.
-       */
-      return () => popper.destroy();
-    },
-    ddButtonAction(option) {
-      this.focusSearch();
-      this.$emit('dd-button-action', option);
-    },
     getOptionLabel(option) {
       if (isString(option)) {
         return option;
@@ -154,165 +119,57 @@ export default {
       this.focused = false;
     },
 
-    focusSearch() {
-      this.$nextTick(() => {
-        const el = this.$refs['button-dropdown'].searchEl;
-
-        if ( el ) {
-          el.focus();
-        }
-      });
+    ddButtonAction(option) {
+      this.$emit('dd-button-action', option);
     },
-    get,
+
+    handleItemClick(option) {
+      if (this.selectable(option)) {
+        this.$emit('click-action', option);
+        this.$emit('dd-button-action', option);
+      }
+    },
   },
 };
 </script>
 
 <template>
-  <v-select
-    ref="button-dropdown"
-    class="button-dropdown btn"
-    :class="{
-      disabled,
-      focused,
-    }"
-    v-bind="$attrs"
-    :append-to-body="true"
-    :calculate-position="withPopper"
-    :searchable="false"
-    :clearable="false"
-    :close-on-select="closeOnSelect"
-    :filterable="false"
-    :modelValue="buttonLabel"
-    :options="dropdownOptions"
-    :map-keydown="mappedKeys"
-    :get-option-key="
-      (opt) => (optionKey ? get(opt, optionKey) : getOptionLabel(opt))
-    "
-    :get-option-label="(opt) => getOptionLabel(opt)"
-    :selectable="selectable"
-    @search:blur="onBlur"
-    @search:focus="onFocus"
-    @update:modelValue="$emit('click-action', $event)"
+  <rc-dropdown
+    :placement="placement"
+    @update:open="isOpen = $event"
   >
-    <template #no-options>
-      <slot name="no-options" />
-    </template>
-
-    <template #selected-option="option">
-      <button
-        tabindex="-1"
-        type="button"
-        class="dropdown-button-two btn"
-        data-testid="dropdown-button"
-        @click="ddButtonAction(option)"
-        @focus="focusSearch"
-      >
-        {{ option.label }}
-      </button>
-    </template>
-    <!-- Pass down templates provided by the caller -->
-    <template
-      v-for="(_, slot) of $slots"
-      #[slot]="scope"
-      :key="slot"
+    <rc-dropdown-trigger
+      :disabled="disabled"
+      :aria-label="buttonLabel"
+      secondary
+      :small="isSmall"
     >
-      <template v-if="slot !== 'selected-option' && typeof $slots[slot] === 'function'">
-        <slot
-          :name="slot"
-          v-bind="scope"
+      {{ buttonLabel }}
+      <template #after>
+        <rc-icon
+          type="chevron-down"
         />
       </template>
+    </rc-dropdown-trigger>
+
+    <template #dropdownCollection>
+      <rc-dropdown-label
+        v-if="!dropdownOptions.length"
+        role="none"
+        tabindex="-1"
+      >
+        <slot name="no-options">
+          <!--Empty slot content-->
+        </slot>
+      </rc-dropdown-label>
+      <rc-dropdown-item
+        v-for="(option, index) in dropdownOptions"
+        :key="optionKey ? get(option, optionKey) : index"
+        :disabled="option.disabled || false"
+        @click="handleItemClick(option)"
+      >
+        <span>{{ getOptionLabel(option) }}</span>
+      </rc-dropdown-item>
     </template>
-  </v-select>
+  </rc-dropdown>
 </template>
-
-<style lang='scss' scoped>
-.button-dropdown.btn-sm {
-  :deep() > .vs__dropdown-toggle {
-    .vs__actions {
-      &:after {
-        font-size: 1.6rem;
-      }
-    }
-  }
-}
-.button-dropdown.btn-lg {
-  :deep() > .vs__dropdown-toggle {
-    .vs__actions {
-      &:after {
-        font-size: 2.6rem;
-      }
-    }
-  }
-}
-.button-dropdown {
-  background: var(--accent-btn);
-  border: solid 1px var(--link);
-  color: var(--link);
-  padding: 0;
-
-  &.vs--open :deep() {
-    outline: none;
-    box-shadow: none;
-  }
-
-  &:hover {
-    :deep() .vs__dropdown-toggle .vs__actions,
-    :deep() .vs__selected-options {
-      background: var(--accent-btn-hover);
-    }
-    :deep() .vs__selected-options .vs__selected button {
-      background-color: transparent;
-      color: var(--accent-btn-hover-text);
-    }
-    :deep() .vs__dropdown-toggle .vs__actions {
-      &:after {
-        color: var(--accent-btn-hover-text);
-      }
-    }
-  }
-
-  :deep() > .vs__dropdown-toggle {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 75% 25%;
-    border: none;
-    background: transparent;
-
-    .vs__actions {
-
-      &:after {
-        color: var(--link);
-        line-height: 1;
-      }
-    }
-  }
-
-  :deep() .vs__selected-options {
-    .vs__selected {
-      margin: unset;
-      border: none;
-
-      button {
-        border: none;
-        background: transparent;
-        color: var(--link);
-      }
-    }
-    .vs__search {
-      // if you need to keep the dd open you can toggle these on and off
-      // display: none;
-      // visibility: hidden;
-      position: absolute;
-      opacity: 0;
-      padding: 0;
-    }
-  }
-
-  :deep() .vs__dropdown-menu {
-    min-width: unset;
-    width: fit-content;
-  }
-}
-</style>
