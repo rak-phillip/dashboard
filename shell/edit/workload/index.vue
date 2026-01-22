@@ -4,6 +4,7 @@ import FormValidation from '@shell/mixins/form-validation';
 import WorkLoadMixin from '@shell/edit/workload/mixins/workload';
 import { mapGetters } from 'vuex';
 import { FORM_TYPES } from '@shell/components/form/Security';
+import { NODE } from '@shell/config/types';
 
 export default {
   name:   'Workload',
@@ -21,10 +22,11 @@ export default {
     },
   },
   data() {
+    const inStore = this.$store.getters['currentStore'](NODE);
+    const canNode = this.$store.getters[`${ inStore }/canList`](NODE);
+
     return {
-      selectedName: null,
-      errors:       [],
-      FORM_TYPES
+      selectedName: null, errors: [], canNode, FORM_TYPES
     };
   },
   computed: {
@@ -503,22 +505,23 @@ export default {
               name="podScheduling-pod"
               :weight="tabWeightMap['podScheduling']"
             >
+              <!-- TODO: RC PR document -->
               <PodAffinity
                 :mode="mode"
                 :value="podTemplateSpec"
-                :nodes="allNodeObjects"
                 :loading="isLoadingSecondaryResources"
               />
             </Tab>
             <Tab
+              v-if="canNode"
               :label="t('workload.container.titles.nodeScheduling')"
               name="nodeScheduling-pod"
               :weight="tabWeightMap['nodeScheduling']"
             >
+              <!-- TODO: RC PR document -->
               <NodeScheduling
                 :mode="mode"
                 :value="podTemplateSpec"
-                :nodes="workerNodes"
                 :loading="isLoadingSecondaryResources"
               />
             </Tab>
