@@ -5527,7 +5527,7 @@ plugins:
       prompt: This will lead you to the page where you can enable the Feature Flag needed to enable Extension support.
       featuresButton: Go to Feature Flags
       airgap: Air-gapped installations should NOT enable this feature
-      addRancherRepo: Add Official Rancher Extensions Repository
+      addRancherRepo: Add Rancher Prime Extensions Repository
       addPartnersRancherRepo: Add Partners Extensions Repository
     remove:
       label: Disable Extension Support
