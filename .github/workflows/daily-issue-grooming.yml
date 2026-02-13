@@ -108,7 +108,7 @@ jobs:
               const args = [
                 'models',
                 'run',
-                'gpt-4.1-mini',   // or whatever model ID is enabled for your repo
+                'openai/gpt-4.1',   // or whatever model ID is enabled for your repo
                 prompt,
               ];
 
