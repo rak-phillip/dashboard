@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # or 20
+          node-version: '22'
 
       - name: Groom issues with GitHub Models (JS)
         uses: actions/github-script@v8
@@ -30,27 +30,34 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            const { exec } = require('child_process');
-            const util = require('util');
-            const execAsync = util.promisify(exec);
-
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const ghToken = process.env.GH_TOKEN;
 
-            // Helper: run a shell command and return stdout as JSON if needed
-            async function runCmd(cmd, options = {}) {
-              core.debug(`Running: ${cmd}`);
-              const { stdout, stderr } = await execAsync(cmd, {
-                ...options,
+            async function runGhModels(input) {
+              const jsonInput = JSON.stringify(input).replace(/'/g, "'\"'\"'");
+              const cmd = 'gh';
+              const args = [
+                'models',
+                'run',
+                './prompts/issue-grooming.prompt.yml',
+                '--input',
+                jsonInput,
+              ];
+
+              const { exitCode, stdout, stderr } = await exec.getExecOutput(cmd, args, {
                 env: { ...process.env, GH_TOKEN: ghToken },
-                maxBuffer: 10 * 1024 * 1024,
               });
-              if (stderr) core.debug(`stderr: ${stderr}`);
-              return stdout;
+
+              if (stderr) {
+                core.debug(`gh stderr: ${stderr}`);
+              }
+              if (exitCode !== 0) {
+                throw new Error(`gh models run failed with exit code ${exitCode}`);
+              }
+              return stdout.trim();
             }
 
-            // 1) Get issues from last 24h via REST (Node/Octokit)
             const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
             core.info(`Fetching issues since ${since}`);
 
@@ -62,7 +69,7 @@ jobs:
               per_page: 100,
             });
 
-            const issues = issuesResp.data.filter(issue => !issue.pull_request);
+            const issues = issuesResp.data.filter((issue) => !issue.pull_request);
             core.info(`Found ${issues.length} issues to groom`);
 
             if (issues.length === 0) {
@@ -77,22 +84,17 @@ jobs:
 
               core.info(`Processing issue #${number}: ${title}`);
 
-              // 2) Call the reusable prompt file with gh models run
-              // Use --input JSON to satisfy the prompt's input_schema
-              const input = {
-                title,
-                body,
-              };
-
-              const cmd = `gh models run ./prompts/issue-grooming.prompt.yml --input '${JSON.stringify(input).replace(/'/g, "'\"'\"'")}'`;
-              const stdout = await runCmd(cmd);
+              const input = { title, body };
+              const stdout = await runGhModels(input);
               core.debug(`Model raw output: ${stdout}`);
 
               let result;
               try {
                 result = JSON.parse(stdout);
               } catch (err) {
-                core.warning(`Failed to parse model output for issue #${number}: ${err.message}`);
+                core.warning(
+                  `Failed to parse model output for issue #${number}: ${err.message}`,
+                );
                 continue;
               }
 
@@ -107,7 +109,6 @@ jobs:
                 commentBody = `### 🤖 Issue grooming questions\n\n${questions}\n\n_This comment was generated automatically to help gather the information needed to groom this issue._`;
               }
 
-              // 3) Post the comment
               await github.rest.issues.createComment({
                 owner,
                 repo,
@@ -115,7 +116,6 @@ jobs:
                 body: commentBody,
               });
 
-              // 4) Optional labels
               try {
                 if (isGroomed) {
                   await github.rest.issues.addLabels({
@@ -133,7 +133,8 @@ jobs:
                   });
                 }
               } catch (err) {
-                core.warning(`Failed to add labels on issue #${number}: ${err.message}`);
+                core.warning(
+                  `Failed to add labels on issue #${number}: ${err.message}`,
+                );
               }
             }
-
