@@ -6,26 +6,6 @@ model:
     max_tokens: 800
     temperature: 0.2
 
-input_schema:
-  type: object
-  properties:
-    title:
-      type: string
-    body:
-      type: string
-  required: [title, body]
-
-output_schema:
-  type: object
-  properties:
-    is_groomed:
-      type: boolean
-    analysis_markdown:
-      type: string
-    questions_markdown:
-      type: string
-  required: [is_groomed, analysis_markdown, questions_markdown]
-
 system: |
   You are an experienced engineering lead helping groom GitHub issues for a development team.
   Use the grooming checklist to determine whether each issue is sufficiently specified
@@ -73,20 +53,19 @@ system: |
   and repro steps with test data.
 
 user: |
-  Evaluate this GitHub issue against the grooming checklist.
+  Evaluate this GitHub issue against the grooming checklist and produce a JSON response.
 
-  Title:
-  {{title}}
+  Issue title:
+  {{ISSUE_TITLE}}
 
-  Body:
-  {{body}}
+  Issue body:
+  {{ISSUE_BODY}}
 
   Decide if this issue is adequately groomed for implementation.
 
-  Then, produce a JSON object with this exact structure:
+  Respond ONLY with a valid JSON object with this exact structure (no extra text before or after it):
   {
     "is_groomed": boolean,
-    "analysis_markdown": string,   // If groomed, summarize and suggest any refinements. If not groomed, you can still include partial analysis.
-    "questions_markdown": string   // If not groomed, ask targeted questions to gather missing details. If groomed, use an empty string.
+    "analysis_markdown": string,
+    "questions_markdown": string
   }
-
