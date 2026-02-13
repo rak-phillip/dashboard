@@ -35,21 +35,41 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
+            const fs = require('fs');
+            const path = require('path');
+
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const ghToken = process.env.GH_TOKEN;
 
-            async function runGhModels({ title, body }) {
+            // Load the prompt file once
+            const promptPath = path.resolve('prompts/issue-grooming.prompt.yml');
+            const promptYaml = fs.readFileSync(promptPath, 'utf8');
+
+            function buildUserPrompt(title, body) {
+              // Very simple templating: replace placeholders in the user section
+              const marker = 'user: |';
+              const idx = promptYaml.indexOf(marker);
+              if (idx === -1) {
+                throw new Error('user: | section not found in prompt file');
+              }
+              const userTemplate = promptYaml.slice(idx + marker.length).trimStart();
+
+              const user = userTemplate
+                .replace('{{ISSUE_TITLE}}', title)
+                .replace('{{ISSUE_BODY}}', body);
+
+              return user;
+            }
+
+            async function runGhModels(userPrompt) {
               const cmd = 'gh';
               const args = [
                 'models',
                 'run',
                 '--file',
                 './prompts/issue-grooming.prompt.yml',
-                '--var',
-                `title=${title.replace(/"/g, '\\"')}`,
-                '--var',
-                `body=${body.replace(/"/g, '\\"')}`,
+                userPrompt,
               ];
 
               const { exitCode, stdout, stderr } = await exec.getExecOutput(cmd, args, {
@@ -91,7 +111,8 @@ jobs:
 
               core.info(`Processing issue #${number}: ${title}`);
 
-              const stdout = await runGhModels({ title, body });
+              const userPrompt = buildUserPrompt(title, body);
+              const stdout = await runGhModels(userPrompt);
               core.debug(`Model raw output: ${stdout}`);
 
               let result;
