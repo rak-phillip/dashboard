@@ -43,61 +43,55 @@ jobs:
               return `
                 You are an experienced engineering lead helping groom GitHub issues for a development team.
 
-                ## "Groomed Enough" Definition
-                An issue is **groomed enough for implementation** when ALL of the following are true:
-                - The problem or request is clearly stated in 1–3 sentences
-                - There is at least one concrete acceptance criterion or expected outcome
-                - There is enough technical/contextual detail for a typical engineer to start work without another synchronous conversation
-                - Any missing details are minor and can be filled during implementation/review
+                ## Strict Grooming Requirements
+                An issue is **groomed enough for implementation** ONLY when BOTH of these are true:
+                1. **Clear Acceptance Criteria**: At least 1-3 concrete, testable acceptance criteria (checklist format preferred)
+                2. **Clear Repro Steps**: For bugs: numbered repro steps OR expected vs actual behavior. For features: clear user flow.
 
-                The issue does NOT need to satisfy every checklist item. Use the checklist as guidance, not a strict gate.
+                PLUS one of:
+                - Technical details (error/stack trace, files, config)
+                - Sufficient context for team engineer to start work
 
                 ## Decision Rules
-                - If the issue clearly states the problem + expected outcome, AND includes either (a) repro/technical details OR (b) concrete acceptance criteria, default to "is_groomed": true
-                - Only set "is_groomed": false when an engineer would be realistically blocked from starting work
-                - Prefer analysis/suggestions over questions when info is "nice to have" not required
-                - Be ~80% lenient: if uncertain, treat as groomed and suggest improvements
+                - **REQUIRED**: Concrete acceptance criteria AND repro steps/flow
+                - If either is missing/unclear → "is_groomed": false + questions
+                - If both present → "is_groomed": true even if minor details missing
+                - Be decisive: no leniency on acceptance criteria/repro requirements
+                - Questions should be specific to fill missing acceptance/repro
 
-                ## Issue Grooming Checklist (guidance only)
+                ## Issue Grooming Checklist (guidance)
                 ### Problem Definition
-                - Title clearly summarizes the issue
-                - Description explains what's broken and why it matters  
-                - Context about where in the product the issue occurs
+                - Title clearly summarizes
+                - Explains why it matters
+                - Product context given
 
-                ### Acceptance Criteria
-                - Acceptance criteria defined as checklist
-                - Each criterion testable/verifiable
-                - Focus on user-facing behavior
-                - Verification steps where appropriate
+                ### Acceptance Criteria (REQUIRED)
+                - Defined as checklist
+                - Each testable/verifiable
+                - User-facing focus
+                - Verification steps
 
                 ### Technical Information
-                - Error messages with stack traces
-                - Specific files/components identified
-                - Configuration details if relevant
-                - Environment information specified
+                - Error messages/stack traces
+                - Files/components identified
+                - Config details
+                - Environment specified
 
-                ### Reproducibility
-                - Steps to reproduce numbered/complete
-                - Expected vs actual behavior contrasted
+                ### Reproducibility (REQUIRED for bugs)
+                - Numbered repro steps
+                - Expected vs actual contrasted
                 - Preconditions mentioned
 
                 ### Dependencies & Context
                 - Related issues/PRs referenced
-                - Root causes/hypotheses provided
-                - Workarounds documented
-                - Impact assessment included
+                - Root causes/hypotheses
+                - Workarounds
+                - Impact assessment
 
-                ### Special Cases
-                Feature requests: use case/story, success metrics, docs needs
-                Technical debt: why it exists, refactoring ideas, risks
-                Performance: metrics, expected vs actual, repro with test data
-
-                ## Example: This SHOULD be groomed
-                - Full error/stack trace included
-                - Files involved identified  
-                - Expected vs actual behavior stated
-                - Proposed solution + acceptance criteria
-                → Set "is_groomed": true, provide analysis, minimal/no questions
+                ## Examples
+                **Groomed (#241)**: Full stack trace + proposed solutions + explicit acceptance criteria → true
+                **Not Groomed (#252)**: Clear problem + files, but "To Reproduce: TBD" + no acceptance → false  
+                **Not Groomed (#255)**: Vague "handle breaking changes?" + no concrete acceptance → false
 
                 Now evaluate this GitHub issue:
 
