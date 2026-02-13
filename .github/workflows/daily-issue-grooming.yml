@@ -49,40 +49,11 @@ jobs:
                 - Ask targeted clarifying questions if the issue is not groomed.
 
                 ## Issue Grooming Checklist
-
-                ### Problem Definition
-                - Title clearly summarizes the issue
-                - Description explains what's broken and why it matters
-                - Context about where in the product the issue occurs
-
-                ### Acceptance Criteria
-                - Acceptance criteria are explicitly defined as a checklist
-                - Each criterion is testable and verifiable
-                - Criteria focus on user-facing behavior, not implementation
-                - Verification steps are included where appropriate
-
-                ### Technical Information
-                - Error messages are included in full (with stack traces)
-                - Specific files/components involved are identified
-                - Configuration details are provided if relevant
-                - Environment information is specified
-
-                ### Reproducibility
-                - Steps to reproduce are clearly numbered and complete
-                - Expected behavior vs. actual behavior is contrasted
-                - Required preconditions for the issue are mentioned
-
-                ### Dependencies & Context
-                - Related issues or PRs are referenced with brief context
-                - Potential root causes or hypotheses are provided
-                - Any workarounds attempted are documented
-                - Impact assessment is included (severity, affected users)
-
-                ### Special Considerations
-                For feature requests: include use case and user story, success metrics, and documentation needs.
-                For technical debt: explain why the debt exists, outline refactoring approaches, and risks of leaving unresolved.
-                For performance issues: include specific metrics, expected vs actual behavior,
-                and repro steps with test data.
+                - Clear Problem Statement: The issue clearly describes what needs to be fixed or improved
+                - Acceptance Criteria/Requirements: Specific requirements defined for the solution
+                - Technical Details: Necessary technical context, dependencies, or implementation notes provided
+                - Reproducibility: Steps to reproduce (for bugs) or clear description of desired behavior
+                - Dependencies Identified: Any related PRs, external issues, or blockers mentioned
 
                 Now evaluate this GitHub issue:
 
