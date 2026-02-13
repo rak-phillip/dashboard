@@ -39,15 +39,17 @@ jobs:
             const repo = context.repo.repo;
             const ghToken = process.env.GH_TOKEN;
 
-            async function runGhModels(input) {
-              const jsonInput = JSON.stringify(input).replace(/'/g, "'\"'\"'");
+            async function runGhModels({ title, body }) {
               const cmd = 'gh';
               const args = [
                 'models',
                 'run',
+                '--file',
                 './prompts/issue-grooming.prompt.yml',
-                '--input',
-                jsonInput,
+                '--var',
+                `title=${title.replace(/"/g, '\\"')}`,
+                '--var',
+                `body=${body.replace(/"/g, '\\"')}`,
               ];
 
               const { exitCode, stdout, stderr } = await exec.getExecOutput(cmd, args, {
@@ -89,8 +91,7 @@ jobs:
 
               core.info(`Processing issue #${number}: ${title}`);
 
-              const input = { title, body };
-              const stdout = await runGhModels(input);
+              const stdout = await runGhModels({ title, body });
               core.debug(`Model raw output: ${stdout}`);
 
               let result;
