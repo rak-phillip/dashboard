@@ -24,6 +24,11 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install gh-models extension
+        run: gh extension install https://github.com/github/gh-models
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Groom issues with GitHub Models (JS)
         uses: actions/github-script@v8
         env:
