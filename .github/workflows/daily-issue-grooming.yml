@@ -1,0 +1,139 @@
+name: Daily issue grooming
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  models: read
+  id-token: write
+
+jobs:
+  groom-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' # or 20
+
+      - name: Groom issues with GitHub Models (JS)
+        uses: actions/github-script@v8
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const { exec } = require('child_process');
+            const util = require('util');
+            const execAsync = util.promisify(exec);
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const ghToken = process.env.GH_TOKEN;
+
+            // Helper: run a shell command and return stdout as JSON if needed
+            async function runCmd(cmd, options = {}) {
+              core.debug(`Running: ${cmd}`);
+              const { stdout, stderr } = await execAsync(cmd, {
+                ...options,
+                env: { ...process.env, GH_TOKEN: ghToken },
+                maxBuffer: 10 * 1024 * 1024,
+              });
+              if (stderr) core.debug(`stderr: ${stderr}`);
+              return stdout;
+            }
+
+            // 1) Get issues from last 24h via REST (Node/Octokit)
+            const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            core.info(`Fetching issues since ${since}`);
+
+            const issuesResp = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              since,
+              per_page: 100,
+            });
+
+            const issues = issuesResp.data.filter(issue => !issue.pull_request);
+            core.info(`Found ${issues.length} issues to groom`);
+
+            if (issues.length === 0) {
+              core.info('No issues to process, exiting.');
+              return;
+            }
+
+            for (const issue of issues) {
+              const number = issue.number;
+              const title = issue.title || '';
+              const body = issue.body || '';
+
+              core.info(`Processing issue #${number}: ${title}`);
+
+              // 2) Call the reusable prompt file with gh models run
+              // Use --input JSON to satisfy the prompt's input_schema
+              const input = {
+                title,
+                body,
+              };
+
+              const cmd = `gh models run ./prompts/issue-grooming.prompt.yml --input '${JSON.stringify(input).replace(/'/g, "'\"'\"'")}'`;
+              const stdout = await runCmd(cmd);
+              core.debug(`Model raw output: ${stdout}`);
+
+              let result;
+              try {
+                result = JSON.parse(stdout);
+              } catch (err) {
+                core.warning(`Failed to parse model output for issue #${number}: ${err.message}`);
+                continue;
+              }
+
+              const isGroomed = !!result.is_groomed;
+              const analysis = result.analysis_markdown || '';
+              const questions = result.questions_markdown || '';
+
+              let commentBody;
+              if (isGroomed) {
+                commentBody = `### 🤖 Issue grooming analysis\n\n${analysis}\n\n_This analysis was generated automatically based on the repository's grooming checklist._`;
+              } else {
+                commentBody = `### 🤖 Issue grooming questions\n\n${questions}\n\n_This comment was generated automatically to help gather the information needed to groom this issue._`;
+              }
+
+              // 3) Post the comment
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: number,
+                body: commentBody,
+              });
+
+              // 4) Optional labels
+              try {
+                if (isGroomed) {
+                  await github.rest.issues.addLabels({
+                    owner,
+                    repo,
+                    issue_number: number,
+                    labels: ['groomed'],
+                  });
+                } else {
+                  await github.rest.issues.addLabels({
+                    owner,
+                    repo,
+                    issue_number: number,
+                    labels: ['needs-info'],
+                  });
+                }
+              } catch (err) {
+                core.warning(`Failed to add labels on issue #${number}: ${err.message}`);
+              }
+            }
+
