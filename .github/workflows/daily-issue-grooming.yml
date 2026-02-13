@@ -35,41 +35,81 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            const fs = require('fs');
-            const path = require('path');
-
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const ghToken = process.env.GH_TOKEN;
 
-            // Load the prompt file once
-            const promptPath = path.resolve('prompts/issue-grooming.prompt.yml');
-            const promptYaml = fs.readFileSync(promptPath, 'utf8');
+            function buildPrompt(title, body) {
+              return `
+                You are an experienced engineering lead helping groom GitHub issues for a development team.
 
-            function buildUserPrompt(title, body) {
-              // Very simple templating: replace placeholders in the user section
-              const marker = 'user: |';
-              const idx = promptYaml.indexOf(marker);
-              if (idx === -1) {
-                throw new Error('user: | section not found in prompt file');
-              }
-              const userTemplate = promptYaml.slice(idx + marker.length).trimStart();
+                Use the following **Issue Grooming Checklist** to determine whether the issue is sufficiently specified
+                for implementation, and either:
+                - Provide a concise analysis/refinement if the issue is groomed, or
+                - Ask targeted clarifying questions if the issue is not groomed.
 
-              const user = userTemplate
-                .replace('{{ISSUE_TITLE}}', title)
-                .replace('{{ISSUE_BODY}}', body);
+                ## Issue Grooming Checklist
 
-              return user;
+                ### Problem Definition
+                - Title clearly summarizes the issue
+                - Description explains what's broken and why it matters
+                - Context about where in the product the issue occurs
+
+                ### Acceptance Criteria
+                - Acceptance criteria are explicitly defined as a checklist
+                - Each criterion is testable and verifiable
+                - Criteria focus on user-facing behavior, not implementation
+                - Verification steps are included where appropriate
+
+                ### Technical Information
+                - Error messages are included in full (with stack traces)
+                - Specific files/components involved are identified
+                - Configuration details are provided if relevant
+                - Environment information is specified
+
+                ### Reproducibility
+                - Steps to reproduce are clearly numbered and complete
+                - Expected behavior vs. actual behavior is contrasted
+                - Required preconditions for the issue are mentioned
+
+                ### Dependencies & Context
+                - Related issues or PRs are referenced with brief context
+                - Potential root causes or hypotheses are provided
+                - Any workarounds attempted are documented
+                - Impact assessment is included (severity, affected users)
+
+                ### Special Considerations
+                For feature requests: include use case and user story, success metrics, and documentation needs.
+                For technical debt: explain why the debt exists, outline refactoring approaches, and risks of leaving unresolved.
+                For performance issues: include specific metrics, expected vs actual behavior,
+                and repro steps with test data.
+
+                Now evaluate this GitHub issue:
+
+                Title:
+                ${title}
+
+                Body:
+                ${body}
+
+                Decide if this issue is adequately groomed for implementation.
+
+                Respond ONLY with a valid JSON object with this exact structure (no extra text before or after it):
+                {
+                  "is_groomed": boolean,
+                  "analysis_markdown": string,
+                  "questions_markdown": string
+                }
+              `.trim();
             }
 
-            async function runGhModels(userPrompt) {
+            async function runGhModels(prompt) {
               const cmd = 'gh';
               const args = [
                 'models',
                 'run',
-                '--file',
-                './prompts/issue-grooming.prompt.yml',
-                userPrompt,
+                'gpt-4.1-mini',   // or whatever model ID is enabled for your repo
+                prompt,
               ];
 
               const { exitCode, stdout, stderr } = await exec.getExecOutput(cmd, args, {
@@ -111,8 +151,8 @@ jobs:
 
               core.info(`Processing issue #${number}: ${title}`);
 
-              const userPrompt = buildUserPrompt(title, body);
-              const stdout = await runGhModels(userPrompt);
+              const prompt = buildPrompt(title, body);
+              const stdout = await runGhModels(prompt);
               core.debug(`Model raw output: ${stdout}`);
 
               let result;
