@@ -6006,6 +6006,9 @@ rbac:
         label: Login Access
       clustertemplaterevisions-create:
         label: Create RKE Template Revisions
+      proxy-endpoints-manage:
+        label: Manage Rancher Proxy
+        description: Allows the user to manage settings for proxying HTTP requests via Rancher
   errors:
     escalation: You cannot assign Global Permissions that are higher than your own. Please verify the permissions you are attempting to assign.
 
