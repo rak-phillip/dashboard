@@ -120,7 +120,9 @@ export default {
     updateCustomType(type) {
       const oldType = this.customType;
 
-      this.deleteResourceLimits(oldType);
+      if (oldType) {
+        this.deleteResourceLimits(oldType, true);
+      }
 
       this.customType = type;
 
@@ -149,7 +151,20 @@ export default {
       this.value.spec[prop].limit[type] = val;
     },
 
-    deleteResourceLimits(resourceKey) {
+    deleteResourceLimits(resourceKey, isExtended = false) {
+      const limit = this.value?.spec.resourceQuota?.limit;
+      const usedLimit = this.value?.spec.namespaceDefaultResourceQuota?.limit;
+
+      if (isExtended) {
+        if (limit?.extended && typeof this.value.spec.resourceQuota?.limit?.extended[resourceKey] !== 'undefined') {
+          delete this.value.spec.resourceQuota.limit.extended[resourceKey];
+        }
+        if (usedLimit?.extended && typeof this.value.spec.namespaceDefaultResourceQuota?.limit?.extended[resourceKey] !== 'undefined') {
+          delete this.value.spec.namespaceDefaultResourceQuota.limit.extended[resourceKey];
+        }
+
+        return;
+      }
       if (typeof this.value.spec.resourceQuota?.limit[resourceKey] !== 'undefined') {
         delete this.value.spec.resourceQuota.limit[resourceKey];
       }

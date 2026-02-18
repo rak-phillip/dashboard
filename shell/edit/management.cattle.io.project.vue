@@ -162,7 +162,7 @@ export default {
     },
 
     removeQuota(key) {
-      const isExtended = key.startsWith(`${ TYPES.EXTENDED }.`);
+      const isExtended = key.startsWith(`${ TYPES.EXTENDED }`);
       let resourceKey = key;
 
       if (isExtended) {
@@ -180,6 +180,7 @@ export default {
               delete limit.extended;
             }
           }
+
           if (usedLimit?.extended && typeof usedLimit.extended[resourceKey] !== 'undefined') {
             delete usedLimit.extended[resourceKey];
             if (Object.keys(usedLimit.extended).length === 0) {
