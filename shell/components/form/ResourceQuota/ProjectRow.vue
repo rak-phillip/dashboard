@@ -29,6 +29,10 @@ export default {
       type:    String,
       default: ''
     },
+    typeValues: {
+      type:    Array,
+      default: () => [],
+    },
     value: {
       type:    Object,
       default: () => {
@@ -42,7 +46,10 @@ export default {
   },
 
   data() {
-    return { customType: '' };
+    return {
+      customType:      '',
+      localTypeValues: [],
+    };
   },
 
   created() {
@@ -51,6 +58,7 @@ export default {
     } else {
       this.customType = this.type;
     }
+    this.localTypeValues = [...this.typeValues];
   },
 
   computed: {
@@ -99,6 +107,15 @@ export default {
       }
 
       return [];
+    }
+  },
+
+  watch: {
+    typeValues: {
+      handler(_newValues, oldValues) {
+        this.localTypeValues = [...oldValues];
+      },
+      deep: true
     }
   },
 
@@ -156,6 +173,20 @@ export default {
       const usedLimit = this.value?.spec.namespaceDefaultResourceQuota?.limit;
 
       if (isExtended) {
+        const matchesForKey = this.localTypeValues.filter((typeValue) => {
+          const [, typeKey] = typeValue.split('.');
+
+          return resourceKey === typeKey;
+        });
+
+        /**
+         * Prevent inadvertently deleting values for an existing custom resource
+         * if a duplicate key is entered.
+         */
+        if (matchesForKey.length >= 2) {
+          return;
+        }
+
         if (limit?.extended && typeof this.value.spec.resourceQuota?.limit?.extended[resourceKey] !== 'undefined') {
           delete this.value.spec.resourceQuota.limit.extended[resourceKey];
         }
@@ -165,6 +196,7 @@ export default {
 
         return;
       }
+
       if (typeof this.value.spec.resourceQuota?.limit[resourceKey] !== 'undefined') {
         delete this.value.spec.resourceQuota.limit[resourceKey];
       }

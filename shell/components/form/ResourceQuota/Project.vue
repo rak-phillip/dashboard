@@ -162,6 +162,7 @@ export default {
           :mode="mode"
           :types="remainingTypes(typeValues[props.i])"
           :type="typeValues[props.i]"
+          :type-values="typeValues"
           :index="props.i"
           @input="$emit('input', $event)"
           @type-change="updateType($event)"
