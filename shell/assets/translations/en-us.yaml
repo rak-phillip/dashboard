@@ -1887,6 +1887,7 @@ cluster:
         label: Location
       managedDisks:
         label: Use Managed Disks
+        deprecationWarning: 'Azure is retiring unmanaged disk support on March 31, 2026. After this date, VMs using unmanaged disks will be stopped and deallocated. Enable "Use Managed Disks" to avoid service disruption.'
       managedDisksSize:
         label: Managed Disk Size
       nsg:

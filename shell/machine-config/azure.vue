@@ -844,6 +844,11 @@ export default {
             :disabled="disabled"
           />
           <Banner
+            v-if="!value.managedDisks"
+            color="warning"
+            :label="t('cluster.machineConfig.azure.managedDisks.deprecationWarning', {}, true)"
+          />
+          <Banner
             v-if="value.availabilityZone && !value.managedDisks"
             color="error"
             :label="t('cluster.machineConfig.azure.availabilityZone.managedDisksWarning')"
