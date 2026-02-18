@@ -131,3 +131,25 @@ describe('Machines', { testIsolation: 'off', tags: ['@manager', '@adminUser'] },
     cy.contains(this.machineName).should('not.exist');
   });
 });
+
+describe('Visual Testing', { tags: ['@percy', '@manager', '@adminUser'] }, () => {
+  before(() => {
+    cy.login();
+    // Set theme to light
+    cy.setUserPreference({ theme: 'ui-light' });
+  });
+
+  it('should display machines list page', () => {
+    const machinesPage = new MachinesPagePo();
+
+    MachinesPagePo.goTo();
+
+    machinesPage.list().resourceTable().sortableTable().checkVisible();
+    machinesPage.list().resourceTable().sortableTable().checkLoadingIndicatorNotVisible();
+
+    // hide elements before taking percy snapshot
+    cy.hideElementBySelector('[data-testid="nav_header_showUserMenu"]', '[data-testid="type-count"]');
+    // takes percy snapshot.
+    cy.percySnapshot('machines list page');
+  });
+});
