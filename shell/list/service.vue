@@ -28,6 +28,8 @@ export default {
      * of type PagTableFetchSecondaryResources
      */
     async fetchSecondaryResources(opts) {
+      // fetch nodes as they may be referenced in the Target table column
+      // shell/components/formatter/ServiceTargets.vue --> shell/components/formatter/Endpoints.vue --> Picks the first one that has a model's externalIp
       await fetchNodesForServiceTargets({
         $store:  this.$store,
         inStore: this.$store.getters['currentStore']()

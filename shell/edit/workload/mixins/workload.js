@@ -686,7 +686,6 @@ export default {
               }
             ]
           },
-          // TODO: RC create issue, all services fetched (but not all secrets)
           [SERVICE]: {
             applyTo: [
               { var: 'allServices' },

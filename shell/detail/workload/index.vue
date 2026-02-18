@@ -2,7 +2,7 @@
 import CreateEditView from '@shell/mixins/create-edit-view';
 import { NAMESPACE as NAMESPACE_COL } from '@shell/config/table-headers';
 import {
-  POD, WORKLOAD_TYPES, SERVICE, INGRESS, NODE, NAMESPACE, WORKLOAD_TYPE_TO_KIND_MAPPING, METRICS_SUPPORTED_KINDS
+  POD, WORKLOAD_TYPES, SERVICE, INGRESS, NAMESPACE, WORKLOAD_TYPE_TO_KIND_MAPPING, METRICS_SUPPORTED_KINDS
 } from '@shell/config/types';
 import ResourceTable from '@shell/components/ResourceTable';
 import Tab from '@shell/components/Tabbed/Tab';
@@ -32,6 +32,8 @@ export default {
   async fetch() {
     const hash = {
       allIngresses: this.$store.dispatch('cluster/findAll', { type: INGRESS }),
+      // Nodes should be fetched because they may be referenced in the target
+      // column of a service list item.
       nodes:        fetchNodesForServiceTargets({
         $store:  this.$store,
         inStore: this.$store.getters['currentStore']()

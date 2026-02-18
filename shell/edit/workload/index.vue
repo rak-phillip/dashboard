@@ -26,7 +26,10 @@ export default {
     const canNode = this.$store.getters[`${ inStore }/canList`](NODE);
 
     return {
-      selectedName: null, errors: [], canNode, FORM_TYPES
+      selectedName: null,
+      errors:       [],
+      canNode,
+      FORM_TYPES
     };
   },
   computed: {
@@ -505,7 +508,6 @@ export default {
               name="podScheduling-pod"
               :weight="tabWeightMap['podScheduling']"
             >
-              <!-- TODO: RC PR document -->
               <PodAffinity
                 :mode="mode"
                 :value="podTemplateSpec"
@@ -518,7 +520,6 @@ export default {
               name="nodeScheduling-pod"
               :weight="tabWeightMap['nodeScheduling']"
             >
-              <!-- TODO: RC PR document -->
               <NodeScheduling
                 :mode="mode"
                 :value="podTemplateSpec"

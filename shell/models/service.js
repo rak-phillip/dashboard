@@ -84,6 +84,8 @@ export const fetchNodesForServiceTargets = async({
       } else {
         return $store.dispatch(`${ inStore }/findAll`, { type: NODE });
       }
+    } else {
+      return [];
     }
   } catch {}
 };

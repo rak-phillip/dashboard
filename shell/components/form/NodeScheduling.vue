@@ -1,5 +1,5 @@
 <script lang="ts">
-import { mapGetters } from 'vuex';
+import { mapGetters, Store } from 'vuex';
 import { RadioGroup } from '@components/Form/Radio';
 import ResourceLabeledSelect from '@shell/components/form/ResourceLabeledSelect.vue';
 import NodeAffinity from '@shell/components/form/NodeAffinity.vue';
@@ -7,7 +7,6 @@ import { HARVESTER_NAME as VIRTUAL } from '@shell/config/features';
 import { _VIEW } from '@shell/config/query-params';
 import { isEmpty } from '@shell/utils/object';
 import { HOSTNAME } from '@shell/config/labels-annotations';
-import myLogger from '@shell/utils/my-logger';
 import { ResourceLabeledSelectPaginateSettings, ResourceLabeledSelectSettings } from '@shell/types/components/resourceLabeledSelect';
 import { NODE } from '@shell/config/types';
 import { LabelSelectPaginationFunctionOptions } from '@shell/components/form/labeled-select-utils/labeled-select.utils';
@@ -27,6 +26,14 @@ export default {
       default: () => {
         return {};
       }
+    },
+
+    /**
+     * HARVESTER ONLY PROPERTY
+     */
+    nodes: {
+      type:    Array,
+      default: () => []
     },
 
     mode: {
@@ -167,9 +174,6 @@ export default {
     update() {
       const { nodeName, nodeSelector, nodeAffinity } = this;
 
-      // TODO: RC fix create (button disabled)
-      myLogger.warn('ns', 'update', nodeName, nodeSelector, nodeAffinity); // TODO: RC remove
-
       switch (this.selectNode) {
       case 'nodeSelector':
         if (this.isHarvester) {
@@ -204,13 +208,16 @@ export default {
   watch: {
     'value.nodeSelector': {
       handler(nodeSelector) {
+        // Harvester specific code should not live in rancher/dashboard components
+        // This was brought into harvester/dashboard via https://github.com/harvester/dashboard/pull/342
+        // rancher/dashboard via https://github.com/rancher/dashboard/pull/6310
         if (this.isHarvester && nodeSelector?.[HOSTNAME]) {
           this.selectNode = 'nodeSelector';
           const nodeName = nodeSelector[HOSTNAME];
 
           this.nodeName = nodeName;
 
-          const array = this.nodes.map((n) => n.value); // TODO: RC nodes is an array if id's....?!
+          const array = this.nodes.map((n) => n.value);
 
           if (nodeName && !array.includes(nodeName)) {
             this.$store.dispatch('growl/error', {
