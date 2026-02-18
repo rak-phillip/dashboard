@@ -5,7 +5,10 @@ import { LabeledInput } from '@components/Form/LabeledInput';
 import { ROW_COMPUTED, TYPES } from './shared';
 
 export default {
-  emits: ['type-change'],
+  emits: [
+    'type-change',
+    'update:resource-identifier',
+  ],
 
   components: {
     Select,
@@ -120,6 +123,12 @@ export default {
       this.deleteResourceLimits(oldType);
 
       this.customType = type;
+
+      this.$emit('update:resource-identifier', {
+        type:       this.type,
+        customType: this.customType,
+        index:      this.index,
+      });
     },
 
     updateQuotaLimit(prop, type, val) {
@@ -171,6 +180,7 @@ export default {
       :mode="mode"
       :placeholder="t('resourceQuota.resourceIdentifier.placeholder')"
       :rules="customTypeRules"
+      :require-dirty="false"
       class="mr-10"
       data-testid="projectrow-custom-type-input"
       @update:value="updateCustomType($event)"

@@ -5,7 +5,11 @@ import { QUOTA_COMPUTED, TYPES } from './shared';
 import Banner from '@components/Banner/Banner.vue';
 
 export default {
-  emits: ['remove', 'input'],
+  emits: [
+    'remove',
+    'input',
+    'validationChanged',
+  ],
 
   components: {
     ArrayList,
@@ -60,6 +64,34 @@ export default {
       const { index, type } = event;
 
       this.typeValues[index] = type;
+
+      this.validateTypes();
+    },
+    updateResourceIdentifier({ type, customType, index }) {
+      if (type.startsWith(TYPES.EXTENDED)) {
+        this.typeValues[index] = `extended.${ customType }`;
+      }
+
+      this.validateTypes();
+    },
+    validateTypes(isValid = true) {
+      if (!isValid) {
+        this.$emit('validationChanged', false);
+
+        return;
+      }
+
+      const hasMissingExtendedValue = this.typeValues.some((typeValue) => {
+        if (!typeValue.startsWith(TYPES.EXTENDED)) {
+          return false;
+        }
+
+        const [, resourceIdentifier] = typeValue.split('.');
+
+        return !resourceIdentifier;
+      });
+
+      this.$emit('validationChanged', !hasMissingExtendedValue);
     },
     remainingTypes(currentType) {
       return this.mappedTypes
@@ -122,6 +154,7 @@ export default {
       :add-allowed="remainingTypes().length > 0"
       :mode="mode"
       @remove="emitRemove"
+      @add="validateTypes(false)"
     >
       <template #columns="props">
         <Row
@@ -132,6 +165,7 @@ export default {
           :index="props.i"
           @input="$emit('input', $event)"
           @type-change="updateType($event)"
+          @update:resource-identifier="updateResourceIdentifier"
         />
       </template>
     </ArrayList>

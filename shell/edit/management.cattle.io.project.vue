@@ -50,6 +50,7 @@ export default {
       RANCHER_TYPES,
       fvFormRuleSets:     [{ path: 'spec.displayName', rules: ['required'] }],
       resourceQuotaKey:   0,
+      isQuotasValid:      true,
     };
   },
   computed: {
@@ -110,6 +111,9 @@ export default {
     }
   },
   methods: {
+    validateQuotas(isValid) {
+      this.isQuotasValid = isValid;
+    },
     async save(saveCb) {
       try {
         this.errors = [];
@@ -207,7 +211,7 @@ export default {
     :resource="value"
     :subtypes="[]"
     :can-yaml="false"
-    :validation-passed="fvFormIsValid"
+    :validation-passed="fvFormIsValid && isQuotasValid"
     @error="e=>errors = e"
     @finish="save"
     @cancel="done"
@@ -258,6 +262,7 @@ export default {
           :mode="canEditTabElements"
           :types="isStandaloneHarvester ? HARVESTER_TYPES : RANCHER_TYPES"
           @remove="removeQuota"
+          @validationChanged="validateQuotas"
         />
       </Tab>
       <Tab
