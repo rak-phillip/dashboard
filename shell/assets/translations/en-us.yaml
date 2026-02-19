@@ -1865,7 +1865,7 @@ cluster:
       acceleratedNetworking:
         label: Accelerated Networking
       availabilitySet:
-        label: Availability Set (unmanaged)
+        label: Availability Set
         description: Availability sets are used to protect applications from hardware failures within an Azure data center.
       availabilityZone:
         label: Availability Zone
@@ -1890,6 +1890,7 @@ cluster:
         label: Location
       managedDisks:
         label: Use Managed Disks
+        deprecationWarning: 'Azure is retiring unmanaged disk support on March 31, 2026. After this date, VMs using unmanaged disks will be stopped and deallocated. Enable "Use Managed Disks" to avoid service disruption.'
       managedDisksSize:
         label: Managed Disk Size
       nsg:
