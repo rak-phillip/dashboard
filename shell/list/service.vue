@@ -1,6 +1,5 @@
 <script>
 import PaginatedResourceTable from '@shell/components/PaginatedResourceTable';
-import { NODE } from '@shell/config/types';
 import { fetchNodesForServiceTargets } from '@shell/models/service';
 
 export default {
@@ -28,8 +27,7 @@ export default {
      * of type PagTableFetchSecondaryResources
      */
     async fetchSecondaryResources(opts) {
-      // fetch nodes as they may be referenced in the Target table column
-      // shell/components/formatter/ServiceTargets.vue --> shell/components/formatter/Endpoints.vue --> Picks the first one that has a model's externalIp
+      // Nodes should be fetched because they may be referenced in the target column of a service list item.
       await fetchNodesForServiceTargets({
         $store:  this.$store,
         inStore: this.$store.getters['currentStore']()

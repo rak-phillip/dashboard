@@ -32,8 +32,7 @@ export default {
   async fetch() {
     const hash = {
       allIngresses: this.$store.dispatch('cluster/findAll', { type: INGRESS }),
-      // Nodes should be fetched because they may be referenced in the target
-      // column of a service list item.
+      // Nodes should be fetched because they may be referenced in the target column of a service list item.
       nodes:        fetchNodesForServiceTargets({
         $store:  this.$store,
         inStore: this.$store.getters['currentStore']()

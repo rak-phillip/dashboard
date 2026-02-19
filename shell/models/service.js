@@ -69,14 +69,13 @@ export const fetchNodesForServiceTargets = async({
         const findPageArgs = {
           pagination: {
             pageSize: 1,
-            // TODO: RC test once https://github.com/rancher/rancher/issues/53459 resolved
-            // filters:  [
-            //   PaginationParamFilter.createSingleField({
-            //     field:    'status.addresses.type',
-            //     value:    'ExternalIP',
-            //     equality: PaginationFilterEquality.EQUALS
-            //   }),
-            // ],
+            filters:  [
+              PaginationParamFilter.createSingleField({
+                field:    'status.addresses.type',
+                value:    'ExternalIP',
+                equality: PaginationFilterEquality.CONTAINS
+              }),
+            ],
           },
         };
 

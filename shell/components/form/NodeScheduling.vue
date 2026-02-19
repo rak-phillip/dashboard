@@ -1,5 +1,5 @@
 <script lang="ts">
-import { mapGetters, Store } from 'vuex';
+import { mapGetters } from 'vuex';
 import { RadioGroup } from '@components/Form/Radio';
 import ResourceLabeledSelect from '@shell/components/form/ResourceLabeledSelect.vue';
 import NodeAffinity from '@shell/components/form/NodeAffinity.vue';
@@ -10,7 +10,7 @@ import { HOSTNAME } from '@shell/config/labels-annotations';
 import { ResourceLabeledSelectPaginateSettings, ResourceLabeledSelectSettings } from '@shell/types/components/resourceLabeledSelect';
 import { NODE } from '@shell/config/types';
 import { LabelSelectPaginationFunctionOptions } from '@shell/components/form/labeled-select-utils/labeled-select.utils';
-import { PaginationParamFilter } from '@shell/types/store/pagination.types';
+import { PaginationFilterEquality, PaginationParamFilter } from '@shell/types/store/pagination.types';
 import { KubeNode, KubeNodeTaint } from '@shell/types/resources/node';
 
 export default {
@@ -61,6 +61,7 @@ export default {
       `node-role.kubernetes.io/etcd`
     ];
 
+    // Settings used by ResourceLabeledSelect when node pagination disabled
     const nodeSchedulingAllSettings: ResourceLabeledSelectSettings = {
       updateResources(nodes: KubeNode[]) {
         return nodes
@@ -72,6 +73,8 @@ export default {
           .map((node) => node.id);
       },
     };
+
+    // Settings used by ResourceLabeledSelect when node pagination enabled
     const nodeSchedulingPaginationSettings: ResourceLabeledSelectPaginateSettings = {
       updateResources(nodes) {
         return nodes.map((node) => node.id);
@@ -84,11 +87,9 @@ export default {
           })
         ] : [];
 
-        // TODO: RC test once https://github.com/rancher/rancher/issues/53459 merges
-        // filter=spec.taints.key!=node-role.kubernetes.io/control-plane&filter=spec.taints.key!=node-role.kubernetes.io/etcd
-        // filters.push(...keys.map((k) => PaginationParamFilter.createSingleField( ({
-        //   field: 'spec.taints.key', value: k, exact: true, exists: false
-        // })))); // TODO: RC exact and exist --> equality PaginationFilterEquality
+        filters.push(PaginationParamFilter.createMultipleFields(keys.map((k) => ({
+          field: 'spec.taints.key', value: k, equality: PaginationFilterEquality.NOT_CONTAINS
+        }))));
 
         opts.filters = filters;
         opts.groupByNamespace = false;
