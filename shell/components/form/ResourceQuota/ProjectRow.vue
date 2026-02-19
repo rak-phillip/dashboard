@@ -47,8 +47,8 @@ export default {
 
   data() {
     return {
-      customType:      '',
-      localTypeValues: [],
+      customType:         '',
+      previousTypeValues: [],
     };
   },
 
@@ -58,7 +58,7 @@ export default {
     } else {
       this.customType = this.type;
     }
-    this.localTypeValues = [...this.typeValues];
+    this.previousTypeValues = [...this.typeValues];
   },
 
   computed: {
@@ -112,8 +112,15 @@ export default {
 
   watch: {
     typeValues: {
+      /**
+       * Intentionally uses `oldValues` (not `_newValues`) so that
+       * `previousTypeValues` always reflects the committed state before the
+       * current change. `deleteResourceLimits` relies on this snapshot to
+       * detect duplicate keys: if a key still appears twice in the old list
+       * we know another row owns it and must not delete the shared limit.
+       */
       handler(_newValues, oldValues) {
-        this.localTypeValues = [...oldValues];
+        this.previousTypeValues = [...oldValues];
       },
       deep: true
     }
@@ -173,7 +180,10 @@ export default {
       const usedLimit = this.value?.spec.namespaceDefaultResourceQuota?.limit;
 
       if (isExtended) {
-        const matchesForKey = this.localTypeValues.filter((typeValue) => {
+        // `previousTypeValues` holds the previous snapshot of typeValues.
+        // Counting matches against the old list lets us detect whether another
+        // row already owns this key before we delete the shared limit entry.
+        const matchesForKey = this.previousTypeValues.filter((typeValue) => {
           const [, typeKey] = typeValue.split('.');
 
           return resourceKey === typeKey;
