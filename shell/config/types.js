@@ -264,8 +264,11 @@ export const BRAND = {
 };
 
 export const EXT = {
-  USER_ACTIVITY: 'ext.cattle.io.useractivity',
-  KUBECONFIG:    'ext.cattle.io.kubeconfig',
+  USER_ACTIVITY:                     'ext.cattle.io.useractivity',
+  SELFUSER:                          'ext.cattle.io.selfuser',
+  GROUP_MEMBERSHIP_REFRESH_REQUESTS: 'ext.cattle.io.groupmembershiprefreshrequest',
+  PASSWORD_CHANGE_REQUESTS:          'ext.cattle.io.passwordchangerequest',
+  KUBECONFIG:                        'ext.cattle.io.kubeconfig',
 };
 
 export const CAPI = {
@@ -410,3 +413,7 @@ export const DEPRECATED = 'Deprecated';
 export const EXPERIMENTAL = 'Experimental';
 export const AUTOSCALER_CONFIG_MAP_ID = 'kube-system/cluster-autoscaler-status';
 export const HOSTED_PROVIDER = 'hostedprovider';
+
+// Named saved counts
+
+export const SAVED_COUNTS = { K8S_CLUSTERS: 'k8sClusters' };
