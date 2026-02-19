@@ -104,7 +104,13 @@ export default {
         });
     },
     emitRemove(data) {
+      this.typeValues = this.typeValues.filter((_typeValue, index) => {
+        return index !== data.index;
+      });
+
       this.$emit('remove', data.row?.value);
+
+      this.validateTypes();
     }
   },
 };
