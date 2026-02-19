@@ -440,7 +440,7 @@ export default {
       cache.map.set(proxies[i][keyField], proxies[i]);
     }
 
-    cache.haveSelector[selector] = true;
+    cache.haveSelector = { [selector]: true };
     cache.revision = revision || 0;
   },
 
