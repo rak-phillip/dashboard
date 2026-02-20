@@ -9,6 +9,8 @@ import TabbedPo from '@/cypress/e2e/po/components/tabbed.po';
 import { LONG_TIMEOUT_OPT, MEDIUM_TIMEOUT_OPT, VERY_LONG_TIMEOUT_OPT } from '@/cypress/support/utils/timeouts';
 import { USERS_BASE_URL } from '@/cypress/support/utils/api-endpoints';
 import { promptModal } from '@/cypress/e2e/po/prompts/shared/modalInstances.po';
+import describeSubnetsResponse from '@/cypress/e2e/blueprints/manager/describe-subnets-response';
+import describeVpcsResponse from '@/cypress/e2e/blueprints/manager/describe-vpcs-response';
 
 // will only run this in jenkins pipeline where cloud credentials are stored
 describe('Deploy RKE2 cluster using node driver on Amazon EC2', { tags: ['@manager', '@adminUser', '@standardUser', '@jenkins'] }, () => {
@@ -426,6 +428,218 @@ describe('Deploy RKE2 cluster using node driver on Amazon EC2', { tags: ['@manag
       clusterList.sortableTable().checkRowCount(false, rows.length - 1, MEDIUM_TIMEOUT_OPT);
       clusterList.sortableTable().rowNames('.cluster-link').should('not.contain', this.rke2Ec2ClusterName);
     });
+  });
+
+  it('validates cluster networking configuration when machines are using dual-stack networking', function() {
+    const createRKE2ClusterPage = new ClusterManagerCreateRke2AmazonPagePo();
+
+    // Intercept AWS API requests
+    cy.intercept('POST', 'meta/proxy/ec2*', (req) => {
+      const requestBody = req.body;
+
+      if (requestBody?.includes('DescribeSubnets')) {
+        req.reply(describeSubnetsResponse);
+      } else if (requestBody?.includes('DescribeVpcs')) {
+        req.reply(describeVpcsResponse);
+      } else {
+        req.continue();
+      }
+    });
+
+    // Intercept and prevent cluster creation POST request
+    cy.intercept('POST', 'v1/provisioning.cattle.io.clusters', (req) => {
+      req.reply(200);
+    }).as('createRke2Cluster');
+
+    // load cluster creation page
+    ClusterManagerListPagePo.navTo();
+    clusterList.waitForPage();
+    clusterList.createCluster();
+    createRKE2ClusterPage.selectCreate(0);
+    loadingPo.checkNotExists();
+    createRKE2ClusterPage.rke2PageTitle().should('include', 'Create Amazon EC2');
+    createRKE2ClusterPage.waitForPage('type=amazonec2&rkeType=rke2', 'basic');
+
+    // set cluster name to enable save button
+    createRKE2ClusterPage.nameNsDescription().name().set(this.rke2Ec2ClusterName);
+
+    createRKE2ClusterPage.machinePoolTab().enableDualStack().set();
+
+    createRKE2ClusterPage.machinePoolTab().networks().toggle();
+    createRKE2ClusterPage.machinePoolTab().networks().clickOptionWithLabel('(vpc-123)');
+    createRKE2ClusterPage.machinePoolTab().enableIpv6().set();
+
+    // click create, verify confirmation modal appears with 2 warnings
+    createRKE2ClusterPage.create();
+
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 2);
+
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // toggle to k3s and verify the confirmation modal appears with a third warning
+    createRKE2ClusterPage.basicsTab().kubernetesVersions().toggle();
+    createRKE2ClusterPage.basicsTab().kubernetesVersions().clickOptionWithLabel('k3s');
+
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 3);
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // toggle off ipv6-only and ensure the dialog no longer has flannel masq warning
+    createRKE2ClusterPage.machinePoolTab().enableIpv6().set();
+
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 2);
+    createRKE2ClusterPage.ipv6Recommendations().should('not.contain.text', 'Masq');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // verify that setting stack preference to 'IPv6' clears the warning
+    createRKE2ClusterPage.clusterConfigurationTabs().clickTabWithSelector('#networking');
+    createRKE2ClusterPage.networkTab().stackPreference().toggle();
+    createRKE2ClusterPage.networkTab().stackPreference().clickOptionWithLabel('IPv6');
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 1);
+    createRKE2ClusterPage.ipv6Recommendations().should('not.contain.text', 'Stack Preference');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // verify that setting stack pref to dual does not reintroduce the warning
+    createRKE2ClusterPage.networkTab().stackPreference().toggle();
+    createRKE2ClusterPage.networkTab().stackPreference().clickOptionWithLabel('Dual');
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 1);
+    createRKE2ClusterPage.ipv6Recommendations().should('not.contain.text', 'Stack Preference');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // toggle ipv6-only back on
+    createRKE2ClusterPage.machinePoolTab().enableIpv6().set();
+
+    // verify that warnings for stack preference and flannel masq are shown again
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 3);
+    createRKE2ClusterPage.ipv6Recommendations().should('contain.text', 'Stack Preference');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // verify that setting stack preference to 'IPv6' removes the stack preference warning
+    createRKE2ClusterPage.networkTab().stackPreference().toggle();
+    createRKE2ClusterPage.networkTab().stackPreference().clickOptionWithLabel('IPv6');
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 2);
+    createRKE2ClusterPage.ipv6Recommendations().should('not.contain.text', 'Stack Preference');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // set cluster/service CIDR and verify that the confirmation modal is updated
+    createRKE2ClusterPage.networkTab().clusterCIDR().set('fd00:10:244::/120');
+    createRKE2ClusterPage.networkTab().serviceCIDR().set('fd00:10:244::/120');
+
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 1);
+    createRKE2ClusterPage.ipv6Recommendations().should('not.contain.text', 'CIDR');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // set flannel masq and verify that the confirmation modal is no longer shown
+    createRKE2ClusterPage.networkTab().flannelMasq().set();
+    createRKE2ClusterPage.create();
+    cy.wait('@createRke2Cluster');
+  });
+
+  it('validates cluster networking configuration when machines are using ipv6-only networking', function() {
+    const createRKE2ClusterPage = new ClusterManagerCreateRke2AmazonPagePo();
+
+    // Intercept AWS API requests
+    cy.intercept('POST', 'meta/proxy/ec2*', (req) => {
+      const requestBody = req.body;
+
+      if (requestBody?.includes('DescribeSubnets')) {
+        req.reply(describeSubnetsResponse);
+      } else if (requestBody?.includes('DescribeVpcs')) {
+        req.reply(describeVpcsResponse);
+      } else {
+        req.continue();
+      }
+    });
+
+    // Intercept and prevent cluster creation POST request
+    cy.intercept('POST', 'v1/provisioning.cattle.io.clusters', (req) => {
+      req.reply(200);
+    }).as('createRke2Cluster');
+
+    // load cluster creation page
+    ClusterManagerListPagePo.navTo();
+    clusterList.waitForPage();
+    clusterList.createCluster();
+    createRKE2ClusterPage.selectCreate(0);
+    loadingPo.checkNotExists();
+    createRKE2ClusterPage.rke2PageTitle().should('include', 'Create Amazon EC2');
+    createRKE2ClusterPage.waitForPage('type=amazonec2&rkeType=rke2', 'basic');
+
+    // set cluster name to enable save button
+    createRKE2ClusterPage.nameNsDescription().name().set(this.rke2Ec2ClusterName);
+
+    createRKE2ClusterPage.machinePoolTab().enableDualStack().set();
+
+    createRKE2ClusterPage.machinePoolTab().networks().toggle();
+    createRKE2ClusterPage.machinePoolTab().networks().clickOptionWithLabel('ipv6only');
+
+    // verify that the enable ipv6 checkbox is automatically set
+    createRKE2ClusterPage.machinePoolTab().enableIpv6().isChecked();
+
+    // click create, verify confirmation modal appears with 2 warnings
+    createRKE2ClusterPage.create();
+
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 2);
+
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // toggle to k3s and verify the confirmation modal appears with a third warning
+    createRKE2ClusterPage.basicsTab().kubernetesVersions().toggle();
+    createRKE2ClusterPage.basicsTab().kubernetesVersions().clickOptionWithLabel('k3s');
+
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 3);
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // verify that setting stack pref to dual does not remove the stack preference warning
+    createRKE2ClusterPage.clusterConfigurationTabs().clickTabWithSelector('#networking');
+    createRKE2ClusterPage.networkTab().stackPreference().toggle();
+    createRKE2ClusterPage.networkTab().stackPreference().clickOptionWithLabel('Dual');
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 3);
+    createRKE2ClusterPage.ipv6Recommendations().should('contain.text', 'Stack Preference');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // verify that setting stack pref to ipv6 removes the stack preference warning
+    createRKE2ClusterPage.networkTab().stackPreference().toggle();
+    createRKE2ClusterPage.networkTab().stackPreference().clickOptionWithLabel('IPv6');
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 2);
+    createRKE2ClusterPage.ipv6Recommendations().should('not.contain.text', 'Stack Preference');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // set cluster/service CIDR and verify that the confirmation modal is updated
+    createRKE2ClusterPage.networkTab().clusterCIDR().set('fd00:10:244::/120');
+    createRKE2ClusterPage.networkTab().serviceCIDR().set('fd00:10:244::/120');
+
+    createRKE2ClusterPage.create();
+    createRKE2ClusterPage.ipv6ConfirmationDialog().should('be.visible');
+    createRKE2ClusterPage.ipv6Recommendations().should('have.length', 1);
+    createRKE2ClusterPage.ipv6Recommendations().should('not.contain.text', 'CIDR');
+    createRKE2ClusterPage.ipv6ConfirmationDialog().find('[data-testid="ipv6-dialog-cancel"]').click();
+
+    // set flannel masq and verify that the confirmation modal is no longer shown
+    createRKE2ClusterPage.networkTab().flannelMasq().set();
+    createRKE2ClusterPage.create();
+    cy.wait('@createRke2Cluster');
   });
 
   after('clean up', () => {
