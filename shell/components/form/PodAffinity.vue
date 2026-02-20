@@ -2,7 +2,7 @@
 import { mapGetters } from 'vuex';
 import { _VIEW } from '@shell/config/query-params';
 import { get, set, isEmpty, clone } from '@shell/utils/object';
-import { POD, NODE, NAMESPACE } from '@shell/config/types';
+import { POD, NAMESPACE } from '@shell/config/types';
 import MatchExpressions from '@shell/components/form/MatchExpressions';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import { RadioGroup } from '@components/Form/Radio';
@@ -104,10 +104,6 @@ export default {
       return POD;
     },
 
-    node() {
-      return NODE;
-    },
-
     labeledInputNamespaceLabel() {
       return this.removeLabeledInputNamespaceLabel ? '' : this.overwriteLabels?.namespaceInputLabel || this.t('workload.scheduling.affinity.matchExpressions.inNamespaces');
     },
@@ -124,13 +120,6 @@ export default {
       }), 'label');
 
       return out;
-    },
-
-    hasNodes() {
-      const inStore = this.$store.getters['currentStore'](NODE);
-      const canList = this.$store.getters[`${ inStore }/canList`](NODE);
-
-      return canList;
     },
 
     namespaceSelectionOptions() {
@@ -433,23 +422,7 @@ export default {
           />
           <div class="row mt-20">
             <div class="col span-9">
-              <LabeledSelect
-                v-if="hasNodes"
-                v-model:value="props.row.value.topologyKey"
-                :taggable="true"
-                :searchable="true"
-                :close-on-select="false"
-                :mode="mode"
-                required
-                :label="t('workload.scheduling.affinity.topologyKey.label')"
-                :placeholder="topologyKeyPlaceholder"
-                :disabled="mode==='view'"
-                :loading="loading"
-                :data-testid="`pod-affinity-topology-select-index${props.i}`"
-                @update:value="update"
-              />
               <LabeledInput
-                v-else
                 v-model:value="props.row.value.topologyKey"
                 :mode="mode"
                 :label="t('workload.scheduling.affinity.topologyKey.label')"

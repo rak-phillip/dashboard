@@ -87,7 +87,7 @@ export default {
           })
         ] : [];
 
-        filters.push(PaginationParamFilter.createMultipleFields(keys.map((k) => ({
+        filters.push(...keys.map((k) => PaginationParamFilter.createSingleField( ({
           field: 'spec.taints.key', value: k, equality: PaginationFilterEquality.NOT_CONTAINS
         }))));
 

@@ -86,7 +86,11 @@ export const fetchNodesForServiceTargets = async({
     } else {
       return [];
     }
-  } catch {}
+  } catch (err) {
+    console.warn('Failed to fetch nodes for service targets:', err); // eslint-disable-line no-console
+
+    return [];
+  }
 };
 
 export default class Service extends SteveModel {
