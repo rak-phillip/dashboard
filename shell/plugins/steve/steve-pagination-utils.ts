@@ -235,6 +235,8 @@ class StevePaginationUtils extends NamespaceProjectFilters {
     [NODE]: [
       { field: 'status.nodeInfo.kubeletVersion' },
       { field: 'status.nodeInfo.operatingSystem' },
+      { field: 'spec.taints.key' },
+      { field: 'status.addresses.type' },
     ],
     [POD]: [
       { field: 'spec.containers.image' },
