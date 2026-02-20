@@ -328,9 +328,20 @@ jobs:
               );
               const lastBotComment = botComments[botComments.length - 1];
 
-              // Skip if no new activity since the bot last commented
-              if (lastBotComment && new Date(issue.updated_at) <= new Date(lastBotComment.created_at)) {
-                core.info(`Issue #${number}: no new activity since last bot comment, skipping`);
+              // Skip if no meaningful user activity since the bot last commented.
+              // Two conditions guard against false negatives:
+              //   1. lastCommentIsBot  — no one replied after the bot
+              //   2. buffer check      — absorbs GitHub's server-side timestamp lag (~seconds) and
+              //                          the issue.updated_at bump from label changes the bot makes
+              //                          immediately after commenting (still well within 30 min)
+              const lastComment = commentsResp.data[commentsResp.data.length - 1];
+              const lastCommentIsBot = lastComment?.user?.login === 'github-actions[bot]';
+              const LABEL_BUMP_BUFFER_MS = 30 * 60 * 1000; // 30 minutes
+              const issueUpdatedAt = new Date(issue.updated_at).getTime();
+              const lastBotCommentedAt = lastBotComment ? new Date(lastBotComment.created_at).getTime() : 0;
+
+              if (lastBotComment && lastCommentIsBot && issueUpdatedAt <= lastBotCommentedAt + LABEL_BUMP_BUFFER_MS) {
+                core.info(`Issue #${number}: no new user activity since last bot comment, skipping`);
                 continue;
               }
 
