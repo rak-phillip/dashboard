@@ -227,6 +227,7 @@ export default {
       :data-testid="'cluster-list'"
       :force-update-live-and-delayed="forceUpdateLiveAndDelayed"
       :get-custom-detail-link="getCustomDetailLink"
+      :sub-rows="true"
     >
       <!-- Why are state column and subrow overwritten here? -->
       <!-- for rke1 clusters, where they try to use the mgmt cluster stateObj instead of prov cluster stateObj,  -->
@@ -272,30 +273,49 @@ export default {
           {{ t('cluster.explore') }}
         </button>
       </template>
-      <template #state-description-td="{row, fullColspan, tableActions}">
-        <td
-          :colspan="fullColspan - (tableActions ? 1: 0)"
-          :class="{ 'text-error' : row.row.stateObj.error }"
+      <template #additional-sub-row="{row, fullColspan, tableActions}">
+        <tr
+
+          class="capi-unsupported"
+          :class="{'has-description': !!row.stateDescription}"
         >
-          <span v-clean-html="row.row.stateDescription" />
-          <div
-            v-if="row.row.isCapiHybrid"
-            class="text-error cluster-state-description"
-            :class="{'mt-5': !!row.row.stateDescription.trim()}"
+          <td
+            v-if="row.isCapiHybrid"
+            class="row-check"
+          />
+          <td
+            v-if="row.isCapiHybrid"
+            :colspan="fullColspan - (tableActions ? 1: 0)"
           >
-            <i class="icon icon-warning" />{{ t('cluster.capi.notSupported') }}
-          </div>
-        </td>
+            <div
+
+              class="text-error"
+              :class="{'mt-5': !!row.stateDescription.trim()}"
+            >
+              <i class="icon icon-warning" />{{ t('cluster.capi.notSupported') }}
+            </div>
+          </td>
+        </tr>
       </template>
     </ResourceTable>
   </div>
 </template>
 
 <stye scoped lang="scss">
-  .cluster-state-description {
-    & i {
-      margin-right: 0.1em;
+  .capi-unsupported {
+    &.has-description {
+      border-bottom: none;
+      padding: 0px;
+      td {
+        padding-top: 0px;
+      }
     }
-    display: flex;
+
+    & div {
+      & i {
+        margin-right: 0.1em;
+      }
+      display: flex;
+    }
   }
 </stye>
