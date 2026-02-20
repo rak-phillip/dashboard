@@ -41,75 +41,75 @@ jobs:
 
             function buildPrompt(title, body) {
               return `
-                You are an experienced engineering lead helping groom GitHub issues for a development team.
+    You are an experienced engineering lead helping groom GitHub issues for a development team.
 
-                ## Strict Grooming Requirements
-                An issue is **groomed enough for implementation** ONLY when BOTH of these are true:
-                1. **Clear Acceptance Criteria**: At least 1-3 concrete, testable acceptance criteria (checklist format preferred)
-                2. **Clear Repro Steps**: For bugs: numbered repro steps OR expected vs actual behavior. For features: clear user flow.
+    ## Grooming Decision Model (4 primary + 1 secondary)
 
-                PLUS one of:
-                - Technical details (error/stack trace, files, config)
-                - Sufficient context for team engineer to start work
+    An issue is **groomed** when ALL FOUR primary criteria are clearly present.
+    The fifth criterion may be absent or only partially met without blocking grooming.
 
-                ## Decision Rules
-                - **REQUIRED**: Concrete acceptance criteria AND repro steps/flow
-                - If either is missing/unclear → "is_groomed": false + questions
-                - If both present → "is_groomed": true even if minor details missing
-                - Be decisive: no leniency on acceptance criteria/repro requirements
-                - Questions should be specific to fill missing acceptance/repro
+    ### PRIMARY CRITERIA — all four must be fully satisfied
 
-                ## Issue Grooming Checklist (guidance)
-                ### Problem Definition
-                - Title clearly summarizes
-                - Explains why it matters
-                - Product context given
+    1. **Clear Problem Statement**
+       - Title clearly summarizes the issue
+       - Description explains what is broken or needed and why it matters
+       - Context provided about where in the product the issue occurs
 
-                ### Acceptance Criteria (REQUIRED)
-                - Defined as checklist
-                - Each testable/verifiable
-                - User-facing focus
-                - Verification steps
+    2. **Acceptance Criteria / Requirements**
+       - At least 1–3 concrete, testable acceptance criteria (checklist preferred)
+       - User-facing and verifiable; not implementation details
+       - For bugs: defines what "fixed" looks like
+       - For features: defines what "done" looks like
 
-                ### Technical Information
-                - Error messages/stack traces
-                - Files/components identified
-                - Config details
-                - Environment specified
+    3. **Technical Details**
+       - For bugs: error messages and/or stack traces; specific files or components identified
+       - For features: enough technical context for an engineer to scope the work
+       - Config/environment details where relevant
 
-                ### Reproducibility (REQUIRED for bugs)
-                - Numbered repro steps
-                - Expected vs actual contrasted
-                - Preconditions mentioned
+    4. **Reproducibility**
+       - For bugs: numbered steps to reproduce + expected vs. actual behavior
+       - For features: clear user story or flow describing the desired behavior
+       - Preconditions or environment requirements stated
 
-                ### Dependencies & Context
-                - Related issues/PRs referenced
-                - Root causes/hypotheses
-                - Workarounds
-                - Impact assessment
+    ### SECONDARY CRITERION — partial satisfaction is acceptable
 
-                ## Examples
-                **Groomed (#241)**: Full stack trace + proposed solutions + explicit acceptance criteria → true
-                **Not Groomed (#252)**: Clear problem + files, but "To Reproduce: TBD" + no acceptance → false  
-                **Not Groomed (#255)**: Vague "handle breaking changes?" + no concrete acceptance → false
+    5. **Dependencies / Additional Information**
+       - Related issues or PRs referenced (even one link is sufficient)
+       - Root cause hypotheses, workarounds, impact/severity
+       - Absence of this criterion does NOT block grooming
 
-                Now evaluate this GitHub issue:
+    ## Decision Rules
 
-                Title:
-                ${title}
+    - \`"is_groomed": true\`  → all four PRIMARY criteria clearly present (dependencies optional)
+    - \`"is_groomed": false\` → one or more PRIMARY criteria are missing or too vague
+    - Be decisive; do not fail an issue for missing or incomplete dependencies alone
+    - Ask at most 2–3 targeted questions focused only on the specific missing primary criteria
+    - Do NOT ask about dependencies unless all four primary criteria are already met
 
-                Body:
-                ${body}
+    ## Examples
 
-                1. Can an engineer reasonably start work without synchronous clarification?
-                2. Prefer "groomed" when problem + outcome + some detail exist
+    **Groomed**: Clear problem description + explicit AC checklist + stack trace + numbered repro steps → true (even with no related issues linked)
+    **Not Groomed**: Clear problem + repro steps + stack trace, but no acceptance criteria → false
+    **Not Groomed**: Acceptance criteria + good description, but "Steps to reproduce: TBD" and no error details → false
+    **Not Groomed**: Vague title, no AC, no repro → false
 
-                Respond ONLY with a valid JSON object with this exact structure (no extra text before or after it):
-                {
-                  "is_groomed": boolean,
-                  "analysis_markdown": string,
-                  "questions_markdown": string
-                }
+    Now evaluate this GitHub issue:
+
+    Title:
+    ${title}
+
+    Body:
+    ${body}
+
+    In "questions_markdown", ask only about the specific missing primary criteria — no more than 2–3 focused questions.
+    In "analysis_markdown", briefly summarize which criteria are met and which are not.
+
+    Respond ONLY with a valid JSON object with this exact structure (no extra text before or after it):
+    {
+      "is_groomed": boolean,
+      "analysis_markdown": string,
+      "questions_markdown": string
+    }
               `.trim();
             }
 
@@ -135,18 +135,27 @@ jobs:
               return stdout.trim();
             }
 
-            const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-            core.info(`Fetching issues since ${since}`);
+            const sinceISO = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            core.info(`Fetching issues since ${sinceISO}`);
 
             const issuesResp = await github.rest.issues.listForRepo({
               owner,
               repo,
               state: 'open',
-              since,
+              since: sinceISO,
               per_page: 100,
             });
 
-            const issues = issuesResp.data.filter((issue) => !issue.pull_request);
+            const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            const issues = issuesResp.data.filter((issue) => {
+              if (issue.pull_request) return false;
+              // Only process newly created issues
+              if (new Date(issue.created_at) < since) return false;
+              // Skip if already labeled by a previous grooming run
+              const labelNames = (issue.labels || []).map((l) => l.name);
+              if (labelNames.includes('groomed') || labelNames.includes('needs-info')) return false;
+              return true;
+            });
             core.info(`Found ${issues.length} issues to groom`);
 
             if (issues.length === 0) {
