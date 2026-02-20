@@ -12,7 +12,7 @@ import HomePagePo from '@/cypress/e2e/po/pages/home.po';
 /******
 *  Running this test will delete all Amazon cloud credentials from the target cluster
 ******/
-describe('Cloud Credential', { tags: ['@manager', '@adminUser'] }, () => {
+describe('Cloud Credential', { tags: ['@manager', '@adminUser', '@clusterConfig'] }, () => {
   const clusterList = new ClusterManagerListPagePo();
   const doCreatedCloudCredsIds = [];
   const azCreatedCloudCredsIds = [];
