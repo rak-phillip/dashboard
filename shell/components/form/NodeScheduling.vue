@@ -66,7 +66,7 @@ export default {
       updateResources(nodes: KubeNode[]) {
         return nodes
           .filter((node) => {
-            const taints = node?.spec?.taints || [];
+            const taints = node.spec?.taints || [];
 
             return taints.every((taint: KubeNodeTaint) => !keys.includes(taint.key));
           })

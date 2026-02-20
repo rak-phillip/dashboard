@@ -30,7 +30,7 @@ describe('component: NodeScheduling', () => {
     _VIEW,
     _CREATE,
     _EDIT
-  ])('should show NodeName option', async(mode) => {
+  ])('should show NodeName option', (mode) => {
     const wrapper = mount(
       NodeScheduling,
       {
