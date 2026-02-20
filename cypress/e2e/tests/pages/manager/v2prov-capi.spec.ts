@@ -41,9 +41,9 @@ describe('Cluster List - v2 Provisioning CAPI Clusters', { tags: ['@manager', '@
   });
 
   it('should show a message indicating that CAPI clusters are not editable', () => {
-    cy.get('body').find(`[data-testid="capi-unsupported-warning-${ clusterName }"]`)
+    clusterList.capiWarningSubRow(clusterName)
       .should('be.visible');
-    cy.get('body').find(`[data-testid="capi-unsupported-warning-local"]`)
+    clusterList.capiWarningSubRow('Local')
       .should('not.exist');
   });
 
