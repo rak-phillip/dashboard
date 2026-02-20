@@ -67,9 +67,8 @@ jobs:
                   - Config/environment details where relevant
 
                 4. **Reproducibility**
-                  - For bugs: numbered steps to reproduce + expected vs. actual behavior
-                  - For features: clear user story or flow describing the desired behavior
-                  - Preconditions or environment requirements stated
+                   - **Bugs**: numbered steps to reproduce + expected vs. actual behavior; preconditions stated. This is REQUIRED.
+                   - **Features**: a clear user story or flow describing the desired behavior is sufficient. Numbered repro steps are NOT required and must not be asked for.
 
                 ### SECONDARY CRITERION — partial satisfaction is acceptable
 
@@ -82,6 +81,7 @@ jobs:
 
                 - \`"is_groomed": true\`  → all four PRIMARY criteria clearly present (dependencies optional)
                 - \`"is_groomed": false\` → one or more PRIMARY criteria are missing or too vague
+                - For feature requests, criterion 4 is satisfied by a clear user story or flow — do NOT ask for reproduction steps
                 - Be decisive; do not fail an issue for missing or incomplete dependencies alone
                 - Ask at most 2–3 targeted questions focused only on the specific missing primary criteria
                 - Do NOT ask about dependencies unless all four primary criteria are already met
@@ -103,6 +103,76 @@ jobs:
 
                 In "questions_markdown", ask only about the specific missing primary criteria — no more than 2–3 focused questions.
                 In "analysis_markdown", briefly summarize which criteria are met and which are not.
+
+                Respond ONLY with a valid JSON object with this exact structure (no extra text before or after it):
+                {
+                  "is_groomed": boolean,
+                  "analysis_markdown": string,
+                  "questions_markdown": string
+                }
+              `.trim();
+            }
+
+            function buildReviewPrompt(title, body, previousQuestions) {
+              return `
+                You are an experienced engineering lead reviewing a GitHub issue that was previously flagged as needing more information.
+
+                ## What the bot previously asked
+
+                ${previousQuestions}
+
+                ## Current issue state
+
+                Title:
+                ${title}
+
+                Body:
+                ${body}
+
+                ## Grooming Decision Model (4 primary + 1 secondary)
+
+                An issue is **groomed** when ALL FOUR primary criteria are clearly present.
+                The fifth criterion may be absent or only partially met without blocking grooming.
+
+                ### PRIMARY CRITERIA — all four must be fully satisfied
+
+                1. **Clear Problem Statement**
+                  - Title clearly summarizes the issue
+                  - Description explains what is broken or needed and why it matters
+                  - Context provided about where in the product the issue occurs
+
+                2. **Acceptance Criteria / Requirements**
+                  - At least 1–3 concrete, testable acceptance criteria (checklist preferred)
+                  - User-facing and verifiable; not implementation details
+                  - For bugs: defines what "fixed" looks like
+                  - For features: defines what "done" looks like
+
+                3. **Technical Details**
+                  - For bugs: error messages and/or stack traces; specific files or components identified
+                  - For features: enough technical context for an engineer to scope the work
+                  - Config/environment details where relevant
+
+                4. **Reproducibility**
+                  - **Bugs**: numbered steps to reproduce + expected vs. actual behavior; preconditions stated. This is REQUIRED.
+                  - **Features**: a clear user story or flow describing the desired behavior is sufficient. Numbered repro steps are NOT required and must not be asked for.
+
+                ### SECONDARY CRITERION — partial satisfaction is acceptable
+
+                5. **Dependencies / Additional Information**
+                  - Related issues or PRs referenced (even one link is sufficient)
+                  - Root cause hypotheses, workarounds, impact/severity
+                  - Absence of this criterion does NOT block grooming
+
+                ## Decision Rules
+
+                - Evaluate the CURRENT issue body — the reporter may have edited it since the first review
+                - \`"is_groomed": true\`  → all four PRIMARY criteria now clearly present
+                - \`"is_groomed": false\` → one or more PRIMARY criteria are still missing or too vague
+                - For feature requests, criterion 4 is satisfied by a clear user story or flow — do NOT ask for reproduction steps
+                - Do NOT repeat questions that have already been answered in the current body
+                - In "analysis_markdown", briefly acknowledge what has improved and what is still missing
+                - In "questions_markdown", ask only about the specific criteria still outstanding — no more than 2–3 questions
+                - Do NOT ask about dependencies unless all four primary criteria are already met
 
                 Respond ONLY with a valid JSON object with this exact structure (no extra text before or after it):
                 {
@@ -157,11 +227,6 @@ jobs:
               return true;
             });
             core.info(`Found ${issues.length} issues to groom`);
-
-            if (issues.length === 0) {
-              core.info('No issues to process, exiting.');
-              return;
-            }
 
             for (const issue of issues) {
               const number = issue.number;
@@ -223,4 +288,106 @@ jobs:
                   `Failed to add labels on issue #${number}: ${err.message}`,
                 );
               }
+            }
+
+            const processedByQueueA = new Set(issues.map((i) => i.number));
+
+            // --- Queue B: re-evaluate needs-info issues updated since last run ---
+            const needsInfoResp = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              labels: 'needs-info',
+              since: sinceISO,
+              per_page: 100,
+            });
+
+            const needsInfoIssues = needsInfoResp.data.filter((issue) => !issue.pull_request);
+            core.info(`Found ${needsInfoIssues.length} needs-info issues to re-evaluate`);
+
+            for (const issue of needsInfoIssues) {
+              const number = issue.number;
+              const title = issue.title || '';
+              const body = issue.body || '';
+
+              if (processedByQueueA.has(number)) {
+                core.info(`Issue #${number}: just processed in Queue A this run, skipping`);
+                continue;
+              }
+
+              // Fetch comments to find the last bot comment
+              const commentsResp = await github.rest.issues.listComments({
+                owner,
+                repo,
+                issue_number: number,
+                per_page: 100,
+              });
+
+              const botComments = commentsResp.data.filter(
+                (c) => c.user?.login === 'github-actions[bot]'
+              );
+              const lastBotComment = botComments[botComments.length - 1];
+
+              // Skip if no new activity since the bot last commented
+              if (lastBotComment && new Date(issue.updated_at) <= new Date(lastBotComment.created_at)) {
+                core.info(`Issue #${number}: no new activity since last bot comment, skipping`);
+                continue;
+              }
+
+              core.info(`Re-evaluating issue #${number}: ${title}`);
+
+              const previousQuestions = lastBotComment?.body || '(no previous bot comment found)';
+              const prompt = buildReviewPrompt(title, body, previousQuestions);
+              const stdout = await runGhModels(prompt);
+              core.debug(`Model raw output for re-evaluation of #${number}: ${stdout}`);
+
+              let result;
+              try {
+                result = JSON.parse(stdout);
+              } catch (err) {
+                core.warning(`Failed to parse model output for issue #${number}: ${err.message}`);
+                continue;
+              }
+
+              const isGroomed = !!result.is_groomed;
+              const analysis = result.analysis_markdown || '';
+              const questions = result.questions_markdown || '';
+
+              let commentBody;
+              if (isGroomed) {
+                commentBody = `### 🤖 Issue grooming analysis\n\n${analysis}\n\n_This analysis was generated automatically based on the repository's grooming checklist._`;
+              } else {
+                commentBody = `### 🤖 Issue grooming questions\n\n${questions}\n\n_This comment was generated automatically to help gather the information needed to groom this issue._`;
+              }
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: number,
+                body: commentBody,
+              });
+
+              if (isGroomed) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner,
+                    repo,
+                    issue_number: number,
+                    name: 'needs-info',
+                  });
+                } catch (err) {
+                  core.warning(`Failed to remove needs-info label on issue #${number}: ${err.message}`);
+                }
+                try {
+                  await github.rest.issues.addLabels({
+                    owner,
+                    repo,
+                    issue_number: number,
+                    labels: ['groomed'],
+                  });
+                } catch (err) {
+                  core.warning(`Failed to add groomed label on issue #${number}: ${err.message}`);
+                }
+              }
+              // If still not groomed, needs-info label already present — no label change needed
             }
