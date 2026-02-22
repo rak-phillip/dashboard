@@ -28,8 +28,9 @@ import {
 } from '@shell/utils/object';
 import { allHash } from '@shell/utils/promise';
 import {
-  getAllOptionsAfterCurrentVersion, filterOutDeprecatedPatchVersions, isHarvesterSatisfiesVersion, labelForAddon, initSchedulingCustomization, addonConfigPreserve
+  getAllOptionsAfterCurrentVersion, filterOutDeprecatedPatchVersions, isHarvesterSatisfiesVersion, labelForAddon, initSchedulingCustomization, addonConfigPreserve,
 } from '@shell/utils/cluster';
+import { AGENT_CONFIGURATION_TYPES, SETTING } from '@shell/config/settings';
 
 import { BadgeState } from '@components/BadgeState';
 import { Banner } from '@components/Banner';
@@ -43,7 +44,6 @@ import { canViewClusterMembershipEditor } from '@shell/components/form/Members/C
 import semver from 'semver';
 
 import { CLOUD_CREDENTIAL_OVERRIDE } from '@shell/models/nodedriver';
-import { SETTING } from '@shell/config/settings';
 import { base64Encode } from '@shell/utils/crypto';
 import { CAPI as CAPI_ANNOTATIONS, CLUSTER_BADGE } from '@shell/config/labels-annotations';
 import AgentEnv from '@shell/edit/provisioning.cattle.io.cluster/AgentEnv';
@@ -160,6 +160,8 @@ export default {
 
     this.clusterAgentDefaultPC = sc.clusterAgentDefaultPC;
     this.clusterAgentDefaultPDB = sc.clusterAgentDefaultPDB;
+    this.fleetAgentDefaultPC = sc.fleetAgentDefaultPC;
+    this.fleetAgentDefaultPDB = sc.fleetAgentDefaultPDB;
     this.schedulingCustomizationFeatureEnabled = sc.schedulingCustomizationFeatureEnabled;
     this.schedulingCustomizationOriginallyEnabled = sc.schedulingCustomizationOriginallyEnabled;
     this.errors = this.errors.concat(sc.errors);
@@ -282,6 +284,8 @@ export default {
       schedulingCustomizationOriginallyEnabled: false,
       clusterAgentDefaultPC:                    null,
       clusterAgentDefaultPDB:                   null,
+      fleetAgentDefaultPC:                      null,
+      fleetAgentDefaultPDB:                     null,
       activeTab:                                null,
       isGoogle,
       isAuthenticated:                          !isGoogle || this.mode === _EDIT,
@@ -292,6 +296,7 @@ export default {
       addonConfigDiffs:                         {},
       originalKubeVersion:                      null,
       isEmpty,
+      AGENT_CONFIGURATION_TYPES,
     };
   },
 
@@ -1156,11 +1161,27 @@ export default {
       }
     },
 
-    setSchedulingCustomization(val) {
-      if (val) {
-        set(this.value, 'spec.clusterAgentDeploymentCustomization.schedulingCustomization', { priorityClass: this.clusterAgentDefaultPC, podDisruptionBudget: this.clusterAgentDefaultPDB });
+    setSchedulingCustomization({ event, agentType }) {
+      if (event) {
+        switch (agentType) {
+        case AGENT_CONFIGURATION_TYPES.CLUSTER:
+          set(this.value, 'spec.clusterAgentDeploymentCustomization.schedulingCustomization', { priorityClass: this.clusterAgentDefaultPC, podDisruptionBudget: this.clusterAgentDefaultPDB });
+          break;
+        case AGENT_CONFIGURATION_TYPES.FLEET:
+          set(this.value, 'spec.fleetAgentDeploymentCustomization.schedulingCustomization', { priorityClass: this.fleetAgentDefaultPC, podDisruptionBudget: this.fleetAgentDefaultPDB });
+          break;
+        default:
+        }
       } else {
-        delete this.value.spec.clusterAgentDeploymentCustomization.schedulingCustomization;
+        switch (agentType) {
+        case AGENT_CONFIGURATION_TYPES.CLUSTER:
+          delete this.value.spec.clusterAgentDeploymentCustomization.schedulingCustomization;
+          break;
+        case AGENT_CONFIGURATION_TYPES.FLEET:
+          delete this.value.spec.fleetAgentDeploymentCustomization.schedulingCustomization;
+          break;
+        default:
+        }
       }
     },
 
@@ -2712,7 +2733,7 @@ export default {
             <AgentConfiguration
               v-model:value="value.spec.clusterAgentDeploymentCustomization"
               data-testid="rke2-cluster-agent-config"
-              type="cluster"
+              :type="AGENT_CONFIGURATION_TYPES.CLUSTER"
               :mode="mode"
               :scheduling-customization-feature-enabled="schedulingCustomizationFeatureEnabled"
               :default-p-c="clusterAgentDefaultPC"
@@ -2731,8 +2752,13 @@ export default {
               v-if="value.spec.fleetAgentDeploymentCustomization"
               v-model:value="value.spec.fleetAgentDeploymentCustomization"
               data-testid="rke2-fleet-agent-config"
-              type="fleet"
+              :type="AGENT_CONFIGURATION_TYPES.FLEET"
               :mode="mode"
+              :scheduling-customization-feature-enabled="schedulingCustomizationFeatureEnabled"
+              :default-p-c="fleetAgentDefaultPC"
+              :default-p-d-b="fleetAgentDefaultPDB"
+              :scheduling-customization-originally-enabled="schedulingCustomizationOriginallyEnabled"
+              @scheduling-customization-changed="setSchedulingCustomization"
             />
           </Tab>
 
