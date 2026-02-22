@@ -276,6 +276,12 @@ export default {
     },
 
     updatePollingInterval(value) {
+      this.pollingInterval = value;
+    },
+
+    validatePollingInterval() {
+      const value = this.pollingInterval;
+
       if (value) {
         this.value.spec.pollingInterval = this.durationSeconds(value);
       } else {
@@ -553,6 +559,7 @@ export default {
         @update:downstream-resources="updateDownstreamResources($event.kind, $event.list)"
         @toggle-polling="togglePolling"
         @update:polling-interval="updatePollingInterval"
+        @update:validate-polling-interval="validatePollingInterval"
       />
     </template>
 
@@ -656,6 +663,7 @@ export default {
             @update:downstream-resources="updateDownstreamResources($event.kind, $event.list)"
             @toggle-polling="togglePolling"
             @update:polling-interval="updatePollingInterval"
+            @update:validate-polling-interval="validatePollingInterval"
           />
         </Tab>
         <Tab

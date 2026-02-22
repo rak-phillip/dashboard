@@ -388,10 +388,17 @@ export default {
     },
 
     updatePollingInterval(value) {
+      this.pollingInterval = value;
+    },
+
+    validatePollingInterval() {
+      const value = this.pollingInterval;
+
       if (!value) {
         this.pollingInterval = DEFAULT_POLLING_INTERVAL;
         this.value.spec.pollingInterval = this.durationSeconds(DEFAULT_POLLING_INTERVAL);
       } else if (value === MINIMUM_POLLING_INTERVAL) {
+        this.pollingInterval = MINIMUM_POLLING_INTERVAL;
         delete this.value.spec.pollingInterval;
       } else {
         this.value.spec.pollingInterval = this.durationSeconds(value);
@@ -479,6 +486,7 @@ export default {
         @update:correct-drift="correctDriftEnabled = $event"
         @update:polling-enabled="enablePolling"
         @update:polling-interval="updatePollingInterval"
+        @update:validate-polling-interval="validatePollingInterval"
       />
     </template>
 
@@ -572,6 +580,7 @@ export default {
             @update:correct-drift="correctDriftEnabled = $event"
             @update:polling-enabled="enablePolling"
             @update:polling-interval="updatePollingInterval"
+            @update:validate-polling-interval="validatePollingInterval"
           />
         </Tab>
         <Tab

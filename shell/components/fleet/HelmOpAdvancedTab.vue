@@ -75,7 +75,8 @@ const emit = defineEmits([
   'update:correct-drift',
   'update:downstream-resources',
   'toggle-polling',
-  'update:polling-interval'
+  'update:polling-interval',
+  'update:validate-polling-interval',
 ]);
 
 const store = useStore();
@@ -103,6 +104,10 @@ const togglePolling = (value) => {
 
 const updatePollingInterval = (value) => {
   emit('update:polling-interval', value);
+};
+
+const validatePollingInterval = () => {
+  emit('update:validate-polling-interval');
 };
 </script>
 
@@ -217,8 +222,8 @@ const updatePollingInterval = (value) => {
               :label="t('fleet.helmOp.polling.pollingInterval.label')"
               :mode="mode"
               tooltip-key="fleet.helmOp.polling.pollingInterval.tooltip"
-              @blur.capture="updatePollingInterval(pollingInterval)"
               @update:value="updatePollingInterval"
+              @blur.capture="validatePollingInterval"
             />
           </div>
         </template>

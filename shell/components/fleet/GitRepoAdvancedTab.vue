@@ -88,7 +88,8 @@ const emit = defineEmits([
   'update:cached-auth',
   'update:correct-drift',
   'update:polling-enabled',
-  'update:polling-interval'
+  'update:polling-interval',
+  'update:validate-polling-interval',
 ]);
 
 const store = useStore();
@@ -120,6 +121,10 @@ const enablePolling = (value) => {
 
 const updatePollingInterval = (value) => {
   emit('update:polling-interval', value);
+};
+
+const validatePollingInterval = () => {
+  emit('update:validate-polling-interval');
 };
 </script>
 
@@ -297,7 +302,7 @@ const updatePollingInterval = (value) => {
             :mode="mode"
             tooltip-key="fleet.gitRepo.polling.pollingInterval.tooltip"
             @update:value="updatePollingInterval"
-            @blur.capture="updatePollingInterval(pollingInterval)"
+            @blur.capture="validatePollingInterval"
           />
         </div>
       </template>

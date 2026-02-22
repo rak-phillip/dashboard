@@ -407,7 +407,7 @@ export default {
         @update:value="selectClusters"
       />
       <div
-        v-if="!isView || (isView && clusterSelectors && clusterSelectors.length > 0)"
+        v-if="!isView || (clusterSelectors && clusterSelectors.length > 0)"
         class="mmt-6"
       >
         <h4 class="m-0">
