@@ -154,7 +154,7 @@ export default {
       return getters.all(type);
     }
 
-    // Does the store contain a page, assume it's a subset of all resources still covering applicable resources and
+    // Does the store contain a page, assume it's a subset of all resources still covering applicable resources, and
     // apply labelSelector to get actual result
     if (getters['havePage'](type)) {
       return getters.matching( type, selector, namespace );
