@@ -257,6 +257,8 @@ describe('oidc.vue', () => {
 
       expect(addCustomClaimsCheckbox.exists()).toBe(true);
       expect(groupSearchCheckbox.exists()).toBe(true);
+      expect(addCustomClaimsCheckbox.find('input').element.disabled).toBe(false);
+      expect(groupSearchCheckbox.find('input').element.disabled).toBe(false);
     });
 
     it('should render custom claims section when provider is keycloak and addCustomClaims is true', async() => {
@@ -282,6 +284,8 @@ describe('oidc.vue', () => {
 
       expect(addCustomClaimsCheckbox.exists()).toBe(true);
       expect(groupSearchCheckbox.exists()).toBe(true);
+      expect(addCustomClaimsCheckbox.find('input').element.disabled).toBe(false);
+      expect(groupSearchCheckbox.find('input').element.disabled).toBe(false);
     });
 
     it('should NOT render custom claims section when provider is keycloak and addCustomClaims is false', async() => {
@@ -296,6 +300,19 @@ describe('oidc.vue', () => {
       expect(nameClaim.exists()).toBe(false);
       expect(groupsClaim.exists()).toBe(false);
       expect(emailClaim.exists()).toBe(false);
+    });
+
+    it.each([
+      ['cognito'],
+    ])('addCustomClaims and supportsGroupSearch fields do not exist for provider "%s"', async(providerId: string) => {
+      wrapper.setData({ model: { ...mockModel, id: providerId } });
+      await nextTick();
+
+      const addCustomClaimsCheckbox = wrapper.find('[data-testid="input-add-custom-claims"]');
+      const groupSearchCheckbox = wrapper.find('[data-testid="input-group-search"]');
+
+      expect(addCustomClaimsCheckbox.exists()).toBe(false);
+      expect(groupSearchCheckbox.exists()).toBe(false);
     });
   });
 });
