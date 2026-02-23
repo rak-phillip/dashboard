@@ -74,6 +74,87 @@ describe('Projects/Namespaces', { tags: ['@explorer2', '@adminUser'] }, () => {
     });
   });
 
+  describe('Custom resource quota type', () => {
+    it('identifier input is disabled when a non-custom resource type is selected', () => {
+      projectsNamespacesPage.baseResourceList().masthead().create();
+      createProjectPage.resourceDetail().createEditView().nameNsDescription()
+        .name()
+        .set('test-1234');
+      createProjectPage.tabResourceQuotas().click();
+      createProjectPage.btnAddResource().click();
+      createProjectPage.selectResourceTypeByLabel('Config Maps');
+      createProjectPage.inputCustomType().expectToBeDisabled();
+    });
+
+    it('identifier input is enabled when the Custom resource type is selected', () => {
+      projectsNamespacesPage.baseResourceList().masthead().create();
+      createProjectPage.resourceDetail().createEditView().nameNsDescription()
+        .name()
+        .set('test-1234');
+      createProjectPage.tabResourceQuotas().click();
+      createProjectPage.btnAddResource().click();
+      createProjectPage.inputCustomType().expectToBeEnabled();
+    });
+
+    it('Create button is disabled with Custom type selected but no identifier provided', () => {
+      projectsNamespacesPage.baseResourceList().masthead().create();
+      createProjectPage.resourceDetail().createEditView().nameNsDescription()
+        .name()
+        .set('test-1234');
+      createProjectPage.tabResourceQuotas().click();
+      createProjectPage.btnAddResource().click();
+      createProjectPage.resourceDetail().createEditView()
+        .createButton()
+        .expectToBeDisabled();
+    });
+
+    it('Create button is enabled after providing the resource identifier', () => {
+      projectsNamespacesPage.baseResourceList().masthead().create();
+      createProjectPage.resourceDetail().createEditView().nameNsDescription()
+        .name()
+        .set('test-1234');
+      createProjectPage.tabResourceQuotas().click();
+      createProjectPage.btnAddResource().click();
+      createProjectPage.inputCustomType().set('example.io/custom-resource');
+      createProjectPage.resourceDetail().createEditView()
+        .createButton()
+        .expectToBeEnabled();
+    });
+
+    describe('stores correct quota values for Custom type', () => {
+      beforeEach(() => {
+        cy.createE2EResourceName('proj').as('projectName');
+        cy.intercept('POST', '/v3/projects').as('createProjectRequest');
+      });
+
+      it('correctly stores Project Limit and Namespace Default Limit for Custom type', () => {
+        cy.get('@projectName').then((projectName) => {
+          projectsNamespacesPage.baseResourceList().masthead().create();
+          createProjectPage.resourceDetail().createEditView().nameNsDescription()
+            .name()
+            .set(projectName);
+          createProjectPage.tabResourceQuotas().click();
+          createProjectPage.btnAddResource().click();
+          createProjectPage.inputCustomType().set('example.io/custom-resource');
+          createProjectPage.inputProjectLimit().set('5');
+          createProjectPage.inputNamespaceDefaultLimit().set('2');
+          createProjectPage.resourceDetail().createEditView().create();
+
+          cy.wait('@createProjectRequest').then(({ request }) => {
+            expect(request.body.resourceQuota.limit.extended['example.io/custom-resource']).to.equal('5');
+            expect(request.body.namespaceDefaultResourceQuota.limit.extended['example.io/custom-resource']).to.equal('2');
+          });
+        });
+      });
+
+      afterEach(() => {
+        cy.get<string>('@projectName').then((projectName) => {
+          cy.deleteRancherResource('v3', 'projects', projectName, false);
+        });
+      });
+    });
+  });
+
   describe('Project Error Banner and Validation', () => {
     beforeEach(() => {
       projectsNamespacesPage.goTo();

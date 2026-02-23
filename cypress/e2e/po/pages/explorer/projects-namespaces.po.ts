@@ -88,6 +88,18 @@ export class ProjectCreateEditPagePo extends BaseDetailPagePo {
     return selectPo.clickOption(optionIndex + 1);
   }
 
+  selectResourceTypeByLabel(label: string) {
+    const selectPo = new SelectPo(cy.get('[data-testid="projectrow-type-input"]'));
+
+    selectPo.toggle();
+
+    return selectPo.clickOptionWithLabel(label);
+  }
+
+  inputCustomType() {
+    return new LabeledInputPo(cy.get('[data-testid="projectrow-custom-type-input"]'));
+  }
+
   bannerError(n: number) {
     return this.self().getId(`error-banner${ n }`);
   }
