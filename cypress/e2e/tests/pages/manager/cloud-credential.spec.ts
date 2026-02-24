@@ -328,8 +328,7 @@ describe('Cloud Credential', { tags: ['@manager', '@adminUser', '@clusterConfig'
 describe('Visual Testing', { tags: ['@percy', '@manager', '@adminUser'] }, () => {
   beforeEach(() => {
     cy.login();
-    // Set theme to light
-    cy.setUserPreference({ theme: 'ui-light' });
+    cy.applyDefaultTestTheme();
     HomePagePo.goTo(); // this is needed to ensure we have a valid authentication session
   });
 
