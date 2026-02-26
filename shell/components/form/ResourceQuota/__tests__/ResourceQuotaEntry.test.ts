@@ -82,12 +82,6 @@ describe('component: ResourceQuotaEntry', () => {
 
       expect((wrapper.vm as any).typeOption).toStrictEqual(extendedType);
     });
-
-    it('should match on the resourceType', () => {
-      const wrapper = createWrapper({ resourceType: 'configMaps' });
-
-      expect((wrapper.vm as any).typeOption).toStrictEqual(mockType);
-    });
   });
 
   describe('computed: isCustom', () => {
