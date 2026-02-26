@@ -46,14 +46,14 @@ export default {
     this.value.spec['resourceQuota'] = this.value.spec.resourceQuota || { limit: {} };
 
     this.quotasFromSpec();
-  },
 
-  computed: { ...QUOTA_COMPUTED },
-
-  watch: {
-    resourceQuotas: {
-      deep: true,
-      handler() {
+    /**
+     * Register watcher using the imperative API to reduce churn when initialing
+     * data on first render
+     */
+    this.$watch(
+      'resourceQuotas',
+      () => {
         const { projectLimit, nsLimit } = this.specFromQuotas();
 
         this.$emit('input', { projectLimit, nsLimit });
@@ -63,9 +63,12 @@ export default {
         );
 
         this.$emit('validationChanged', !hasMissingExtendedIdentifier);
-      }
-    }
+      },
+      { deep: true }
+    );
   },
+
+  computed: { ...QUOTA_COMPUTED },
 
   methods: {
     addResource() {
