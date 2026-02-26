@@ -65,6 +65,43 @@ describe('project', () => {
       });
     });
 
+    it('should initialise resourceQuotas as an empty array when resourceQuota exists but has no limit property', () => {
+      const wrapper: any = shallowMount(Project, {
+        props: {
+          ...defaultProps,
+          value: {
+            spec: {
+              resourceQuota:                 {},
+              namespaceDefaultResourceQuota: { limit: {} }
+            }
+          }
+        }
+      });
+
+      expect(wrapper.vm.resourceQuotas).toStrictEqual([]);
+    });
+
+    it('should parse project quotas and fall back to empty string for missing ns limits when namespaceDefaultResourceQuota has no limit property', () => {
+      const wrapper: any = shallowMount(Project, {
+        props: {
+          ...defaultProps,
+          value: {
+            spec: {
+              resourceQuota:                 { limit: { configMaps: '20' } },
+              namespaceDefaultResourceQuota: {}
+            }
+          }
+        }
+      });
+
+      expect(wrapper.vm.resourceQuotas).toHaveLength(1);
+      expect(wrapper.vm.resourceQuotas[0]).toMatchObject({
+        resourceType:          'configMaps',
+        projectLimit:          '20',
+        namespaceDefaultLimit: '',
+      });
+    });
+
     it('should parse both standard and extended resource types into resourceQuotas', () => {
       const wrapper: any = shallowMount(Project, {
         props: {

@@ -119,8 +119,8 @@ export default {
     },
 
     quotasFromSpec() {
-      const projectLimit = this.value.spec.resourceQuota.limit;
-      const nsLimit = this.value.spec.namespaceDefaultResourceQuota.limit;
+      const projectLimit = this.value?.spec?.resourceQuota?.limit || {};
+      const nsLimit = this.value?.spec?.namespaceDefaultResourceQuota?.limit || {};
 
       Object.keys(projectLimit).forEach((key) => {
         if (key !== TYPES.EXTENDED) {
