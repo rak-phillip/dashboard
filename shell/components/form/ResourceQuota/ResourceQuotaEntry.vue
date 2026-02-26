@@ -112,7 +112,7 @@ const updateResourceIdentifier = (resourceType: string) => {
       variant="tertiary"
       @click="remove(id)"
     >
-      Remove
+      {{ t('generic.remove') }}
     </RcButton>
   </div>
 </template>
