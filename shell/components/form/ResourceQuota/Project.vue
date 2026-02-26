@@ -3,6 +3,9 @@ import ArrayList from '@shell/components/form/ArrayList';
 import Row from './ProjectRow';
 import { QUOTA_COMPUTED, TYPES } from './shared';
 import Banner from '@components/Banner/Banner.vue';
+import ResourceQuota from '@shell/components/form/ResourceQuota/ResourceQuotaEntry.vue';
+import { RcButton } from '@components/RcButton';
+import { uniqueId } from 'lodash';
 
 export default {
   emits: [
@@ -15,6 +18,8 @@ export default {
     ArrayList,
     Row,
     Banner,
+    RcButton,
+    ResourceQuota,
   },
 
   props: {
@@ -37,7 +42,16 @@ export default {
   },
 
   data() {
-    return { typeValues: null };
+    return {
+      typeValues:     null,
+      resourceQuotas: [{
+        id:                    uniqueId(),
+        resourceType:          'extended',
+        resourceIdentifier:    '',
+        projectLimit:          '',
+        namespaceDefaultLimit: '',
+      }],
+    };
   },
 
   created() {
@@ -60,6 +74,20 @@ export default {
   computed: { ...QUOTA_COMPUTED },
 
   methods: {
+    addResource() {
+      this.resourceQuotas.push({
+        id:                    uniqueId(),
+        resourceType:          'extended',
+        resourceIdentifier:    '',
+        projectLimit:          '',
+        namespaceDefaultLimit: '',
+      });
+    },
+    removeResource(id) {
+      this.resourceQuotas = this.resourceQuotas.filter((test) => {
+        return test.id !== id;
+      });
+    },
     updateType(event) {
       const { index, type } = event;
 
@@ -152,6 +180,29 @@ export default {
         <label>{{ t('resourceQuota.headers.namespaceDefaultLimit') }}</label>
       </div>
     </div>
+    <template
+      v-for="resourceQuota in resourceQuotas"
+      :key="resourceQuota.id"
+    >
+      <ResourceQuota
+        :id="resourceQuota.id"
+        v-model:resource-type="resourceQuota.resourceType"
+        v-model:resource-identifier="resourceQuota.resourceIdentifier"
+        v-model:project-limit="resourceQuota.projectLimit"
+        v-model:namespace-default-limit="resourceQuota.namespaceDefaultLimit"
+        :mapped-types="mappedTypes"
+        :types="mappedTypes"
+        :mode="mode"
+        @remove="removeResource"
+      />
+    </template>
+    <rc-button
+      variant="tertiary"
+      @click="addResource"
+    >
+      Add Resource
+    </rc-button>
+
     <ArrayList
       v-model:value="typeValues"
       label="Resources"
