@@ -24,7 +24,7 @@ const projectLimit = defineModel<string>('projectLimit');
 const namespaceDefaultLimit = defineModel<string>('namespaceDefaultLimit');
 
 const typeOption = computed(() => {
-  return props.types.find((type) => type.value === resourceType.value?.split('.')[0]);
+  return props.types.find((type) => type.value === resourceType.value);
 });
 
 const isCustom = computed(() => {
