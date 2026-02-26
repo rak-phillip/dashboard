@@ -199,7 +199,7 @@ export default {
         @remove="removeResource"
       />
     </template>
-    <div class="mmt-6">
+    <div class="project-quotas-footer">
       <rc-button
         variant="tertiary"
         data-testid="btn-add-resource"
@@ -227,5 +227,9 @@ export default {
 
 .required {
   color: var(--error);
+}
+
+.project-quotas-footer {
+  margin-top: 24px;
 }
 </style>
