@@ -151,14 +151,23 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div
+    role="grid"
+    :aria-label="t('resourceQuota.ariaLabel.grid')"
+  >
     <Banner
       color="info"
       label-key="resourceQuota.banner"
       class="mb-20"
     />
-    <div class="headers mb-10">
-      <div class="mr-10">
+    <div
+      role="row"
+      class="headers mb-10"
+    >
+      <div
+        role="columnheader"
+        class="mr-10"
+      >
         <label>
           {{ t('resourceQuota.headers.resourceType') }}
           <span
@@ -167,7 +176,10 @@ export default {
           >*</span>
         </label>
       </div>
-      <div class="mr-20">
+      <div
+        role="columnheader"
+        class="mr-20"
+      >
         <label>
           {{ t('resourceQuota.headers.resourceIdentifier') }}
           <span
@@ -180,15 +192,21 @@ export default {
           />
         </label>
       </div>
-      <div class="mr-20">
+      <div
+        role="columnheader"
+        class="mr-20"
+      >
         <label>{{ t('resourceQuota.headers.projectLimit') }}</label>
       </div>
-      <div class="mr-10">
+      <div
+        role="columnheader"
+        class="mr-10"
+      >
         <label>{{ t('resourceQuota.headers.namespaceDefaultLimit') }}</label>
       </div>
     </div>
     <template
-      v-for="resourceQuota in resourceQuotas"
+      v-for="(resourceQuota, resourceQuotaIndex) in resourceQuotas"
       :key="resourceQuota.id"
     >
       <ResourceQuota
@@ -197,6 +215,7 @@ export default {
         v-model:resource-identifier="resourceQuota.resourceIdentifier"
         v-model:project-limit="resourceQuota.projectLimit"
         v-model:namespace-default-limit="resourceQuota.namespaceDefaultLimit"
+        :index="resourceQuotaIndex + 1"
         :types="remainingTypes(resourceQuota.resourceType)"
         :mode="mode"
         @remove="removeResource"
@@ -208,7 +227,7 @@ export default {
         data-testid="btn-add-resource"
         @click="addResource"
       >
-        Add Resource
+        {{ t('resourceQuota.add.label') }}
       </rc-button>
     </div>
   </div>

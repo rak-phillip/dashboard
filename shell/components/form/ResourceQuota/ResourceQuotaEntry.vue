@@ -12,11 +12,15 @@ import { useI18n } from '@shell/composables/useI18n';
 
 const props = defineProps<{
   id: string,
+  index: number,
   mode: string,
   types: any[],
 }>();
 
 const emit = defineEmits(['remove']);
+
+const store = useStore();
+const { t } = useI18n(store);
 
 const resourceType = defineModel<string>('resourceType');
 const resourceIdentifier = defineModel<string>('resourceIdentifier');
@@ -31,8 +35,17 @@ const isCustom = computed(() => {
   return resourceType.value === TYPES.EXTENDED;
 });
 
-const store = useStore();
-const { t } = useI18n(store);
+const removeAriaLabel = computed(() => {
+  let identifier;
+
+  if (isCustom.value) {
+    identifier = resourceIdentifier.value || t('generic.ariaLabel.genericRow', { index: String(props.index) });
+  } else {
+    identifier = typeOption.value?.label || t('generic.ariaLabel.genericRow', { index: String(props.index) });
+  }
+
+  return t('resourceQuota.ariaLabel.remove', { identifier });
+});
 
 const customTypeRules = computed(() => {
   // Return a validation rule that makes the field required when isCustom is true
@@ -66,6 +79,7 @@ const updateResourceIdentifier = (resourceType: string) => {
 
 <template>
   <div
+    role="row"
     class="row mb-10"
   >
     <Select
@@ -73,6 +87,7 @@ const updateResourceIdentifier = (resourceType: string) => {
       class="mr-10"
       :mode="mode"
       :options="types"
+      :aria-label="t('resourceQuota.ariaLabel.resourceType', { row: index })"
       data-testid="projectrow-type-input"
       @update:value="updateResourceIdentifier"
     />
@@ -84,6 +99,7 @@ const updateResourceIdentifier = (resourceType: string) => {
       :placeholder="t('resourceQuota.resourceIdentifier.placeholder')"
       :rules="customTypeRules"
       :require-dirty="false"
+      :aria-label="t('resourceQuota.ariaLabel.resourceIdentifier', { row: index })"
       class="mr-10"
       data-testid="projectrow-custom-type-input"
     />
@@ -96,6 +112,7 @@ const updateResourceIdentifier = (resourceType: string) => {
       :input-exponent="typeOption.inputExponent"
       :base-unit="typeOption.baseUnit"
       :output-modifier="true"
+      :aria-label="t('resourceQuota.ariaLabel.projectLimit', { row: index })"
       data-testid="projectrow-project-quota-input"
     />
     <UnitInput
@@ -106,10 +123,12 @@ const updateResourceIdentifier = (resourceType: string) => {
       :input-exponent="typeOption.inputExponent"
       :base-unit="typeOption.baseUnit"
       :output-modifier="true"
+      :aria-label="t('resourceQuota.ariaLabel.namespaceDefaultLimit', { row: index })"
       data-testid="projectrow-namespace-quota-input"
     />
     <RcButton
       variant="tertiary"
+      :aria-label="removeAriaLabel"
       @click="remove(id)"
     >
       {{ t('generic.remove') }}
