@@ -199,12 +199,15 @@ export default {
         @remove="removeResource"
       />
     </template>
-    <rc-button
-      variant="tertiary"
-      @click="addResource"
-    >
-      Add Resource
-    </rc-button>
+    <div class="mmt-6">
+      <rc-button
+        variant="tertiary"
+        data-testid="btn-add-resource"
+        @click="addResource"
+      >
+        Add Resource
+      </rc-button>
+    </div>
   </div>
 </template>
 <style lang="scss" scoped>
