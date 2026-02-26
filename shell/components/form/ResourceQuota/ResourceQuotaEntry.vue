@@ -13,7 +13,6 @@ import { useI18n } from '@shell/composables/useI18n';
 const props = defineProps<{
   id: string,
   mode: string,
-  mappedTypes: string[],
   types: any[],
 }>();
 
@@ -73,7 +72,7 @@ const updateResourceIdentifier = (resourceType: string) => {
       v-model:value="resourceType"
       class="mr-10"
       :mode="mode"
-      :options="mappedTypes"
+      :options="types"
       data-testid="projectrow-type-input"
       @update:value="updateResourceIdentifier"
     />
