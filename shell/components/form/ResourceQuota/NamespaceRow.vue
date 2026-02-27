@@ -83,6 +83,13 @@ export default {
 
       return limit[this.type];
     },
+    displayType() {
+      if (this.type.startsWith('extended.')) {
+        return this.type.slice('extended.'.length);
+      }
+
+      return this.type;
+    },
     limitValue() {
       return parseSi(this.projectResourceQuotaLimits[this.type]);
     },
@@ -189,7 +196,7 @@ export default {
     <Select
       class="mr-10"
       :mode="mode"
-      :value="type"
+      :value="displayType"
       :disabled="true"
       :options="types"
     />
