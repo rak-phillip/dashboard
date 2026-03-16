@@ -3,7 +3,7 @@ import jsyaml from 'js-yaml';
 import { mapPref, DIFF } from '@shell/store/prefs';
 import isEmpty from 'lodash/isEmpty';
 import { saferDump } from '@shell/utils/create-yaml';
-import CodeMirror from './CodeMirror';
+import { CodeMirror } from '@rancher/codemirror';
 import FileDiff from './FileDiff';
 
 export const EDITOR_MODES = {
@@ -65,7 +65,16 @@ export default {
     componentTestid: {
       type:    String,
       default: 'yaml-editor'
-    }
+    },
+
+    extensions: {
+      type:    Array,
+      default: () => [],
+    },
+  },
+
+  setup() {
+    return { EDITOR_MODES };
   },
 
   data() {
@@ -89,60 +98,12 @@ export default {
       original = value;
     }
 
-    return { original, curValue };
+    return {
+      original, curValue, editorView: null
+    };
   },
 
   computed: {
-    codeMirrorOptions() {
-      const readOnly = this.editorMode === EDITOR_MODES.VIEW_CODE;
-
-      const gutters = [];
-
-      if ( !readOnly ) {
-        gutters.push('CodeMirror-lint-markers');
-      }
-
-      gutters.push('CodeMirror-foldgutter');
-
-      return {
-        readOnly,
-        gutters,
-        mode:            'yaml',
-        lint:            !readOnly,
-        lineNumbers:     !readOnly,
-        styleActiveLine: false,
-        tabSize:         2,
-        indentWithTabs:  false,
-        cursorBlinkRate: ( readOnly ? -1 : 530 ),
-        extraKeys:       {
-          'Ctrl-Space': 'autocomplete',
-
-          Tab: (cm) => {
-            if (cm.somethingSelected()) {
-              cm.indentSelection('add');
-
-              return;
-            }
-
-            cm.execCommand('insertSoftTab');
-          },
-
-          'Shift-Tab': (cm) => {
-            cm.indentSelection('subtract');
-          }
-        },
-        screenReaderLabel: this.t('import.editor.label'),
-        // @TODO find a better way to display the outline
-        // foldOptions: {
-        //   widget: (from, to) => {
-        //     const count = to.line - from.line;
-
-        //     return count ? `\u21A4${ count }\u21A6` : '\u2194';
-        //   }
-        // }
-      };
-    },
-
     isPreview() {
       return this.editorMode === EDITOR_MODES.DIFF_CODE;
     },
@@ -164,15 +125,7 @@ export default {
 
   methods: {
     focus() {
-      if ( this.$refs.cm ) {
-        this.$refs.cm.focus();
-      }
-    },
-
-    refresh() {
-      if ( this.$refs.cm ) {
-        this.$refs.cm.refresh();
-      }
+      this.editorView?.focus();
     },
 
     onInput(value) {
@@ -193,8 +146,9 @@ export default {
       this.$emit('onInput', ...arguments);
     },
 
-    onReady() {
-      this.$emit('onReady', ...arguments);
+    onReady(view) {
+      this.editorView = view;
+      this.$emit('onReady', view);
     },
 
     onChanges() {
@@ -203,7 +157,6 @@ export default {
 
     updateValue(value) {
       this.curValue = value;
-      this.$refs.cm?.updateValue(value);
     }
   }
 };
@@ -239,15 +192,16 @@ export default {
       v-if="showCodeEditor"
       ref="cm"
       :class="{fill: true, scrolling: scrolling}"
-      :value="curValue"
-      :options="codeMirrorOptions"
-      :showKeyMapBox="true"
+      language="yaml"
+      theme="one-dark"
+      :model-value="curValue"
+      :read-only="editorMode === EDITOR_MODES.VIEW_CODE"
+      :fold-gutter="true"
+      :line-wrapping="true"
+      :extensions="extensions"
       :data-testid="componentTestid + '-code-mirror'"
-      :mode="mode"
-      @onInput="onInput"
-      @onReady="onReady"
-      @onChanges="onChanges"
-      @validationChanged="$emit('validationChanged', $event)"
+      @update:model-value="onInput"
+      @ready="onReady"
     />
     <FileDiff
       v-else
@@ -268,17 +222,6 @@ export default {
 
   .fill {
     flex: 1;
-  }
-
-  .codemirror-container  {
-    position: relative;
-
-    .CodeMirror {
-      background-color: var(--yaml-editor-bg);
-      & .CodeMirror-gutters {
-        background-color: var(--yaml-editor-bg);
-      }
-    }
   }
 
   .diff-mode {
