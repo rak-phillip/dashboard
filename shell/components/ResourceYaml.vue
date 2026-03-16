@@ -2,6 +2,10 @@
 import jsyaml from 'js-yaml';
 import YamlEditor, { EDITOR_MODES } from '@shell/components/YamlEditor';
 import FileSelector from '@shell/components/form/FileSelector';
+import {
+  foldMatchingLines, foldYamlPath, foldAllComments,
+  foldByLineMatch, foldByYamlPath, commentFoldService
+} from '@rancher/codemirror';
 import Footer from '@shell/components/form/Footer';
 import { ANNOTATIONS_TO_FOLD } from '@shell/config/labels-annotations';
 import { ensureRegex } from '@shell/utils/string';
@@ -134,6 +138,21 @@ export default {
     canDiff() {
       return this.initialYaml !== this.currentYaml;
     },
+
+    foldExtensions() {
+      const exts = [
+        commentFoldService,
+        foldByLineMatch(/managedFields/),
+        foldByLineMatch(/^status:\s*$/),
+        foldByLineMatch(/^\s+annotations:\s*$/),
+      ];
+
+      if (this.value?.yamlFolding) {
+        this.value.yamlFolding.forEach((path) => exts.push(foldByYamlPath(path)));
+      }
+
+      return exts;
+    },
   },
 
   watch: {
@@ -155,59 +174,37 @@ export default {
   methods: {
     onInput(yaml) {
       this.currentYaml = yaml;
-      this.onReady(this.cm);
     },
 
-    onReady(cm) {
+    onReady(view) {
       if (!this.initialReady) {
         return;
       }
       this.initialReady = false;
+      this.cm = view;
 
-      this.cm = cm;
-
-      if ( this.isEdit ) {
-        cm.foldLinesMatching(/^status:\s*$/);
+      if (this.isEdit) {
+        foldMatchingLines(view, /^status:\s*$/);
       }
 
       try {
         const parsed = jsyaml.load(this.currentYaml);
         const annotations = Object.keys(parsed?.metadata?.annotations || {});
         const regexes = ANNOTATIONS_TO_FOLD.map((x) => ensureRegex(x));
+        const foldAnnotations = annotations.some((k) => regexes.some((r) => k.match(r)));
 
-        let foldAnnotations = false;
-
-        for ( const k of annotations ) {
-          if ( foldAnnotations ) {
-            break;
-          }
-
-          for ( const regex of regexes ) {
-            if ( k.match(regex) ) {
-              foldAnnotations = true;
-              break;
-            }
-          }
-        }
-
-        if ( foldAnnotations ) {
-          cm.foldLinesMatching(/^\s+annotations:\s*$/);
+        if (foldAnnotations) {
+          foldMatchingLines(view, /^\s+annotations:\s*$/);
         }
       } catch (e) {}
 
-      cm.foldLinesMatching(/managedFields/);
+      foldMatchingLines(view, /managedFields/);
 
-      // Allow the model to supply an array of json paths to fold other sections in the YAML for the given resource type
       if (this.value?.yamlFolding) {
-        this.value.yamlFolding.forEach((path) => cm.foldYaml(path));
+        this.value.yamlFolding.forEach((path) => foldYamlPath(view, path));
       }
 
-      // regardless of edit or create we should probably fold all the comments so they dont get out of hand.
-      const saved = cm.getMode().fold;
-
-      cm.getMode().fold = 'yamlcomments';
-      cm.execCommand('foldAll');
-      cm.getMode().fold = saved;
+      foldAllComments(view);
     },
 
     updateValue(value) {
@@ -294,10 +291,6 @@ export default {
       }
     },
 
-    refresh() {
-      this.$refs.yamleditor.refresh();
-    },
-
     closeError(index) {
       this.errors = (this.errors || []).filter((_, i) => i !== index);
     },
@@ -314,6 +307,7 @@ export default {
       :initial-yaml-values="initialYaml"
       class="yaml-editor flex-content"
       :editor-mode="editorMode"
+      :extensions="foldExtensions"
       @onReady="onReady"
     />
     <slot
