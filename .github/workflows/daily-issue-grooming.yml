@@ -1,0 +1,217 @@
+name: Daily issue grooming
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  models: read
+  id-token: write
+
+jobs:
+  groom-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install gh-models extension
+        run: gh extension install https://github.com/github/gh-models
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Groom issues with GitHub Models (JS)
+        uses: actions/github-script@v8
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const ghToken = process.env.GH_TOKEN;
+
+            function buildPrompt(title, body) {
+              return `
+                You are an experienced engineering lead helping groom GitHub issues for a development team.
+
+                ## Strict Grooming Requirements
+                An issue is **groomed enough for implementation** ONLY when BOTH of these are true:
+                1. **Clear Acceptance Criteria**: At least 1-3 concrete, testable acceptance criteria (checklist format preferred)
+                2. **Clear Repro Steps**: For bugs: numbered repro steps OR expected vs actual behavior. For features: clear user flow.
+
+                PLUS one of:
+                - Technical details (error/stack trace, files, config)
+                - Sufficient context for team engineer to start work
+
+                ## Decision Rules
+                - **REQUIRED**: Concrete acceptance criteria AND repro steps/flow
+                - If either is missing/unclear → "is_groomed": false + questions
+                - If both present → "is_groomed": true even if minor details missing
+                - Be decisive: no leniency on acceptance criteria/repro requirements
+                - Questions should be specific to fill missing acceptance/repro
+
+                ## Issue Grooming Checklist (guidance)
+                ### Problem Definition
+                - Title clearly summarizes
+                - Explains why it matters
+                - Product context given
+
+                ### Acceptance Criteria (REQUIRED)
+                - Defined as checklist
+                - Each testable/verifiable
+                - User-facing focus
+                - Verification steps
+
+                ### Technical Information
+                - Error messages/stack traces
+                - Files/components identified
+                - Config details
+                - Environment specified
+
+                ### Reproducibility (REQUIRED for bugs)
+                - Numbered repro steps
+                - Expected vs actual contrasted
+                - Preconditions mentioned
+
+                ### Dependencies & Context
+                - Related issues/PRs referenced
+                - Root causes/hypotheses
+                - Workarounds
+                - Impact assessment
+
+                ## Examples
+                **Groomed (#241)**: Full stack trace + proposed solutions + explicit acceptance criteria → true
+                **Not Groomed (#252)**: Clear problem + files, but "To Reproduce: TBD" + no acceptance → false  
+                **Not Groomed (#255)**: Vague "handle breaking changes?" + no concrete acceptance → false
+
+                Now evaluate this GitHub issue:
+
+                Title:
+                ${title}
+
+                Body:
+                ${body}
+
+                1. Can an engineer reasonably start work without synchronous clarification?
+                2. Prefer "groomed" when problem + outcome + some detail exist
+
+                Respond ONLY with a valid JSON object with this exact structure (no extra text before or after it):
+                {
+                  "is_groomed": boolean,
+                  "analysis_markdown": string,
+                  "questions_markdown": string
+                }
+              `.trim();
+            }
+
+            async function runGhModels(prompt) {
+              const cmd = 'gh';
+              const args = [
+                'models',
+                'run',
+                'openai/gpt-4.1',   // or whatever model ID is enabled for your repo
+                prompt,
+              ];
+
+              const { exitCode, stdout, stderr } = await exec.getExecOutput(cmd, args, {
+                env: { ...process.env, GH_TOKEN: ghToken },
+              });
+
+              if (stderr) {
+                core.debug(`gh stderr: ${stderr}`);
+              }
+              if (exitCode !== 0) {
+                throw new Error(`gh models run failed with exit code ${exitCode}`);
+              }
+              return stdout.trim();
+            }
+
+            const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            core.info(`Fetching issues since ${since}`);
+
+            const issuesResp = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              since,
+              per_page: 100,
+            });
+
+            const issues = issuesResp.data.filter((issue) => !issue.pull_request);
+            core.info(`Found ${issues.length} issues to groom`);
+
+            if (issues.length === 0) {
+              core.info('No issues to process, exiting.');
+              return;
+            }
+
+            for (const issue of issues) {
+              const number = issue.number;
+              const title = issue.title || '';
+              const body = issue.body || '';
+
+              core.info(`Processing issue #${number}: ${title}`);
+
+              const prompt = buildPrompt(title, body);
+              const stdout = await runGhModels(prompt);
+              core.debug(`Model raw output: ${stdout}`);
+
+              let result;
+              try {
+                result = JSON.parse(stdout);
+              } catch (err) {
+                core.warning(
+                  `Failed to parse model output for issue #${number}: ${err.message}`,
+                );
+                continue;
+              }
+
+              const isGroomed = !!result.is_groomed;
+              const analysis = result.analysis_markdown || '';
+              const questions = result.questions_markdown || '';
+
+              let commentBody;
+              if (isGroomed) {
+                commentBody = `### 🤖 Issue grooming analysis\n\n${analysis}\n\n_This analysis was generated automatically based on the repository's grooming checklist._`;
+              } else {
+                commentBody = `### 🤖 Issue grooming questions\n\n${questions}\n\n_This comment was generated automatically to help gather the information needed to groom this issue._`;
+              }
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: number,
+                body: commentBody,
+              });
+
+              try {
+                if (isGroomed) {
+                  await github.rest.issues.addLabels({
+                    owner,
+                    repo,
+                    issue_number: number,
+                    labels: ['groomed'],
+                  });
+                } else {
+                  await github.rest.issues.addLabels({
+                    owner,
+                    repo,
+                    issue_number: number,
+                    labels: ['needs-info'],
+                  });
+                }
+              } catch (err) {
+                core.warning(
+                  `Failed to add labels on issue #${number}: ${err.message}`,
+                );
+              }
+            }
