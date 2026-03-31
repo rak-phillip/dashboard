@@ -10,9 +10,9 @@ import Select from '@shell/components/form/Select';
 import FileSelector from '@shell/components/form/FileSelector';
 import { _EDIT, _VIEW } from '@shell/config/query-params';
 import { asciiLike } from '@shell/utils/string';
-import CodeMirror from '@shell/components/CodeMirror';
 import isEqual from 'lodash/isEqual';
 import { LabeledTooltip } from '@components/LabeledTooltip';
+import { CodeMirror } from '@rancher/codemirror';
 
 export default {
   name: 'KeyValue',
@@ -767,16 +767,16 @@ export default {
                   <CodeMirror
                     v-if="valueMarkdownMultiline"
                     ref="cm"
+                    theme="one-dark"
+                    language="json"
+                    :model-value="row[valueName]"
                     data-testid="code-mirror-multiline-field"
                     :class="{['focus']: codeMirrorFocus[i]}"
-                    :value="row[valueName]"
-                    :as-text-area="true"
-                    :mode="mode"
                     :options="{
                       screenReaderLabel: t('generic.ariaLabel.value', { index: i })
                     }"
-                    @onInput="onInputMarkdownMultiline(i, $event)"
-                    @onFocus="onFocusMarkdownMultiline(i, $event)"
+                    :line-wrapping="true"
+                    @update:model-value="onInputMarkdownMultiline(i, $event)"
                   />
                   <TextAreaAutoGrow
                     v-else-if="valueMultiline && row[valueName] !== undefined"
@@ -904,7 +904,7 @@ export default {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .key-value {
   width: 100%;
   .file-selector.role-link {
@@ -965,6 +965,7 @@ export default {
   }
 
   .remove {
+    min-width: 92px;
     text-align: center;
     BUTTON {
       padding: 0px;
