@@ -2884,10 +2884,10 @@
   resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
-"@rancher/codemirror@^0.3.2":
-  version "0.3.2"
-  resolved "http://localhost:4873/@rancher/codemirror/-/codemirror-0.3.2.tgz#e1b714f2037d476534f14abc33d277bb8419917c"
-  integrity sha512-6EtmHPYT3wXUfIZ2hW1fruyjJ+w+YhFHqx4ParUkulf1vBhXeYeriMSWMXvk4lAWLh3wPfu1yp7ZEBJE2v9kHw==
+"@rancher/codemirror@^0.3.3-alpha.3":
+  version "0.3.3-alpha.3"
+  resolved "http://localhost:4873/@rancher/codemirror/-/codemirror-0.3.3-alpha.3.tgz#0bad2c89bc9e497335e96d2a4cb3bf55a89e01fd"
+  integrity sha512-Sg6H8tP7odVCMjN+wbMmmmPO+tNWjvoXIGCIAu+MKUwZED1rbKjwFgzM4Zj9hKde+5tSqcaVe/V6a4LzHoWIhQ==
   dependencies:
     "@codemirror/autocomplete" "^6.0.0"
     "@codemirror/commands" "^6.0.0"
