@@ -10,7 +10,7 @@ const config = {
   url:                   'https://extensions.rancher.io',
   baseUrl:               '/',
   onBrokenLinks:         'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown:              { hooks: { onBrokenMarkdownLinks: 'warn' } },
   favicon:               'img/favicon.ico',
   trailingSlash:         false,
 
