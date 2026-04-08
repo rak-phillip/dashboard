@@ -1,0 +1,39 @@
+name: Daily issue grooming
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  models: read
+  id-token: write
+
+jobs:
+  groom-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install gh-models extension
+        run: gh extension install https://github.com/github/gh-models
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Groom issues with GitHub Models (JS)
+        uses: actions/github-script@v8
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/scripts/daily-issue-grooming.js`);
+            await script({ github, context, core, exec });
