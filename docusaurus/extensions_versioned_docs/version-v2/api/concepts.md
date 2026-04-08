@@ -74,5 +74,5 @@ const routeForATopLevelProductResource = {
 
 With this overview on how routing works in Rancher Dashboard, we should be ready to cover the registration of custom pages, resource pages and general route definition. For more detailed information on **top-level product routing**, check this page [here](./nav/routing.md#routes-definition-for-an-extension-as-a-top-level-product).
 
-If you are interested in **cluster-level product routing**, check this page [here](./nav/routing.md#routes-definition-for-an-extension-as-a-cluster-level-product).
+If you are interested in **cluster-level product routing**, check this page [here](./nav/routing#routes-definitions-for-an-extension-as-a-cluster-level-product).
 

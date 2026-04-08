@@ -182,7 +182,7 @@ export default routes;
 
 On the above example, we are registering the route for our custom page called `CUSTOM_PAGE_NAME`. At this point we are still missing the route for `YOUR_K8S_RESOURCE_NAME`, which we will cover next. 
 
-Just to reinforce the message, it is imperative that the `name` and `path` follow this convention needed for Extension top-level products, which we cover on this [overview](../../api/concepts.md#overview-on-routing-structure-for-a-top-level-extension-product).
+Just to reinforce the message, it is imperative that the `name` and `path` follow this convention needed for Extension top-level products, which we cover on this [overview](../concepts#overview-on-routing-structure-for-rancher-dashboard).
 
 As you can see, we've added a `meta` parameter with the product and cluster names. This is necessary to exist on the routes definition in order to ensure that all the wiring "under the hood" is handled correctly by Rancher Dashboard.
 

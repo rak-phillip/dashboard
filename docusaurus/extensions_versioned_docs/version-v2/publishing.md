@@ -9,7 +9,7 @@ As discussed in the [Getting Started](./extensions-getting-started#creating-a-re
 
 > Note: An explanation on the workflow files can be found in the [Additional Release Configuration](#additional-release-configuration) section.
 
-## Automatic Approach - Triggering a Github Workflow on Tagged Release
+## Automatic Approach - Triggering a Github Workflow on Tagged Release {#triggering-a-github-workflow-on-tagged-release}
 
 > **WARNING:** When using the provided Github workflows, the base skeleton application name (Found in the root level `package.json`) ___MUST___ be unique when compared with any extension packages found in `./pkg/*`. If an extension package name matches the base skeleton name the workflow will fail due to the "Parse Extension Name" step found in both the ["Build and Release Extension Charts"](https://github.com/rancher/dashboard/blob/422823e2b6868191b9bb33470e99e69ff058b72b/.github/workflows/build-extension-charts.yml#L59-L65) and ["Build and release Extension Catalog Image to registry"](https://github.com/rancher/dashboard/blob/422823e2b6868191b9bb33470e99e69ff058b72b/.github/workflows/build-extension-catalog.yml#L64-L70) workflows.
 
@@ -200,7 +200,7 @@ By default, both of these actions are triggered by pushing into the `main` branc
 
 ## GitLab Integration
 
-When building an extension that will be housed in a GitLab repository or hosted environment, there is only one option for publishing automatically - That is by utilizing the provided [GitLab Pipeline CI file](https://github.com/rancher/dashboard/blob/master/creators/extension/app/files/.gitlab-ci.yml) that is generated when [creating the skeleton app](extensions-getting-started#creating-the-skeleton-app).
+When building an extension that will be housed in a GitLab repository or hosted environment, there is only one option for publishing automatically - That is by utilizing the provided [GitLab Pipeline CI file](https://github.com/rancher/dashboard/blob/master/creators/extension/app/files/.gitlab-ci.yml) that is generated when [creating the skeleton app](extensions-getting-started#creating-the-application).
 
 This pipeline will build an ECI and publish it to container registry (`registry.gitlab.com` by default) to allow for importing into Rancher Manager.
 The actual pipeline jobs are defined in the [Dashboard repo](https://github.com/rancher/dashboard/blob/master/.gitlab/workflows/build-extension-catalog.gitlab-ci.yml) to allow for proper versioning and to apply any updates to the pipeline without any additional work from the Extension developer.

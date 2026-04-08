@@ -92,7 +92,7 @@ jobs:
 ## Dispatching Configuration
 
 As mentioned in the `tagged_release` property description, in order to have the workflow triggered by published releases the dispatch will need to be updated. 
-This topic is covered in the [Publishing section](../publishing#triggering-a-github-workflow-on-tagged-release). To be concise, update the dispatch within the workflow file to execute the workflow on the `released` event of a `release` action:"
+This topic is covered in the [Publishing section](../publishing#helm-chart-automated-approach). To be concise, update the dispatch within the workflow file to execute the workflow on the `released` event of a `release` action:"
 
 ```yml
 on:

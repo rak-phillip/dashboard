@@ -22,7 +22,7 @@ The admissable string values for the `where` are:
 |`PanelLocation.RESOURCE_LIST`| String | 2.7.2 | Location for a panel on a Resource List View page (above the table area). Check [screenshot](./panels#panellocationresource_list-options) for location. |
 |`PanelLocation.ABOUT_TOP`| String | 2.13.0 | Location for a panel on the About page. Check [screenshot](./panels#panellocationabout_top-options) for location. |
 |`CardLocation.CLUSTER_DASHBOARD_CARD`| String | 2.7.2 | Location for a card on the Cluster Dashboard page. Check [screenshot](./cards/#cardlocationcluster_dashboard_card-options) for location. |
-|`TableColumnLocation.RESOURCE`| String | 2.7.2 | Location for a table column on a Resource List View page. Check [screenshot](./table-columns/#tablecolumnlocationresource-options) for location. |
+|`TableColumnLocation.RESOURCE`| String | 2.7.2 | Location for a table column on a Resource List View page. Check [screenshot](./table-columns#tablecolumnlocationresource-column) for location. |
 
 
 ## LocationConfig

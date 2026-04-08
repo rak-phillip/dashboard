@@ -2,7 +2,7 @@
 
 As the development of an extension progresses over time, through different versions of Rancher and the Shell package, some users may wonder why a specific extension version is available for installation in Rancher versions when it is known that it shouldn't work.
 
-This is due to the fact that when the first releases were done, no-one could foresee if future versions would have breaking changes, therefore [annotations](../configuration#configurable-annotations) most commonly used like `catalog.cattle.io/rancher-version` or `catalog.cattle.io/kube-version` would either lack an upper limit boundary or just have too low of an upper limit.
+This is due to the fact that when the first releases were done, no-one could foresee if future versions would have breaking changes, therefore [annotations](../configuration#annotations) most commonly used like `catalog.cattle.io/rancher-version` or `catalog.cattle.io/kube-version` would either lack an upper limit boundary or just have too low of an upper limit.
 
 Since that extension was already built and served to users, fixing annotations and repackaging an extension my be a pain point that would often get postponed.
 
@@ -10,7 +10,7 @@ Starting with Shell version `3.0.0`, we have introduced a feature that allows de
 
 **1)** Copy over the contents of the root file `package.json` to have access to the yarn command alias `publish-pkgs`. You'll need to create the file in the branch where the Helm chart that serves your extension lives in.
 
-**2)** After identifying which extension version you want to fix the annotations for, go to branch of the repository where the Helm chart that serves your extension lives (for the examples we [provide](./../extensions-getting-started.md#creating-a-release) that branch should be `gh-pages`) and edit the `Chart.yaml` in `charts/<-YOUR-EXT->/<-EXT-VERSION-TO-FIX->/Chart.yaml` and change the annotations there as desired
+**2)** After identifying which extension version you want to fix the annotations for, go to branch of the repository where the Helm chart that serves your extension lives (for the examples we [provide](./../extensions-getting-started#releasing-your-extension-as-a-helm-chart) that branch should be `gh-pages`) and edit the `Chart.yaml` in `charts/<-YOUR-EXT->/<-EXT-VERSION-TO-FIX->/Chart.yaml` and change the annotations there as desired
 
 **3)** On the same branch, create on the root a file called `package.json`, with the contents copied from step 1)
 

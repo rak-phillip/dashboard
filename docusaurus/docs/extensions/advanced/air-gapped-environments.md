@@ -45,7 +45,7 @@ docker tag ghcr.io/<ORGANIZATION>/ui-extension-<REPO>:<TAG> <MY_REGISTRY>/<ORGAN
 docker push <MY_REGISTRY>/<ORGANIZATION>/ui-extension-<REPO>:TAG
 ```
 
-Proceed to the [Importing the Extension Catalog Image](#importing-the-catalog-image) step.
+Proceed to the [Importing the Extension Catalog Image](#importing-the-extension-catalog-image) step.
 
 ### Manual Build
 
@@ -79,7 +79,7 @@ yarn publish-pkgs -cp -r <REGISTRY> -o <ORGANIZATION>
 | `-r` | `<registry>` | specifies the registry where the image will be housed |
 | `-o` | `<organization>` | specifies the organization namespace for the registry |
 
-Reference the [Manually Publishing an Extension Catalog Image](../publishing#manually-publishing-an-extension-catalog-image) step in the Publishing section for more information.
+Reference the [Publishing an Extension Catalog Image](../publishing#publishing-an-extension-catalog-image) step in the Publishing section for more information.
 
 ## Importing the Extension Catalog Image
 
@@ -101,7 +101,7 @@ Fill out the form within the modal with your Catalog Reference Image URI (for ex
 
 ![Extension Catalog Import](../screenshots/import-catalog-dialog.png)
 
-The resources mentioned [above](#air-gapped-environments) will be created. You can navigate back to the main Extensions page by selecting breadcrumb link for "Extension" button from the header title in the top left of the screen.
+The resources mentioned above will be created. You can navigate back to the main Extensions page by selecting breadcrumb link for "Extension" button from the header title in the top left of the screen.
 
 ![Navigate Charts List](../screenshots/navigate-chart-list.png)
 

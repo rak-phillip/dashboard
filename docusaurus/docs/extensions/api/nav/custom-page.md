@@ -49,7 +49,7 @@ export function init($extension: IPlugin, store: any) {
 }
 ```
 
-With the route definition in the router (check the [Extension Routing](#routes-definition-for-an-extension-as-a-top-level-product)) chapter, you can define which Vue component will be loaded as a custom page. That will act as a "blank canvas" to render anything you want.
+With the route definition in the router (check the [Extension Routing](./routing#routes-definition-for-an-extension-as-a-top-level-product)) chapter, you can define which Vue component will be loaded as a custom page. That will act as a "blank canvas" to render anything you want.
 
 The acceptable parameters for the `virtualType` function are defined here:
 

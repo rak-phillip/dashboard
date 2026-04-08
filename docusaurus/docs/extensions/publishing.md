@@ -5,7 +5,7 @@ There are currently two options for building and publishing a extensions:
 1. Building the Helm charts and necessary assets of an extension that can be committed into a Github or Helm repository.
 2. Building an [Extension Catalog Image](./advanced/air-gapped-environments) that can be pushed or mirrored into a container registry.
 
-As discussed in the [Getting Started](./extensions-getting-started#creating-a-release) section, we have established a [workflow](https://github.com/rancher/dashboard/tree/master/creators/extension/app/files/.github/workflows) using [Github reusable workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows), that automatically handles the build and publication of both the Helm charts and ECI into the Extension's GitHub repository. However, this workflow can be omitted for a more hands-on approach to publishing Extensions.
+As discussed in the [Getting Started](./extensions-getting-started#releasing-your-extension-as-a-helm-chart) section, we have established a [workflow](https://github.com/rancher/dashboard/tree/master/creators/extension/app/files/.github/workflows) using [Github reusable workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows), that automatically handles the build and publication of both the Helm charts and ECI into the Extension's GitHub repository. However, this workflow can be omitted for a more hands-on approach to publishing Extensions.
 
 > **WARNING:** When using the provided Github workflows, the base development app name (Found in the root level `package.json`) ___MUST___ be unique when compared with any extension packages found in `./pkg/*`. If an extension package name matches the base skeleton name the workflow will fail due to the "Parse Extension Name" step found in both the ["Build and Release Extension Charts"](https://github.com/rancher/dashboard/blob/422823e2b6868191b9bb33470e99e69ff058b72b/.github/workflows/build-extension-charts.yml#L59-L65) and ["Build and release Extension Catalog Image to registry"](https://github.com/rancher/dashboard/blob/422823e2b6868191b9bb33470e99e69ff058b72b/.github/workflows/build-extension-catalog.yml#L64-L70) workflows.
 
@@ -112,7 +112,7 @@ Usage: yarn publish-pkgs [<options>] [plugins]
 
 ## Manually Publishing the Extension Helm Charts
 
-> Note: Currently, we only support publishing Extension Helm charts into a **public** Github repository, if you intend to deploy an extension from a private repository/registry, we recommend utilizing the [Extension Catalog Image](#manually-publishing-an-extension-catalog-image) method.
+> Note: Currently, we only support publishing Extension Helm charts into a **public** Github repository, if you intend to deploy an extension from a private repository/registry, we recommend utilizing the [Extension Catalog Image](#publishing-an-extension-catalog-image) method.
 
 Building the Extension into Helm charts with the necessary assets can be accomplished with the `publish-pkgs` script declared in the extension's `package.json`.
 Running this script will bundle each extension package as a node.js app, create Helm charts with metadata needed by the [`ui-plugin-operator`](https://github.com/rancher/ui-plugin-operator), and a [Helm repo index](https://helm.sh/docs/helm/helm_repo_index/) to populate the Extension marketplace for installation.
@@ -289,7 +289,7 @@ By default, both of these actions are triggered by pushing into the `main` branc
 
 ## GitLab Integration
 
-When building an extension that will be housed in a GitLab repository or hosted environment, there is only one option for publishing automatically - That is by utilizing the provided [GitLab Pipeline CI file](https://github.com/rancher/dashboard/blob/master/creators/extension/app/files/.gitlab-ci.yml) that is generated when [creating the skeleton app](extensions-getting-started#creating-the-skeleton-app).
+When building an extension that will be housed in a GitLab repository or hosted environment, there is only one option for publishing automatically - That is by utilizing the provided [GitLab Pipeline CI file](https://github.com/rancher/dashboard/blob/master/creators/extension/app/files/.gitlab-ci.yml) that is generated when [creating the skeleton app](extensions-getting-started#generating-the-development-app-and-your-first-extension).
 
 This pipeline will build an ECI and publish it to container registry (`registry.gitlab.com` by default) to allow for importing into Rancher Manager.
 The actual pipeline jobs are defined in the [Dashboard repo](https://github.com/rancher/dashboard/blob/master/shell/scripts/.gitlab/workflows/build-extension-catalog.gitlab-ci.yml) to allow for proper versioning and to apply any updates to the pipeline without any additional work from the Extension developer.

@@ -57,7 +57,7 @@ export function init($extension: IPlugin, store: any) {
 }
 ```
 
-> Note: We strongly encourange the usage of the `customRoute` to make sure we follow the same route structure as the other routes on the same Extension product. Check pattern [here](#overview-on-routing-structure-for-a-top-level-extension-product).
+> Note: We strongly encourange the usage of the `customRoute` to make sure we follow the same route structure as the other routes on the same Extension product. Check pattern [here](../concepts#overview-on-routing-structure-for-rancher-dashboard).
 
 The acceptable parameters for the `configureType` function are defined here:
 
