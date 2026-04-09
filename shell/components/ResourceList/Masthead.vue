@@ -204,7 +204,7 @@ export default {
               v-if="hasEditComponent && _isCreatable"
               variant="primary"
               :data-testid="componentTestid+'-create'"
-              @click="$router.push(_createLocation)"
+              :to="_createLocation"
             >
               {{ _createButtonlabel }}
             </RcButton>
@@ -212,7 +212,7 @@ export default {
               v-else-if="_isYamlCreatable"
               variant="primary"
               :data-testid="componentTestid+'-create-yaml'"
-              @click="$router.push(_yamlCreateLocation)"
+              :to="_yamlCreateLocation"
             >
               {{ t("resourceList.head.createFromYaml") }}
             </RcButton>
