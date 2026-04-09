@@ -922,7 +922,7 @@ export default {
     & .kv-item {
       width: 100%;
       margin: 10px 0px 10px 0px;
-      &.key, &.extra {
+      &.key, &.extra, &.value {
         align-self: flex-start;
       }
       &.value .value-container {
@@ -935,6 +935,13 @@ export default {
         .file-selector {
           position: absolute;
           margin-right: 5px;
+        }
+        :deep(.cm-editor) {
+          min-height: 40px;
+        }
+        :deep(.cm-content) {
+          min-height: 40px;
+          padding: 10px 4px;
         }
       }
       &.value textarea {
