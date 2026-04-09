@@ -22,6 +22,7 @@ import {
 import { closeBrackets, autocompletion } from '@codemirror/autocomplete';
 import { search } from '@codemirror/search';
 import { oneDark } from '@codemirror/theme-one-dark';
+import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { getLanguageExtension } from '../extensions/syntax';
 import { getKeymapExtension } from '../extensions/keymaps';
 import { buildFoldExtension } from '../extensions/fold';
@@ -31,7 +32,7 @@ export interface Props {
   modelValue?: string;
   language?: 'yaml' | 'json';
   keymap?: 'default' | 'vim' | 'emacs';
-  theme?: 'one-dark' | 'none';
+  theme?: 'one-dark' | 'bbedit' | 'none';
   readOnly?: boolean;
   lineNumbers?: boolean;
   foldGutter?: boolean;
@@ -42,7 +43,7 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
-  theme: 'none',
+  theme: 'one-dark',
   readOnly: false,
   lineNumbers: true,
   foldGutter: true,
@@ -68,9 +69,12 @@ const readOnlyCompartment = new Compartment();
 const lineNumbersCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
 
-function getThemeExtension(theme?: 'one-dark' | 'none'): Extension {
+function getThemeExtension(theme?: 'one-dark' | 'bbedit' | 'none'): Extension {
   if (theme === 'one-dark') {
     return oneDark;
+  }
+  if (theme === 'bbedit') {
+    return bbedit;
   }
   return [];
 }
@@ -194,7 +198,7 @@ watch(
 // Hot-swap theme
 watch(
   () => props.theme,
-  (theme) => {
+  (theme: 'one-dark' | 'bbedit' | 'none' | undefined) => {
     view.value?.dispatch({
       effects: themeCompartment.reconfigure(getThemeExtension(theme))
     });

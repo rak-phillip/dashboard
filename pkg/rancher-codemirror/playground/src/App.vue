@@ -89,7 +89,7 @@ function onJsonReady(v: EditorView) {
 }
 
 const keymapOptions: CodeMirrorProps['keymap'][] = ['default', 'vim', 'emacs'];
-const themeOptions: CodeMirrorProps['theme'][] = ['none', 'one-dark'];
+const themeOptions: CodeMirrorProps['theme'][] = ['one-dark', 'bbedit', 'none'];
 </script>
 
 <template>

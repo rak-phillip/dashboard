@@ -316,6 +316,7 @@
     "@codemirror/theme-one-dark" "^6.0.0"
     "@codemirror/view" "^6.0.0"
     "@replit/codemirror-vim" "^6.0.0"
+    "@uiw/codemirror-theme-bbedit" "^4.25.9"
 
 "@replit/codemirror-vim@^6.0.0":
   version "6.3.0"
@@ -456,6 +457,22 @@
   version "1.0.8"
   resolved "https://registry.npmjs.org/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"
   integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
+
+"@uiw/codemirror-theme-bbedit@^4.25.9":
+  version "4.25.9"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-bbedit/-/codemirror-theme-bbedit-4.25.9.tgz#e3f71b5844e235bf87ffba13eb7370b3ecbc43b5"
+  integrity sha512-SGXQ0tLsqcRvxXCrdeU/MiQ3liNKvr8DCxaSt4N5LP7EPGO94ebuvba0F+H/3LpeJJrn5Xq0FuhaPlMYJ10RXg==
+  dependencies:
+    "@uiw/codemirror-themes" "4.25.9"
+
+"@uiw/codemirror-themes@4.25.9":
+  version "4.25.9"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.25.9.tgz#08d70061d4b8ec721023484cd80d4e0302184443"
+  integrity sha512-DAHKb/L9ELwjY4nCf/MP/mIllHOn4GQe7RR4x8AMJuNeh9nGRRoo1uPxrxMmUL/bKqe6kDmDbIZ2AlhlqyIJuw==
+  dependencies:
+    "@codemirror/language" "^6.0.0"
+    "@codemirror/state" "^6.0.0"
+    "@codemirror/view" "^6.0.0"
 
 "@vitejs/plugin-vue@^6.0.0":
   version "6.0.5"

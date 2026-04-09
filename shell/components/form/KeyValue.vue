@@ -253,6 +253,10 @@ export default {
     };
   },
   computed: {
+    codeMirrorTheme() {
+      return this.$store.getters['prefs/theme'] === 'light' ? 'bbedit' : 'one-dark';
+    },
+
     _protip() {
       if (this.protip === false) {
         return null;
@@ -767,7 +771,7 @@ export default {
                   <CodeMirror
                     v-if="valueMarkdownMultiline"
                     ref="cm"
-                    theme="one-dark"
+                    :theme="codeMirrorTheme"
                     language="json"
                     :model-value="row[valueName]"
                     data-testid="code-mirror-multiline-field"

@@ -44,7 +44,8 @@
     "@codemirror/state": "^6.0.0",
     "@codemirror/theme-one-dark": "^6.0.0",
     "@codemirror/view": "^6.0.0",
-    "@replit/codemirror-vim": "^6.0.0"
+    "@replit/codemirror-vim": "^6.0.0",
+    "@uiw/codemirror-theme-bbedit": "^4.25.9"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.0.0",

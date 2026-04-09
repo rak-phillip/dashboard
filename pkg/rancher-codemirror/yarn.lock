@@ -997,6 +997,22 @@
     "@typescript-eslint/types" "8.58.0"
     eslint-visitor-keys "^5.0.0"
 
+"@uiw/codemirror-theme-bbedit@^4.25.9":
+  version "4.25.9"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-bbedit/-/codemirror-theme-bbedit-4.25.9.tgz#e3f71b5844e235bf87ffba13eb7370b3ecbc43b5"
+  integrity sha512-SGXQ0tLsqcRvxXCrdeU/MiQ3liNKvr8DCxaSt4N5LP7EPGO94ebuvba0F+H/3LpeJJrn5Xq0FuhaPlMYJ10RXg==
+  dependencies:
+    "@uiw/codemirror-themes" "4.25.9"
+
+"@uiw/codemirror-themes@4.25.9":
+  version "4.25.9"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.25.9.tgz#08d70061d4b8ec721023484cd80d4e0302184443"
+  integrity sha512-DAHKb/L9ELwjY4nCf/MP/mIllHOn4GQe7RR4x8AMJuNeh9nGRRoo1uPxrxMmUL/bKqe6kDmDbIZ2AlhlqyIJuw==
+  dependencies:
+    "@codemirror/language" "^6.0.0"
+    "@codemirror/state" "^6.0.0"
+    "@codemirror/view" "^6.0.0"
+
 "@vitejs/plugin-vue@^6.0.5":
   version "6.0.5"
   resolved "https://registry.npmjs.org/@vitejs/plugin-vue/-/plugin-vue-6.0.5.tgz#20ebb46c4da069753d9cfb1309c4334213cc3f7b"

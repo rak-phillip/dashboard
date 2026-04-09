@@ -110,6 +110,10 @@ export default {
 
     diffMode: mapPref(DIFF),
 
+    codeMirrorTheme() {
+      return this.$store.getters['prefs/theme'] === 'light' ? 'bbedit' : 'one-dark';
+    },
+
     showCodeEditor() {
       return [EDITOR_MODES.EDIT_CODE, EDITOR_MODES.VIEW_CODE].includes(this.editorMode);
     },
@@ -193,7 +197,7 @@ export default {
       ref="cm"
       :class="{fill: true, scrolling: scrolling}"
       language="yaml"
-      theme="one-dark"
+      :theme="codeMirrorTheme"
       :model-value="curValue"
       :read-only="editorMode === EDITOR_MODES.VIEW_CODE"
       :fold-gutter="true"
