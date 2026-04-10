@@ -941,11 +941,16 @@ export default {
           margin-right: 5px;
         }
         :deep(.cm-editor) {
-          min-height: 40px;
+          border: solid var(--border-width) var(--input-border);
+          border-radius: var(--border-radius);
+        }
+        :deep(.cm-editor.cm-focused) {
+          border-color: var(--outline);
         }
         :deep(.cm-content) {
-          min-height: 40px;
+          min-height: 38px;
           padding: 10px 4px;
+          line-height: 18px;
         }
       }
       &.value textarea {
