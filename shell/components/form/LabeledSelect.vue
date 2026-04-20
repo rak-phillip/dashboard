@@ -12,7 +12,8 @@ import { _VIEW } from '@shell/config/query-params';
 import { useClickOutside } from '@shell/composables/useClickOutside';
 import { useLabeledFormElement, labeledFormElementProps } from '@shell/composables/useLabeledFormElement';
 import { useLabeledSelect } from '@shell/composables/useLabeledSelect';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useField } from 'vee-validate';
 
 export default {
   name: 'LabeledSelect',
@@ -115,6 +116,11 @@ export default {
     noOptionsLabelKey: {
       type:    String,
       default: 'labelSelect.noOptions.empty'
+    },
+
+    name: {
+      type:    String,
+      default: null
     }
   },
 
@@ -161,6 +167,38 @@ export default {
       resizeHandlerFn(select);
     };
 
+    const standaloneFieldId = `__field__${ generateRandomAlphaString(12) }`;
+    const veeFieldName = computed(() => props.name || standaloneFieldId);
+
+    const veeValidator = (value) => {
+      if (!props.name) return true;
+      for (const rule of props.rules) {
+        const msg = rule(value);
+
+        if (msg) return msg;
+      }
+
+      return true;
+    };
+
+    const {
+      errorMessage: veeError,
+      handleBlur:   veeHandleBlur,
+      validate:     veeValidate,
+      value:        veeValue,
+      meta:         veeMeta,
+    } = useField(veeFieldName, veeValidator, {
+      initialValue:          props.value,
+      validateOnValueUpdate: true,
+      validateOnMount:       true,
+    });
+
+    watch(() => props.value, (v) => {
+      if (veeValue.value !== v) {
+        veeValue.value = v;
+      }
+    });
+
     return {
       isOpen,
       select,
@@ -186,6 +224,10 @@ export default {
       paginating,
       loadMore,
       setPaginationFilter,
+      veeError,
+      veeHandleBlur,
+      veeValidate,
+      veeMeta,
     };
   },
 
@@ -221,7 +263,13 @@ export default {
     // update placeholder text to inform user they can add their own opts when none are found
     showTagPrompts() {
       return !this.options.length && this.$attrs.taggable && this.isSearchable;
-    }
+    },
+
+    effectiveValidationMessage() {
+      if (this.name && this.veeError && this.veeMeta.touched && !this.focused) return this.veeError;
+
+      return this.validationMessage;
+    },
   },
 
   methods: {
@@ -272,6 +320,8 @@ export default {
       this.$emit('on-blur');
       this.selectedVisibility = 'visible';
       this.onBlurLabeled();
+      this.veeHandleBlur(undefined, false);
+      this.veeValidate();
     },
 
     onOpen() {
@@ -562,9 +612,9 @@ export default {
       :status="status"
     />
     <LabeledTooltip
-      v-if="!!validationMessage"
+      v-if="!!effectiveValidationMessage"
       :hover="hoverTooltip"
-      :value="validationMessage"
+      :value="effectiveValidationMessage"
     />
   </div>
 </template>

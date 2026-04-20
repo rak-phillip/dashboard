@@ -170,12 +170,14 @@ export default defineComponent({
       handleBlur:   veeHandleBlur,
       validate:     veeValidate,
       value:        veeValue,
+      meta:         veeMeta,
     } = useField<string | number | Record<string, unknown>>(
       veeFieldName,
       veeValidator,
       {
         initialValue:          props.value as string | number,
         validateOnValueUpdate: true,
+        validateOnMount:       true,
       }
     );
 
