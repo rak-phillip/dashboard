@@ -11,7 +11,8 @@ import { LABEL_SELECT_NOT_OPTION_KINDS } from '@shell/types/components/labeledSe
 import { mapGetters } from 'vuex';
 import { _VIEW } from '@shell/config/query-params';
 import { useClickOutside } from '@shell/composables/useClickOutside';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useField } from 'vee-validate';
 
 export default {
   name: 'LabeledSelect',
@@ -114,10 +115,15 @@ export default {
     noOptionsLabelKey: {
       type:    String,
       default: 'labelSelect.noOptions.empty'
+    },
+
+    name: {
+      type:    String,
+      default: null
     }
   },
 
-  setup() {
+  setup(props) {
     const select = ref(null);
     const isOpen = ref(false);
 
@@ -125,7 +131,41 @@ export default {
       isOpen.value = false;
     });
 
-    return { isOpen, select };
+    const standaloneFieldId = `__field__${ generateRandomAlphaString(12) }`;
+    const veeFieldName = computed(() => props.name || standaloneFieldId);
+
+    const veeValidator = (value) => {
+      if (!props.name) return true;
+      for (const rule of props.rules) {
+        const msg = rule(value);
+
+        if (msg) return msg;
+      }
+
+      return true;
+    };
+
+    const {
+      errorMessage: veeError,
+      handleBlur:   veeHandleBlur,
+      validate:     veeValidate,
+      value:        veeValue,
+      meta:         veeMeta,
+    } = useField(veeFieldName, veeValidator, {
+      initialValue:          props.value,
+      validateOnValueUpdate: true,
+      validateOnMount:       true,
+    });
+
+    watch(() => props.value, (v) => {
+      if (veeValue.value !== v) {
+        veeValue.value = v;
+      }
+    });
+
+    return {
+      isOpen, select, veeError, veeHandleBlur, veeValidate, veeMeta,
+    };
   },
 
   data() {
@@ -165,7 +205,13 @@ export default {
     // update placeholder text to inform user they can add their own opts when none are found
     showTagPrompts() {
       return !this.options.length && this.$attrs.taggable && this.isSearchable;
-    }
+    },
+
+    effectiveValidationMessage() {
+      if (this.name && this.veeError && this.veeMeta.touched && !this.focused) return this.veeError;
+
+      return this.validationMessage;
+    },
   },
 
   methods: {
@@ -214,6 +260,8 @@ export default {
     onBlur() {
       this.selectedVisibility = 'visible';
       this.onBlurLabeled();
+      this.veeHandleBlur(undefined, false);
+      this.veeValidate();
     },
 
     onOpen() {
@@ -504,9 +552,9 @@ export default {
       :status="status"
     />
     <LabeledTooltip
-      v-if="!!validationMessage"
+      v-if="!!effectiveValidationMessage"
       :hover="hoverTooltip"
-      :value="validationMessage"
+      :value="effectiveValidationMessage"
     />
   </div>
 </template>
