@@ -70,6 +70,16 @@ export default {
           rules:          ['required'],
           translationKey: 'nameNsDescription.namespace.label',
         },
+        {
+          path:           'secretType',
+          rules:          ['required'],
+          translationKey: 'secret.type',
+        },
+        {
+          path:           'secret._type',
+          rules:          ['required'],
+          translationKey: 'secret.customType',
+        },
       ]
     );
 
@@ -283,7 +293,7 @@ export default {
     },
 
     dataTabHasError() {
-      const topLevelFields = new Set(['metadata.name', 'metadata.namespace']);
+      const topLevelFields = new Set(['metadata.name', 'metadata.namespace', 'secretType', 'secret._type']);
 
       return Object.keys(this.veeErrors).some((key) => !topLevelFields.has(key));
     },
@@ -484,11 +494,13 @@ export default {
         <div class="col span-3">
           <LabeledSelect
             v-model:value="secretType"
+            name="secretType"
             :options="secretTypes"
             :searchable="false"
             :mode="mode"
             :multiple="false"
             :reduce="(e) => e.value"
+            :rules="getRules('secretType')"
             label-key="secret.type"
             required
             @update:value="selectCustomType"
@@ -501,8 +513,10 @@ export default {
             ref="customType"
             v-model:value="value._type"
             v-focus
+            name="secret._type"
             label-key="secret.customType"
             :mode="mode"
+            :rules="getRules('secret._type')"
             required
           />
         </div>
