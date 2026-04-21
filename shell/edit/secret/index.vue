@@ -7,7 +7,9 @@ import {
 } from '@shell/config/query-params';
 import { MANAGEMENT, NAMESPACE, DEFAULT_WORKSPACE, VIRTUAL_TYPES } from '@shell/config/types';
 import { CAPI, UI_PROJECT_SECRET } from '@shell/config/labels-annotations';
-import FormValidation from '@shell/mixins/form-validation';
+import { useStore } from 'vuex';
+import { useFormValidation } from '@shell/composables/useFormValidation';
+import { useI18n } from '@shell/composables/useI18n';
 import CreateEditView from '@shell/mixins/create-edit-view';
 import NameNsDescription from '@shell/components/form/NameNsDescription';
 import { LabeledInput } from '@components/Form/LabeledInput';
@@ -48,7 +50,36 @@ export default {
     SelectIconGrid
   },
 
-  mixins: [CreateEditView, FormValidation],
+  mixins: [CreateEditView],
+
+  setup() {
+    const store = useStore();
+    const { t } = useI18n(store);
+    const {
+      getRules, isFormValid, validateForm, veeErrors
+    } = useFormValidation(
+      t,
+      [
+        {
+          path:           'metadata.name',
+          rules:          ['required'],
+          translationKey: 'nameNsDescription.name.label',
+        },
+        {
+          path:           'metadata.namespace',
+          rules:          ['required'],
+          translationKey: 'nameNsDescription.namespace.label',
+        },
+      ]
+    );
+
+    return {
+      getRules,
+      isFormValid,
+      veeValidateForm: validateForm,
+      veeErrors,
+    };
+  },
 
   async fetch() {
     if ( this.isCloud ) {
@@ -119,16 +150,6 @@ export default {
       secretType:        this.value._type,
       initialSecretType: this.value._type,
       projectName:       null,
-      fvFormRuleSets:    [
-        {
-          path:  'metadata.name',
-          rules: ['required'],
-        },
-        {
-          path:  'metadata.namespace',
-          rules: ['required'],
-        },
-      ],
     };
   },
 
@@ -288,6 +309,14 @@ export default {
 
   methods: {
     async saveSecret(btnCb) {
+      const { valid } = await this.veeValidateForm();
+
+      if (!valid) {
+        btnCb(false);
+
+        return;
+      }
+
       if ( this.errors ) {
         clear(this.errors);
       }
@@ -399,7 +428,7 @@ export default {
     <CruResource
       v-else
       :mode="mode"
-      :validation-passed="fvFormIsValid"
+      :validation-passed="isFormValid"
       :selected-subtype="value._type"
       :resource="value"
       :errors="errors"
@@ -416,6 +445,9 @@ export default {
         :value="value"
         :mode="mode"
         :namespaced="!isCloud"
+        :name-field-name="'metadata.name'"
+        :namespace-field-name="'metadata.namespace'"
+        :rules="{ name: getRules('metadata.name'), namespace: getRules('metadata.namespace'), description: [] }"
         @update:value="$emit('input', $event)"
       />
       <NameNsDescription
@@ -423,10 +455,8 @@ export default {
         :value="value"
         :namespaced="false"
         :mode="mode"
-        :rules="{
-          name: fvGetAndReportPathRules('metadata.name'),
-          namespace: fvGetAndReportPathRules('metadata.namespace'),
-        }"
+        :name-field-name="'metadata.name'"
+        :rules="{ name: getRules('metadata.name'), namespace: [], description: [] }"
       >
         <template #project-selector>
           <LabeledSelect
