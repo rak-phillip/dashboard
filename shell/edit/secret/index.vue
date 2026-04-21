@@ -282,6 +282,12 @@ export default {
       return this.$store.getters['prefs/get'](HIDE_SENSITIVE);
     },
 
+    dataTabHasError() {
+      const topLevelFields = new Set(['metadata.name', 'metadata.namespace']);
+
+      return Object.keys(this.veeErrors).some((key) => !topLevelFields.has(key));
+    },
+
     dataLabel() {
       switch (this.value._type) {
       case TYPES.TLS:
@@ -522,6 +528,7 @@ export default {
           name="data"
           :label="dataLabel"
           :weight="99"
+          :error="dataTabHasError"
         >
           <component
             :is="dataComponent"
