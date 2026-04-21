@@ -12,7 +12,7 @@ import { _VIEW } from '@shell/config/query-params';
 import { useClickOutside } from '@shell/composables/useClickOutside';
 import { useLabeledFormElement, labeledFormElementProps } from '@shell/composables/useLabeledFormElement';
 import { useLabeledSelect } from '@shell/composables/useLabeledSelect';
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { useField } from 'vee-validate';
 
 export default {
@@ -199,6 +199,16 @@ export default {
       }
     });
 
+    const effectiveValidationMessage = computed(() => {
+      if (props.name && veeError.value && (veeMeta.touched || showAllErrors.value)) {
+        return veeError.value;
+      }
+
+      return validationMessage.value;
+    });
+
+    const showAllErrors = inject('vee-show-all-errors', ref(false));
+
     return {
       isOpen,
       select,
@@ -210,7 +220,7 @@ export default {
       onFocusLabeled,
       onBlurLabeled,
       isDisabled,
-      validationMessage,
+      validationMessage: effectiveValidationMessage,
       requiredField,
       isSearchable,
       isFilterable,
@@ -228,6 +238,7 @@ export default {
       veeHandleBlur,
       veeValidate,
       veeMeta,
+      showAllErrors,
     };
   },
 
@@ -263,12 +274,6 @@ export default {
     // update placeholder text to inform user they can add their own opts when none are found
     showTagPrompts() {
       return !this.options.length && this.$attrs.taggable && this.isSearchable;
-    },
-
-    effectiveValidationMessage() {
-      if (this.name && this.veeError && this.veeMeta.touched && !this.focused) return this.veeError;
-
-      return this.validationMessage;
     },
   },
 
