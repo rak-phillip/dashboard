@@ -1,5 +1,7 @@
 <script lang="ts">
-import { defineComponent, inject, computed, watch } from 'vue';
+import {
+  defineComponent, inject, computed, watch, ref, type Ref
+} from 'vue';
 import { useField } from 'vee-validate';
 import TextAreaAutoGrow from '@components/Form/TextArea/TextAreaAutoGrow.vue';
 import LabeledTooltip from '@components/LabeledTooltip/LabeledTooltip.vue';
@@ -141,6 +143,7 @@ export default defineComponent({
     const { isCompact } = useCompactInput(props);
 
     const onInput = inject('onInput', provideProps.onInput);
+    const showAllErrors = inject<Ref<boolean>>('vee-show-all-errors', ref(false));
 
     // Stable fallback name so useField is always called unconditionally.
     // When no name prop is given the field won't match any form-schema path.
@@ -189,7 +192,7 @@ export default defineComponent({
     });
 
     const effectiveValidationMessage = computed(() => {
-      if (props.name && veeError.value) {
+      if (props.name && veeError.value && (veeMeta.touched || showAllErrors.value)) {
         return veeError.value;
       }
 

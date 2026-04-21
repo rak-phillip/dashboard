@@ -11,7 +11,7 @@ import { LABEL_SELECT_NOT_OPTION_KINDS } from '@shell/types/components/labeledSe
 import { mapGetters } from 'vuex';
 import { _VIEW } from '@shell/config/query-params';
 import { useClickOutside } from '@shell/composables/useClickOutside';
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { useField } from 'vee-validate';
 
 export default {
@@ -163,8 +163,10 @@ export default {
       }
     });
 
+    const showAllErrors = inject('vee-show-all-errors', ref(false));
+
     return {
-      isOpen, select, veeError, veeHandleBlur, veeValidate, veeMeta,
+      isOpen, select, veeError, veeHandleBlur, veeValidate, veeMeta, showAllErrors,
     };
   },
 
@@ -208,7 +210,9 @@ export default {
     },
 
     effectiveValidationMessage() {
-      if (this.name && this.veeError && this.veeMeta.touched && !this.focused) return this.veeError;
+      if (this.name && this.veeError && (this.veeMeta.touched || this.showAllErrors)) {
+        return this.veeError;
+      }
 
       return this.validationMessage;
     },
