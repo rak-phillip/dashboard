@@ -1,6 +1,5 @@
 <script>
 import CompactInput from '@shell/mixins/compact-input';
-import LabeledFormElement from '@shell/mixins/labeled-form-element';
 import { get } from '@shell/utils/object';
 import { LabeledTooltip } from '@components/LabeledTooltip';
 import VueSelectOverrides from '@shell/mixins/vue-select-overrides';
@@ -11,6 +10,8 @@ import { LABEL_SELECT_NOT_OPTION_KINDS } from '@shell/types/components/labeledSe
 import { mapGetters } from 'vuex';
 import { _VIEW } from '@shell/config/query-params';
 import { useClickOutside } from '@shell/composables/useClickOutside';
+import { useLabeledFormElement, labeledFormElementProps } from '@shell/composables/useLabeledFormElement';
+import { useLabeledSelect } from '@shell/composables/useLabeledSelect';
 import { ref } from 'vue';
 
 export default {
@@ -21,27 +22,19 @@ export default {
   components: { LabeledTooltip },
   mixins:     [
     CompactInput,
-    LabeledFormElement,
     VueSelectOverrides,
     LabeledSelectPagination
   ],
 
-  emits: ['on-open', 'on-close', 'selecting', 'deselecting', 'search', 'update:validation', 'update:value'],
+  emits: ['on-open', 'on-close', 'on-focus', 'on-blur', 'selecting', 'deselecting', 'search', 'update:validation', 'update:value'],
 
   props: {
+    ...labeledFormElementProps,
     appendToBody: {
       default: true,
       type:    Boolean,
     },
     clearable: {
-      default: false,
-      type:    Boolean
-    },
-    disabled: {
-      default: false,
-      type:    Boolean
-    },
-    required: {
       default: false,
       type:    Boolean
     },
@@ -99,13 +92,17 @@ export default {
       default: null,
       type:    [String, Object]
     },
-    value: {
-      default: null,
-      type:    [String, Object, Number, Array, Boolean]
-    },
     options: {
       type:    Array,
       default: () => ([])
+    },
+    searchable: {
+      default: false,
+      type:    Boolean
+    },
+    filterable: {
+      default: true,
+      type:    Boolean
     },
     closeOnSelect: {
       type:    Boolean,
@@ -117,7 +114,7 @@ export default {
     }
   },
 
-  setup() {
+  setup(props, { emit }) {
     const select = ref(null);
     const isOpen = ref(false);
 
@@ -125,7 +122,46 @@ export default {
       isOpen.value = false;
     });
 
-    return { isOpen, select };
+    const {
+      raised,
+      focused,
+      blurred,
+      empty,
+      isView,
+      onFocusLabeled,
+      onBlurLabeled,
+      isDisabled,
+      validationMessage,
+      requiredField
+    } = useLabeledFormElement(props, emit);
+
+    const {
+      isSearchable,
+      isFilterable,
+      resizeHandler: resizeHandlerFn
+    } = useLabeledSelect(props);
+
+    const resizeHandler = () => {
+      resizeHandlerFn(select);
+    };
+
+    return {
+      isOpen,
+      select,
+      raised,
+      focused,
+      blurred,
+      empty,
+      isView,
+      onFocusLabeled,
+      onBlurLabeled,
+      isDisabled,
+      validationMessage,
+      requiredField,
+      isSearchable,
+      isFilterable,
+      resizeHandler
+    };
   },
 
   data() {
@@ -207,11 +243,13 @@ export default {
     },
 
     onFocus() {
+      this.$emit('on-focus');
       this.selectedVisibility = 'hidden';
       this.onFocusLabeled();
     },
 
     onBlur() {
+      this.$emit('on-blur');
       this.selectedVisibility = 'visible';
       this.onBlurLabeled();
     },

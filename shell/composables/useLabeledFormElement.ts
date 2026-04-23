@@ -18,9 +18,13 @@ interface UseLabeledFormElement {
   focused: Ref<boolean>;
   blurred: Ref<number | null>;
   requiredField: ComputedRef<any>;
+  empty: ComputedRef<boolean>;
+  isView: ComputedRef<boolean>;
   isDisabled: ComputedRef<any>;
   validationMessage: ComputedRef<any>;
+  onFocus: () => void;
   onFocusLabeled: () => void;
+  onBlur: () => void;
   onBlurLabeled: () => void;
 }
 
@@ -73,13 +77,17 @@ export const labeledFormElementProps = {
   }
 };
 
-export const useLabeledFormElement = (props: LabeledFormElementProps, emit: EmitFn<['update:validation']>): UseLabeledFormElement => {
+export const useLabeledFormElement = (props: LabeledFormElementProps, emit: EmitFn<['update:validation', 'on-focus', 'on-blur']>): UseLabeledFormElement => {
   const raised = ref(props.mode === _VIEW || !!`${ props.value }`);
   const focused = ref(false);
   const blurred = ref<number | null>(null);
 
   const requiredField = computed(() => {
     return props.required || props.rules?.some((rule: any) => rule?.name === 'required');
+  });
+
+  const empty = computed(() => {
+    return !!`${ props.value }`;
   });
 
   const isView = computed(() => {
@@ -139,11 +147,27 @@ export const useLabeledFormElement = (props: LabeledFormElementProps, emit: Emit
     blurred.value = Date.now();
   };
 
+  const onFocus = () => {
+    emit('on-focus');
+
+    return onFocusLabeled();
+  };
+
+  const onBlur = () => {
+    emit('on-blur');
+
+    return onBlurLabeled();
+  };
+
   return {
     raised,
     focused,
     blurred,
+    empty,
+    isView,
+    onFocus,
     onFocusLabeled,
+    onBlur,
     onBlurLabeled,
     isDisabled,
     validationMessage,
