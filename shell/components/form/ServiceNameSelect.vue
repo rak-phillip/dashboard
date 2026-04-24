@@ -5,6 +5,8 @@ import { _VIEW } from '@shell/config/query-params';
 import { computed } from 'vue';
 
 export default {
+  inheritAttrs: false,
+
   emits: ['update:value'],
 
   components: { LabeledSelect, Banner },

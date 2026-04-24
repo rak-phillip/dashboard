@@ -11,6 +11,8 @@ import { useLabeledSelect } from '@shell/composables/useLabeledSelect';
 import { ref } from 'vue';
 
 export default {
+  inheritAttrs: false,
+
   emits: ['update:value', 'createdListItem', 'on-open', 'on-close', 'on-focus', 'on-blur', 'update:validation'],
 
   components: { LabeledTooltip },
@@ -19,6 +21,10 @@ export default {
   ],
   props: {
     ...labeledFormElementProps,
+    value: {
+      default: null,
+      type:    [String, Object, Number, Array, Boolean],
+    },
     appendToBody: {
       default: true,
       type:    Boolean,
