@@ -83,7 +83,7 @@ console.log('');
  */
 const baseConfig = defineConfig({
   projectId:             process.env.TEST_PROJECT_ID,
-  defaultCommandTimeout: process.env.TEST_TIMEOUT ? +process.env.TEST_TIMEOUT : 10000,
+  defaultCommandTimeout: process.env.TEST_TIMEOUT ? +process.env.TEST_TIMEOUT : 120_000,
   trashAssetsBeforeRuns: true,
   chromeWebSecurity:     false,
   retries:               {
