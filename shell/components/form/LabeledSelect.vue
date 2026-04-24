@@ -30,6 +30,10 @@ export default {
 
   props: {
     ...labeledFormElementProps,
+    value: {
+      default: null,
+      type:    [String, Object, Number, Array, Boolean]
+    },
     appendToBody: {
       default: true,
       type:    Boolean,

@@ -6,7 +6,10 @@ import { computed } from 'vue';
 import { _VIEW } from '@shell/config/query-params';
 
 export default {
-  name:       'InputWithSelect',
+  name: 'InputWithSelect',
+
+  inheritAttrs: false,
+
   emits:      ['update:value'],
   components: {
     LabeledInput,
