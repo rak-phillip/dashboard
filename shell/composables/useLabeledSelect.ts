@@ -5,7 +5,6 @@ interface LabeledSelectProps {
   options?: Array<any>;
   searchable?: boolean;
   filterable?: boolean;
-  canPaginate?: boolean;
 }
 
 interface UseLabeledSelect {
@@ -14,9 +13,9 @@ interface UseLabeledSelect {
   resizeHandler: (selectRef: Ref<HTMLElement | null>) => void;
 }
 
-export const useLabeledSelect = (props: LabeledSelectProps): UseLabeledSelect => {
+export const useLabeledSelect = (props: LabeledSelectProps, canPaginate?: ComputedRef<boolean>): UseLabeledSelect => {
   const isSearchable = computed(() => {
-    if (props.canPaginate) {
+    if (canPaginate?.value) {
       return true;
     }
     const options = props.options || [];
@@ -29,7 +28,7 @@ export const useLabeledSelect = (props: LabeledSelectProps): UseLabeledSelect =>
   });
 
   const isFilterable = computed(() => {
-    if (props.canPaginate) {
+    if (canPaginate?.value) {
       return false;
     }
 
