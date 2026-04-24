@@ -67,6 +67,7 @@ exports[`component: General rendering & initial state should render with default
               disabled="false"
               filterable="true"
               hovertooltip="true"
+              instore="cluster"
               label="auditPolicy.general.verbosity.level.label"
               loading="false"
               localizedlabel="false"

@@ -5,7 +5,7 @@ import { LabeledTooltip } from '@components/LabeledTooltip';
 import VueSelectOverrides from '@shell/mixins/vue-select-overrides';
 import { calculatePosition } from '@shell/utils/select';
 import { generateRandomAlphaString } from '@shell/utils/string';
-import LabeledSelectPagination from '@shell/components/form/labeled-select-utils/labeled-select-pagination';
+import { useLabeledSelectPagination, labeledSelectPaginationProps } from '@shell/components/form/labeled-select-utils/useLabeledSelectPagination';
 import { LABEL_SELECT_NOT_OPTION_KINDS } from '@shell/types/components/labeledSelect';
 import { mapGetters } from 'vuex';
 import { _VIEW } from '@shell/config/query-params';
@@ -23,13 +23,13 @@ export default {
   mixins:     [
     CompactInput,
     VueSelectOverrides,
-    LabeledSelectPagination
   ],
 
   emits: ['on-open', 'on-close', 'on-focus', 'on-blur', 'selecting', 'deselecting', 'search', 'update:validation', 'update:value'],
 
   props: {
     ...labeledFormElementProps,
+    ...labeledSelectPaginationProps,
     value: {
       default: null,
       type:    [String, Object, Number, Array, Boolean]
@@ -140,10 +140,22 @@ export default {
     } = useLabeledFormElement(props, emit);
 
     const {
+      canPaginate,
+      canLoadMore,
+      optionCounts,
+      _options,
+      pages,
+      totalResults,
+      paginating,
+      loadMore,
+      setPaginationFilter,
+    } = useLabeledSelectPagination(props);
+
+    const {
       isSearchable,
       isFilterable,
       resizeHandler: resizeHandlerFn
-    } = useLabeledSelect(props);
+    } = useLabeledSelect(props, canPaginate);
 
     const resizeHandler = () => {
       resizeHandlerFn(select);
@@ -164,7 +176,16 @@ export default {
       requiredField,
       isSearchable,
       isFilterable,
-      resizeHandler
+      resizeHandler,
+      canPaginate,
+      canLoadMore,
+      optionCounts,
+      _options,
+      pages,
+      totalResults,
+      paginating,
+      loadMore,
+      setPaginationFilter,
     };
   },
 
@@ -186,11 +207,6 @@ export default {
     hasGroupIcon() {
       // Required for option.icon. Note that we only apply if paginating as well (there might be 2 x performance issues with 2k entries. one to iterate through this list, the other with conditional class per entry in dom)
       return this.canPaginate ? !!this._options.find((o) => o.kind === 'group' && !!o.icon) : false;
-    },
-
-    _options() {
-      // If we're paginated show the page as provided by `paginate`. See label-select-pagination mixin
-      return this.canPaginate ? this.page : this.options;
     },
 
     filteredAttrs() {
