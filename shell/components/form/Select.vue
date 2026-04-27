@@ -117,14 +117,22 @@ export default {
       blurred,
       empty,
       isView,
-      onFocus,
       onFocusLabeled,
-      onBlur,
       onBlurLabeled,
       isDisabled,
       validationMessage,
       requiredField
     } = useLabeledFormElement(props, emit);
+
+    const onFocus = () => {
+      emit('on-focus');
+      onFocusLabeled();
+    };
+
+    const onBlur = () => {
+      emit('on-blur');
+      onBlurLabeled();
+    };
 
     const {
       isSearchable,
@@ -145,9 +153,7 @@ export default {
       empty,
       isView,
       onFocus,
-      onFocusLabeled,
       onBlur,
-      onBlurLabeled,
       isDisabled,
       validationMessage,
       requiredField,
