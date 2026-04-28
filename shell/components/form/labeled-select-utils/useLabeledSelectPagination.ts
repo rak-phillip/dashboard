@@ -1,3 +1,6 @@
+/**
+ * composable to provide pagination support to LabeledSelect
+ */
 import {
   ref, computed, onMounted, ComputedRef, Ref, PropType
 } from 'vue';
@@ -35,6 +38,9 @@ export const labeledSelectPaginationProps = {
     default: 'cluster',
   },
 
+  /**
+   * Resource to show
+  */
   resourceType: {
     type:    String,
     default: null,
@@ -44,10 +50,13 @@ export const labeledSelectPaginationProps = {
 export const useLabeledSelectPagination = (props: LabeledSelectPaginationProps): UseLabeledSelectPagination => {
   const store = useStore();
 
+  // Internal
   const currentPage = ref(1);
   const search = ref('');
   const pageSize = ref(10);
   const pages = ref(0);
+
+  // External
   const page = ref<any[]>([]);
   const totalResults = ref(0);
   const paginating = ref(false);
@@ -63,6 +72,7 @@ export const useLabeledSelectPagination = (props: LabeledSelectPaginationProps):
   const canLoadMore = computed(() => pages.value > currentPage.value);
 
   const optionsInPage = computed(() => {
+    // Number of genuine options (not groups, dividers, etc)
     return canPaginate.value ? _options.value.filter((o: any) => {
       return o.kind !== LABEL_SELECT_KINDS.NONE && !LABEL_SELECT_NOT_OPTION_KINDS.includes(o.kind);
     }).length : 0;
@@ -99,7 +109,7 @@ export const useLabeledSelectPagination = (props: LabeledSelectPaginationProps):
   const debouncedRequestPagination = debounce(requestPagination, 700);
 
   const setPaginationFilter = (filter: string) => {
-    paginating.value = true;
+    paginating.value = true; // Do this before debounce
     currentPage.value = 1;
     search.value = filter;
     debouncedRequestPagination(true);
