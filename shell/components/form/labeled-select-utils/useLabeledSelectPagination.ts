@@ -62,8 +62,6 @@ export const useLabeledSelectPagination = (props: LabeledSelectPaginationProps):
   const paginating = ref(false);
 
   const canPaginate = computed(() => {
-    if (!store) return false;
-
     return !!props.paginate && !!props.resourceType && store.getters[`${ props.inStore }/paginationEnabled`](props.resourceType);
   });
 
