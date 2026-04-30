@@ -1113,6 +1113,8 @@ export default {
         this.$router.replace(this.clusterToolsLocation());
       } else if (this.$route.query[FROM_CLUSTER] === _FLAGGED) {
         this.$router.replace(this.clustersLocation());
+      } else if (!this.chart) {
+        this.$router.replace(this.appLocation());
       } else {
         this.$router.replace(this.chartLocation(false));
       }
