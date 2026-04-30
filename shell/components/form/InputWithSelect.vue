@@ -3,7 +3,7 @@ import { LabeledInput } from '@components/Form/LabeledInput';
 import LabeledSelect from '@shell/components/form/LabeledSelect';
 import Select from '@shell/components/form/Select';
 import { computed } from 'vue';
-import { _VIEW } from '@shell/config/query-params';
+import { _VIEW, _EDIT } from '@shell/config/query-params';
 
 export default {
   name: 'InputWithSelect',
@@ -91,7 +91,7 @@ export default {
     },
     mode: {
       type:    String,
-      default: 'edit'
+      default: _EDIT,
     }
 
   },
