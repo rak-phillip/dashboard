@@ -12,8 +12,8 @@ import { _VIEW } from '@shell/config/query-params';
 import { useClickOutside } from '@shell/composables/useClickOutside';
 import { useLabeledFormElement, labeledFormElementProps } from '@shell/composables/useLabeledFormElement';
 import { useLabeledSelect } from '@shell/composables/useLabeledSelect';
-import { computed, inject, ref, watch } from 'vue';
-import { useField } from 'vee-validate';
+import { ref, toRef } from 'vue';
+import { useVeeValidateField } from '@shell/composables/useVeeValidateField';
 
 export default {
   name: 'LabeledSelect',
@@ -167,47 +167,12 @@ export default {
       resizeHandlerFn(select);
     };
 
-    const standaloneFieldId = `__field__${ generateRandomAlphaString(12) }`;
-    const veeFieldName = computed(() => props.name || standaloneFieldId);
-
-    const veeValidator = (value) => {
-      if (!props.name) return true;
-      for (const rule of props.rules) {
-        const msg = rule(value);
-
-        if (msg) return msg;
-      }
-
-      return true;
-    };
-
-    const {
-      errorMessage: veeError,
-      handleBlur:   veeHandleBlur,
-      validate:     veeValidate,
-      value:        veeValue,
-      meta:         veeMeta,
-    } = useField(veeFieldName, veeValidator, {
-      initialValue:          props.value,
-      validateOnValueUpdate: true,
-      validateOnMount:       true,
+    const { effectiveValidationMessage, veeHandleBlur, veeValidate } = useVeeValidateField({
+      name:  toRef(props, 'name'),
+      rules: toRef(props, 'rules'),
+      value: toRef(props, 'value'),
+      validationMessage,
     });
-
-    watch(() => props.value, (v) => {
-      if (veeValue.value !== v) {
-        veeValue.value = v;
-      }
-    });
-
-    const effectiveValidationMessage = computed(() => {
-      if (props.name && veeError.value && (veeMeta.touched || showAllErrors.value)) {
-        return veeError.value;
-      }
-
-      return validationMessage.value;
-    });
-
-    const showAllErrors = inject('vee-show-all-errors', ref(false));
 
     return {
       isOpen,
@@ -234,11 +199,8 @@ export default {
       paginating,
       loadMore,
       setPaginationFilter,
-      veeError,
       veeHandleBlur,
       veeValidate,
-      veeMeta,
-      showAllErrors,
     };
   },
 
@@ -617,9 +579,9 @@ export default {
       :status="status"
     />
     <LabeledTooltip
-      v-if="!!effectiveValidationMessage"
+      v-if="!!validationMessage"
       :hover="hoverTooltip"
-      :value="effectiveValidationMessage"
+      :value="validationMessage"
     />
   </div>
 </template>
