@@ -1,4 +1,5 @@
 import * as vue3 from 'vue';
+import { createRouter } from 'vue-router';
 import $ from 'jquery';
 import JSZip from 'jszip';
 import jsyaml from 'js-yaml';
@@ -25,6 +26,7 @@ export default function({
 
   // Global libraries - allows us to externalise these to reduce package bundle size
   window.Vue = vue3;
+  window.__createRouterProbe = createRouter; // diagnostic: exposes the shell's vue-router module identity
   window.$ = $;
   window.__jszip = JSZip;
   window.__jsyaml = jsyaml;
