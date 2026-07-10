@@ -13,6 +13,13 @@ const { field } = zodValidators(mockT);
 const REQUIRED_MSG = (fieldKey: string) => `validation.required[${ fieldKey }]`;
 const URL_MSG = (fieldKey: string) => `validation.url[${ fieldKey }]`;
 const GENERIC_URL_MSG = 'validation.genericUrl';
+const MIN_LENGTH_MSG = (fieldKey: string, min: number) => `validation.minLength[${ fieldKey },${ min }]`;
+const MAX_LENGTH_MSG = (fieldKey: string, max: number) => `validation.maxLength[${ fieldKey },${ max }]`;
+const END_DOT_MSG = (fieldKey: string) => `validation.dns.label.endDot[${ fieldKey }]`;
+const START_DOT_MSG = (fieldKey: string) => `validation.dns.label.startDot[${ fieldKey }]`;
+const END_HYPHEN_MSG = (fieldKey: string) => `validation.dns.label.endHyphen[${ fieldKey }]`;
+const START_HYPHEN_MSG = (fieldKey: string) => `validation.dns.label.startHyphen[${ fieldKey }]`;
+const START_NUMBER_MSG = (fieldKey: string) => `validation.dns.label.startNumber[${ fieldKey }]`;
 
 describe('zodValidators', () => {
   describe('builder style — field(key).chain()', () => {
@@ -176,6 +183,142 @@ describe('zodValidators', () => {
 
         expect(base.safeParse('').success).toBe(true);
         expect(withReq.safeParse('').success).toBe(false);
+      });
+    });
+
+    describe('field(key).minLength(n) — optional with minimum length', () => {
+      const schema = field('myKey').minLength(3);
+
+      it.each([
+        ['empty string', ''],
+        [null, null],
+        [undefined, undefined],
+      ])('passes for %s (field is optional)', (_label, value) => {
+        expect(schema.safeParse(value).success).toBe(true);
+      });
+
+      it('passes when value meets the minimum', () => {
+        expect(schema.safeParse('abc').success).toBe(true);
+      });
+
+      it('fails when value is too short', () => {
+        const result = schema.safeParse('ab');
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe(MIN_LENGTH_MSG('myKey', 3));
+      });
+    });
+
+    describe('field(key).maxLength(n) — optional with maximum length', () => {
+      const schema = field('myKey').maxLength(5);
+
+      it.each([
+        ['empty string', ''],
+        [null, null],
+        [undefined, undefined],
+      ])('passes for %s (field is optional)', (_label, value) => {
+        expect(schema.safeParse(value).success).toBe(true);
+      });
+
+      it('passes when value is within the maximum', () => {
+        expect(schema.safeParse('hello').success).toBe(true);
+      });
+
+      it('fails when value exceeds the maximum', () => {
+        const result = schema.safeParse('toolong');
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe(MAX_LENGTH_MSG('myKey', 5));
+      });
+    });
+
+    describe('field(key).endDot()', () => {
+      const schema = field('myKey').endDot();
+
+      it.each([
+        ['empty string', ''],
+        ['value without trailing dot', 'foo'],
+      ])('passes for %s', (_label, value) => {
+        expect(schema.safeParse(value).success).toBe(true);
+      });
+
+      it('fails when value ends with a dot', () => {
+        const result = schema.safeParse('foo.');
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe(END_DOT_MSG('myKey'));
+      });
+    });
+
+    describe('field(key).startDot()', () => {
+      const schema = field('myKey').startDot();
+
+      it.each([
+        ['empty string', ''],
+        ['value without leading dot', 'foo'],
+      ])('passes for %s', (_label, value) => {
+        expect(schema.safeParse(value).success).toBe(true);
+      });
+
+      it('fails when value starts with a dot', () => {
+        const result = schema.safeParse('.foo');
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe(START_DOT_MSG('myKey'));
+      });
+    });
+
+    describe('field(key).endHyphen()', () => {
+      const schema = field('myKey').endHyphen();
+
+      it.each([
+        ['empty string', ''],
+        ['value without trailing hyphen', 'foo'],
+      ])('passes for %s', (_label, value) => {
+        expect(schema.safeParse(value).success).toBe(true);
+      });
+
+      it('fails when value ends with a hyphen', () => {
+        const result = schema.safeParse('foo-');
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe(END_HYPHEN_MSG('myKey'));
+      });
+    });
+
+    describe('field(key).startHyphen()', () => {
+      const schema = field('myKey').startHyphen();
+
+      it.each([
+        ['empty string', ''],
+        ['value without leading hyphen', 'foo'],
+      ])('passes for %s', (_label, value) => {
+        expect(schema.safeParse(value).success).toBe(true);
+      });
+
+      it('fails when value starts with a hyphen', () => {
+        const result = schema.safeParse('-foo');
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe(START_HYPHEN_MSG('myKey'));
+      });
+    });
+
+    describe('field(key).startNumber()', () => {
+      const schema = field('myKey').startNumber();
+
+      it.each([
+        ['empty string', ''],
+        ['value not starting with a number', 'foo'],
+      ])('passes for %s', (_label, value) => {
+        expect(schema.safeParse(value).success).toBe(true);
+      });
+
+      it('fails when value starts with a number', () => {
+        const result = schema.safeParse('1foo');
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe(START_NUMBER_MSG('myKey'));
       });
     });
   });

@@ -21,6 +21,20 @@ function createTransformFactories(t: I18n['t'], fieldKey: string) {
 
       return (s) => s.url(k ? t('validation.url', { key: t(k) }) : t('validation.genericUrl'));
     },
+
+    minLength: (min: number, keyOverride?: string): Transform => (s) => s.min(min, t('validation.minLength', { key: t(key(keyOverride)), min })),
+
+    maxLength: (max: number, keyOverride?: string): Transform => (s) => s.max(max, t('validation.maxLength', { key: t(key(keyOverride)), max })),
+
+    endDot: (keyOverride?: string): Transform => (s) => s.refine((v) => !v.endsWith('.'), t('validation.dns.label.endDot', { key: t(key(keyOverride)) })),
+
+    startDot: (keyOverride?: string): Transform => (s) => s.refine((v) => !v.startsWith('.'), t('validation.dns.label.startDot', { key: t(key(keyOverride)) })),
+
+    endHyphen: (keyOverride?: string): Transform => (s) => s.refine((v) => !v.endsWith('-'), t('validation.dns.label.endHyphen', { key: t(key(keyOverride)) })),
+
+    startHyphen: (keyOverride?: string): Transform => (s) => s.refine((v) => !v.startsWith('-'), t('validation.dns.label.startHyphen', { key: t(key(keyOverride)) })),
+
+    startNumber: (keyOverride?: string): Transform => (s) => s.refine((v) => !/^[0-9]/.test(v), t('validation.dns.label.startNumber', { key: t(key(keyOverride)) })),
   };
 }
 
