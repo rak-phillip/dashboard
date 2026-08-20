@@ -45,6 +45,7 @@ defineProps<{
     // Vendor marks are drawn for light backgrounds, so the tile keeps the same
     // light surface in every theme
     background-color: $gray003;
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-lg);
 
     &__mark {

@@ -34,6 +34,18 @@ export class AuthProviderPo extends PagePo {
     return new SelectIconGridPo(this.selector);
   }
 
+  createButton() {
+    return cy.getId('auth-config-create');
+  }
+
+  /**
+   * The provider catalogue lives on the create page, which the list page links to
+   * from either the page header or its empty state.
+   */
+  clickCreate() {
+    return this.createButton().click();
+  }
+
   goToAzureADCreation(clusterId = '_'): Cypress.Chainable<Cypress.AUTWindow> {
     return PagePo.goTo(`/c/${ clusterId }/auth/config/azuread?mode=edit`);
   }
@@ -43,6 +55,8 @@ export class AuthProviderPo extends PagePo {
   }
 
   selectProvider(provider: AuthProvider) {
+    this.clickCreate();
+
     return this.selectionGrid().select(provider);
   }
 }
