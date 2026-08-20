@@ -1,6 +1,7 @@
 import { insertAt } from '@shell/utils/array';
 import SteveModel from '@shell/plugins/steve/steve-class';
 import { requireAsset } from '@shell/utils/require-asset';
+import { MANAGEMENT, NORMAN } from '@shell/config/types';
 
 /**
  * Normalises a provider identifier to a stable key.
@@ -77,6 +78,68 @@ export default class AuthConfig extends SteveModel {
     insertAt(out, 1, { divider: true });
 
     return out;
+  }
+
+  /**
+   * Turning a provider off is a Norman action - the Steve resource has no `disable`
+   * of its own, so the action menu's entry would otherwise resolve to nothing.
+   *
+   * Mirrors the edit page's `disable()` in `@shell/mixins/auth-config`, but cannot
+   * trust `hasAction` alone. See {@link runDisableAction}.
+   */
+  async disable() {
+    try {
+      const norman = await this.$dispatch('rancher/find', {
+        type: NORMAN.AUTH_CONFIG,
+        id:   this.id,
+        opt:  { url: `/v3/${ NORMAN.AUTH_CONFIG }/${ this.id }`, force: true },
+      }, { root: true });
+
+      if (!await this.runDisableAction(norman)) {
+        const clone = await this.$dispatch('rancher/clone', { resource: norman }, { root: true });
+
+        clone.enabled = false;
+        await clone.save();
+      }
+
+      await this.$dispatch('find', {
+        type: MANAGEMENT.AUTH_CONFIG, id: this.id, opt: { force: true }
+      });
+    } catch (e) {
+      this.$dispatch('growl/fromError', {
+        title: this.$rootGetters['i18n/t']('generic.notification.title.error'),
+        err:   e.data || e,
+      }, { root: true });
+    }
+  }
+
+  /**
+   * Runs the server's `disable` action, if it will actually accept it.
+   *
+   * Norman only offers the link on an enabled config, but its presence is still
+   * not proof the server will honour it - a named config has been seen to
+   * advertise it and then answer `ActionNotAvailable`. The advertised action is
+   * treated as a hint, and the caller writes `enabled` directly when it turns
+   * out not to be honoured.
+   *
+   * @returns whether the action ran.
+   */
+  async runDisableAction(norman) {
+    if (!norman.hasAction('disable')) {
+      return false;
+    }
+
+    try {
+      await norman.doAction('disable');
+
+      return true;
+    } catch (e) {
+      if ((e?.code || e?.data?.code) === 'ActionNotAvailable') {
+        return false;
+      }
+
+      throw e;
+    }
   }
 
   /**

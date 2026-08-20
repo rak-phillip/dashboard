@@ -6,7 +6,7 @@ jest.mock('@shell/utils/require-asset', () => {
 });
 
 // Stands in for i18n, echoing the key back so tests can assert on which key was looked up.
-const rootGetters = { 'i18n/withFallback': (key: string) => key };
+const rootGetters = { 'i18n/withFallback': (key: string) => key, 'i18n/t': (key: string) => key };
 
 const makeConfig = (data: Object) => new AuthConfig(data, { rootGetters } as any);
 
@@ -164,6 +164,101 @@ describe('class AuthConfig', () => {
       const second = makeConfig({ id: 'github-two', _type: 'githubConfig' });
 
       expect(second.icon).toBe(first.icon);
+    });
+  });
+
+  // The action menu resolves an action to a method of the same name on the model.
+  // Without one, picking Disable silently does nothing.
+  describe('disable', () => {
+    const makeDisableable = (norman: any, clone?: any) => {
+      const dispatch = jest.fn((action: string) => {
+        if (action === 'rancher/find') {
+          return Promise.resolve(norman);
+        }
+
+        return action === 'rancher/clone' ? Promise.resolve(clone) : Promise.resolve();
+      });
+
+      const config = new AuthConfig(
+        { id: 'github-two', _type: 'githubConfig' },
+        { rootGetters, dispatch } as any
+      );
+
+      return { config, dispatch };
+    };
+
+    it('should be a method the action menu can actually call', () => {
+      expect(typeof makeConfig({ id: 'github-two' }).disable).toBe('function');
+    });
+
+    it('should run the norman action for the matching config', async() => {
+      const norman = { hasAction: () => true, doAction: jest.fn() };
+      const { config, dispatch } = makeDisableable(norman);
+
+      await config.disable();
+
+      expect(dispatch).toHaveBeenCalledWith('rancher/find', {
+        type: 'authconfig',
+        id:   'github-two',
+        opt:  { url: '/v3/authconfig/github-two', force: true },
+      }, { root: true });
+      expect(norman.doAction).toHaveBeenCalledWith('disable');
+    });
+
+    // Not every provider advertises the action, so the flag is written directly.
+    it('should fall back to saving the flag when there is no action', async() => {
+      const clone = { enabled: true, save: jest.fn() };
+      const { config } = makeDisableable({ hasAction: () => false }, clone);
+
+      await config.disable();
+
+      expect(clone.enabled).toBe(false);
+      expect(clone.save).toHaveBeenCalledWith();
+    });
+
+    // A named multi-IdP config advertises `actions.disable` and then 404s on it,
+    // so the advertised action can only be treated as a hint.
+    it('should fall back when the advertised action is not honoured', async() => {
+      const clone = { enabled: true, save: jest.fn() };
+      const norman = {
+        hasAction: () => true,
+        doAction:  jest.fn().mockRejectedValue({ code: 'ActionNotAvailable', status: 404 }),
+      };
+      const { config } = makeDisableable(norman, clone);
+
+      await config.disable();
+
+      expect(norman.doAction).toHaveBeenCalledWith('disable');
+      expect(clone.enabled).toBe(false);
+      expect(clone.save).toHaveBeenCalledWith();
+    });
+
+    it('should report a genuine failure rather than leaving it uncaught', async() => {
+      const norman = {
+        hasAction: () => true,
+        doAction:  jest.fn().mockRejectedValue({ code: 'PermissionDenied', status: 403 }),
+      };
+      const { config, dispatch } = makeDisableable(norman);
+
+      await expect(config.disable()).resolves.toBeUndefined();
+
+      expect(dispatch).toHaveBeenCalledWith('growl/fromError', {
+        title: 'generic.notification.title.error',
+        err:   { code: 'PermissionDenied', status: 403 },
+      }, { root: true });
+    });
+
+    // The list reads `enabled` off the cached resource, so it has to be re-fetched.
+    it('should refresh the config so the list reflects the change', async() => {
+      const { config, dispatch } = makeDisableable({ hasAction: () => true, doAction: jest.fn() });
+
+      await config.disable();
+
+      expect(dispatch).toHaveBeenCalledWith('find', {
+        type: 'management.cattle.io.authconfig',
+        id:   'github-two',
+        opt:  { force: true },
+      });
     });
   });
 });
