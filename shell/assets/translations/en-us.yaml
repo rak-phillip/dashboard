@@ -515,7 +515,7 @@ authConfig:
       learnMore: How external authentication works
     disableLocal:
       label: Disable login with local users
-      descriptionOff: 'A provider is enabled, so this takes effect the moment you turn it on: nobody logs in with a local Rancher account after that, including you. You can switch it back off here at any time — but only while you can still log in. If every provider stops working while this is on, nobody can get into Rancher to undo it, and recovery means command-line access to the cluster.'
+      descriptionOff: Users sign in through external providers only. Local accounts remain, but cannot be used to sign in.
       descriptionOn: Local accounts cannot be used to log in. They still exist and keep their permissions — switch this off to make them a way in again. You can only do that from here, so if every provider stops working while this is on, recovery means command-line access to the cluster.
     localRow:
       title: Local authentication
