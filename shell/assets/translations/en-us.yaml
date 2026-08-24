@@ -531,6 +531,16 @@ authConfig:
     filterLabel: Protocol
     filterAll: All
     noResults: No providers match your search.
+  disable:
+    action: Disable
+    title: 'Disable {name}?'
+    titleGeneric: Disable this authentication provider?
+    loggedOut: Anyone currently logged in with this provider will be logged out and redirected to the login screen to choose another provider.
+    learnMore: Restoring access after disabling a provider
+    docsUrl: '{docsBase}/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/authentication-config'
+    irreversible: This can't be undone. Disabling deletes all resources stored for this provider.
+    acknowledge: I understand these users and permissions will be deleted
+    confirm: Disable and delete
   create:
     title: Add an Authentication Provider
     back: Authentication Providers
