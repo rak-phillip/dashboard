@@ -109,6 +109,8 @@ describe('page: AuthConfigList', () => {
 
       expect(action).toBe('management/promptModal');
       expect(payload.component).toBe('AddAuthProviderDialog');
+      // A width with no unit is not valid CSS, and the modal silently falls back to 600px
+      expect(payload.modalWidth).toMatch(/(px|%)$/);
       expect(payload.componentProps.rows.map((r: any) => r.id)).toStrictEqual(['github', 'okta']);
     });
 
