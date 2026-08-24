@@ -154,6 +154,17 @@ describe('page: AuthConfigList', () => {
     });
   });
 
+  // Branding is how the login screen is customised, and that is worth reaching
+  // whether or not any provider has been added yet.
+  it.each([
+    ['providers are configured', [localConfig, oktaConfig]],
+    ['no provider is configured', [localConfig]],
+  ])('should link to the login screen branding when %s', (_label, configs) => {
+    const wrapper = createWrapper({ configs });
+
+    expect(wrapper.find('[data-testid="auth-config-customise-login"]').exists()).toBe(true);
+  });
+
   describe('when no external provider is configured', () => {
     it('should guide the user to add one', () => {
       const wrapper = createWrapper({ configs: [localConfig] });
