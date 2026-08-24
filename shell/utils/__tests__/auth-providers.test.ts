@@ -2,6 +2,8 @@ import {
   REMEMBERED_PROVIDER_KEY,
   clearRememberedProviderId,
   getRememberedProviderId,
+  isValidAuthConfigName,
+  nextAuthConfigName,
   resolveInitialProvider,
   setRememberedProviderId,
   toProviderOptions,
@@ -268,5 +270,49 @@ describe('fx: toProviderTypes', () => {
 
   it('should cope with a config that has no type', () => {
     expect(toProviderTypes([{ id: 'mystery' } as any])).toStrictEqual([]);
+  });
+});
+
+describe('fx: nextAuthConfigName', () => {
+  it('should take the provider key when nothing has claimed it', () => {
+    expect(nextAuthConfigName(['okta'], 'github')).toBe('github');
+  });
+
+  // Rancher pre-creates a config named after the provider, so in practice the
+  // key is always taken by the time a second one is added.
+  it('should suffix a key that is already in use', () => {
+    expect(nextAuthConfigName(['github'], 'github')).toBe('github-2');
+  });
+
+  it('should skip over suffixes that are also in use', () => {
+    expect(nextAuthConfigName(['github', 'github-2', 'github-3'], 'github')).toBe('github-4');
+  });
+
+  it('should not be confused by another provider using the same suffix', () => {
+    expect(nextAuthConfigName(['github', 'okta-2'], 'github')).toBe('github-2');
+  });
+});
+
+describe('fx: isValidAuthConfigName', () => {
+  it.each([
+    ['a bare provider key', 'github'],
+    ['a suffixed name', 'github-2'],
+    ['digits only', '123'],
+    ['the longest name allowed', 'a'.repeat(63)],
+  ])('should accept %s', (_label, name) => {
+    expect(isValidAuthConfigName(name)).toBe(true);
+  });
+
+  it.each([
+    ['an empty name', ''],
+    ['upper case', 'GitHub'],
+    ['a leading dash', '-github'],
+    ['a trailing dash', 'github-'],
+    ['a space', 'git hub'],
+    ['an underscore', 'git_hub'],
+    ['a dot', 'github.com'],
+    ['a name over 63 characters', 'a'.repeat(64)],
+  ])('should reject %s', (_label, name) => {
+    expect(isValidAuthConfigName(name)).toBe(false);
   });
 });

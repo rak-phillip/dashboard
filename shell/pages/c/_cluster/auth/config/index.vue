@@ -12,6 +12,7 @@ import DisableLocalLoginCard from '@shell/components/auth/DisableLocalLoginCard.
 import { HIDE_LOCAL_AUTH_PROVIDER } from '@shell/store/features';
 import { MODE, _EDIT } from '@shell/config/query-params';
 import { LOCAL_AUTH_ID } from '@shell/utils/auth';
+import { providerKey } from '@shell/models/management.cattle.io.authconfig';
 import { toProviderTypes } from '@shell/utils/auth-providers';
 import { sortBy } from '@shell/utils/sort';
 
@@ -106,9 +107,29 @@ export default {
         styles:         'max-height: 100vh;',
         componentProps: {
           rows:     this.providerTypes,
-          selectCb: (id) => this.$router.push(this.editLocation({ id })),
+          selectCb: (id) => this.$router.push(this.addLocation(id)),
         },
       });
+    },
+
+    /**
+     * Where picking a provider type in the add dialog goes.
+     *
+     * Rancher pre-creates an empty config per provider type, so the first
+     * connection to a provider configures that one. Once it is in use, adding
+     * another means creating a config of its own, which needs a name first.
+     */
+    addLocation(id) {
+      const type = this.providerTypes.find((row) => row.id === id);
+
+      if (type && !type.enabled) {
+        return this.editLocation({ id });
+      }
+
+      return {
+        name:   'c-cluster-auth-config-create-provider',
+        params: { cluster: this.$route.params.cluster, provider: providerKey(type?._type) || id },
+      };
     },
 
     editLocation(row) {
@@ -212,6 +233,7 @@ export default {
         :title="row.nameDisplay"
         :icon="row.icon"
         :chips="chipsFor(row)"
+        :description="row.description"
         :meta="row.id"
         status="success"
         :status-label="row.stateDisplay"

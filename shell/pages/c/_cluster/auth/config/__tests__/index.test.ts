@@ -8,6 +8,7 @@ const localConfig: any = { id: 'local', enabled: true };
 
 const oktaConfig = {
   id:           'okta-corp',
+  _type:        'oktaConfig',
   enabled:      true,
   nameDisplay:  'okta-corp',
   sideLabel:    'SAML',
@@ -16,7 +17,7 @@ const oktaConfig = {
 };
 
 const disabledConfig = {
-  id: 'github', enabled: false, nameDisplay: 'github', sideLabel: 'OAuth'
+  id: 'github', _type: 'githubConfig', enabled: false, nameDisplay: 'github', sideLabel: 'OAuth'
 };
 
 const createFeature = (value: boolean, lockedValue: boolean | null = null) => ({
@@ -111,21 +112,42 @@ describe('page: AuthConfigList', () => {
       expect(payload.componentProps.rows.map((r: any) => r.id)).toStrictEqual(['github', 'okta']);
     });
 
-    it('should send the chosen type to its config page', () => {
+    // Rancher pre-creates an empty config per provider type, so the first
+    // connection to a provider configures the one that is already there.
+    it('should send an unused provider type to its own config page', () => {
       const push = jest.fn();
-      const wrapper = createWrapper();
+      const wrapper = createWrapper({ configs: [localConfig, oktaConfig, disabledConfig] });
 
       (wrapper.vm as any).$router = { push };
       (wrapper.vm as any).promptAddProvider();
 
       const { selectCb } = ((wrapper.vm as any).$store.dispatch as jest.Mock).mock.calls[0][1].componentProps;
 
-      selectCb('okta');
+      selectCb('github');
 
       expect(push).toHaveBeenCalledWith({
         name:   'c-cluster-auth-config-id',
-        params: { cluster: 'local', id: 'okta' },
+        params: { cluster: 'local', id: 'github' },
         query:  { mode: 'edit' },
+      });
+    });
+
+    // ...but a second connection to the same provider is a config of its own,
+    // and its name has to be settled before it can be created.
+    it('should send a provider type that is already in use to the add page', () => {
+      const push = jest.fn();
+      const wrapper = createWrapper({ configs: [localConfig, oktaConfig, disabledConfig] });
+
+      (wrapper.vm as any).$router = { push };
+      (wrapper.vm as any).promptAddProvider();
+
+      const { selectCb } = ((wrapper.vm as any).$store.dispatch as jest.Mock).mock.calls[0][1].componentProps;
+
+      selectCb('okta-corp');
+
+      expect(push).toHaveBeenCalledWith({
+        name:   'c-cluster-auth-config-create-provider',
+        params: { cluster: 'local', provider: 'okta' },
       });
     });
   });

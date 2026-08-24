@@ -11,6 +11,7 @@ import { RadioGroup } from '@components/Form/Radio';
 import { LabeledInput } from '@components/Form/LabeledInput';
 import AllowedPrincipals from '@shell/components/auth/AllowedPrincipals';
 import { MANAGEMENT } from '@shell/config/types';
+import { providerKey } from '@shell/models/management.cattle.io.authconfig';
 import { findBy } from '@shell/utils/array';
 import AuthConfig from '@shell/mixins/auth-config';
 import AuthBanner from '@shell/components/auth/AuthBanner';
@@ -138,7 +139,7 @@ export default {
     },
 
     isGithubApp() {
-      return this.model?.id === 'githubapp';
+      return providerKey(this.model?.type) === 'githubapp';
     },
 
     steps() {
@@ -156,9 +157,9 @@ export default {
   },
 
   watch: {
-    'model.id': {
+    isGithubApp: {
       handler(newVal) {
-        this.isGithubAppRef = newVal === 'githubapp';
+        this.isGithubAppRef = newVal;
       },
       immediate: true,
     },

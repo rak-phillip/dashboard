@@ -358,6 +358,10 @@ export default [
         component: () => interopDefault(import('@shell/pages/c/_cluster/auth/config/create.vue')),
         name:      'c-cluster-auth-config-create'
       }, {
+        path:      '/c/:cluster/auth/config/create/:provider',
+        component: () => interopDefault(import('@shell/pages/c/_cluster/auth/config/create/_provider.vue')),
+        name:      'c-cluster-auth-config-create-provider'
+      }, {
         path:      '/c/:cluster/auth/roles',
         component: () => interopDefault(import('@shell/pages/c/_cluster/auth/roles/index.vue')),
         name:      'c-cluster-auth-roles'

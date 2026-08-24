@@ -57,7 +57,7 @@ const createStore = ({ schema, findError }: StoreOpts) => {
   };
 };
 
-const createWrapper = (store: any) => {
+const createWrapper = (store: any, props: any = {}) => {
   // Start with pending: true so the initial render is the Loading stub (the
   // real component doesn't guard `value.name` because the Nuxt `fetch()`
   // hook is what populates `value` — under the test harness we drive that
@@ -65,6 +65,7 @@ const createWrapper = (store: any) => {
   const fetchState = { pending: true };
 
   const wrapper = shallowMount(ResourceDetail as any, {
+    props,
     global: {
       mocks: {
         $store:      store,
@@ -134,6 +135,25 @@ describe('component: ResourceDetail', () => {
     expect((wrapper.vm as any).resourceNotFoundError).toBeInstanceOf(Error);
     expect(wrapper.findComponent({ name: 'FailWhale' }).exists()).toBe(true);
     expect(store.dispatch).not.toHaveBeenCalledWith('loadingError', expect.anything());
+  });
+
+  // Some resources share one form between several instances - every auth config
+  // of a provider is edited by that provider's form, whatever the config is named.
+  it('resolves the form against subTypeOverride rather than the id in the route', async() => {
+    const store = createStore({ schema: { id: 'bogus-resource-type' } });
+    const { wrapper, fetchState } = createWrapper(store, { subTypeOverride: 'github' });
+
+    const hasCustomEdit = jest.fn(() => false);
+    const importEdit = jest.fn(() => null);
+
+    store.getters['type-map/hasCustomEdit'] = hasCustomEdit;
+    store.getters['type-map/importEdit'] = importEdit;
+
+    await runFetch(wrapper, fetchState);
+    (wrapper.vm as any).configureResource();
+
+    expect(hasCustomEdit).toHaveBeenCalledWith('bogus-resource-type', 'github');
+    expect(importEdit).toHaveBeenCalledWith('bogus-resource-type', 'github');
   });
 
   it('does not set resourceNotFoundError when the resource is found', async() => {
