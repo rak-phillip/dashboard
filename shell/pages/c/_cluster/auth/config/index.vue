@@ -12,6 +12,8 @@ import DisableLocalLoginCard from '@shell/components/auth/DisableLocalLoginCard.
 import { HIDE_LOCAL_AUTH_PROVIDER } from '@shell/store/features';
 import { MODE, _EDIT } from '@shell/config/query-params';
 import { LOCAL_AUTH_ID } from '@shell/utils/auth';
+import { toProviderTypes } from '@shell/utils/auth-providers';
+import { sortBy } from '@shell/utils/sort';
 
 const resource = MANAGEMENT.AUTH_CONFIG;
 
@@ -73,11 +75,9 @@ export default {
       return canUpdate && !!this.localAuthFeature && this.localAuthFeature.status?.lockedValue === null;
     },
 
-    createLocation() {
-      return {
-        name:   'c-cluster-auth-config-create',
-        params: { cluster: this.$route.params.cluster }
-      };
+    /** One tile per configurable provider type, for the add-provider picker. */
+    providerTypes() {
+      return sortBy(toProviderTypes(this.allConfigs), ['sideLabel', 'provider']);
     },
 
     localUsersRoute() {
@@ -98,6 +98,19 @@ export default {
   },
 
   methods: {
+    promptAddProvider() {
+      this.$store.dispatch('management/promptModal', {
+        component:      'AddAuthProviderDialog',
+        modalWidth:     '960',
+        height:         'auto',
+        styles:         'max-height: 100vh;',
+        componentProps: {
+          rows:     this.providerTypes,
+          selectCb: (id) => this.$router.push(this.editLocation({ id })),
+        },
+      });
+    },
+
     editLocation(row) {
       return {
         name:   'c-cluster-auth-config-id',
@@ -147,8 +160,8 @@ export default {
       <rc-button
         v-if="rows.length"
         variant="primary"
-        :to="createLocation"
         data-testid="auth-config-create"
+        @click="promptAddProvider"
       >
         <template #before>
           <RcIcon
@@ -168,7 +181,7 @@ export default {
 
     <AuthProvidersEmptyState
       v-if="!rows.length"
-      :create-location="createLocation"
+      @create="promptAddProvider"
     />
 
     <template v-else>

@@ -4,7 +4,7 @@ import AuthProviderRow from '@shell/components/auth/AuthProviderRow.vue';
 import AuthProvidersEmptyState from '@shell/components/auth/AuthProvidersEmptyState.vue';
 import DisableLocalLoginCard from '@shell/components/auth/DisableLocalLoginCard.vue';
 
-const localConfig = { id: 'local', enabled: true };
+const localConfig: any = { id: 'local', enabled: true };
 
 const oktaConfig = {
   id:           'okta-corp',
@@ -79,6 +79,54 @@ describe('page: AuthConfigList', () => {
       name:   'c-cluster-auth-config-id',
       params: { cluster: 'local', id: 'okta-corp' },
       query:  { mode: 'edit' },
+    });
+  });
+
+  describe('adding a provider', () => {
+    // The picker is for new entries, so it lists provider *types*. A multi-IDP
+    // install has one config per instance, which previously showed eleven GitHub
+    // tiles for eleven GitHub configs.
+    it('should offer each provider type once', () => {
+      const wrapper = createWrapper({
+        configs: [
+          localConfig,
+          {
+            id: 'github', _type: 'githubConfig', enabled: true
+          },
+          {
+            id: 'github-two', _type: 'githubConfig', enabled: true
+          },
+          {
+            id: 'okta', _type: 'oktaConfig', enabled: false
+          },
+        ],
+      });
+
+      (wrapper.vm as any).promptAddProvider();
+
+      const [action, payload] = ((wrapper.vm as any).$store.dispatch as jest.Mock).mock.calls[0];
+
+      expect(action).toBe('management/promptModal');
+      expect(payload.component).toBe('AddAuthProviderDialog');
+      expect(payload.componentProps.rows.map((r: any) => r.id)).toStrictEqual(['github', 'okta']);
+    });
+
+    it('should send the chosen type to its config page', () => {
+      const push = jest.fn();
+      const wrapper = createWrapper();
+
+      (wrapper.vm as any).$router = { push };
+      (wrapper.vm as any).promptAddProvider();
+
+      const { selectCb } = ((wrapper.vm as any).$store.dispatch as jest.Mock).mock.calls[0][1].componentProps;
+
+      selectCb('okta');
+
+      expect(push).toHaveBeenCalledWith({
+        name:   'c-cluster-auth-config-id',
+        params: { cluster: 'local', id: 'okta' },
+        query:  { mode: 'edit' },
+      });
     });
   });
 

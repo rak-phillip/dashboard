@@ -1,5 +1,5 @@
 import { configTypeForProvider, providerIcon, providerKey } from '@shell/models/management.cattle.io.authconfig';
-import { LOCAL_AUTH_ID } from '@shell/utils/auth';
+import { LOCAL_AUTH_ID, UNSUPPORTED_AUTH_IDS } from '@shell/utils/auth';
 import { sortBy } from '@shell/utils/sort';
 
 export const LOCAL_PROVIDER = 'localProvider';
@@ -84,6 +84,44 @@ export const toProviderOptions = (drivers: AuthProviderDriver[], i18n: I18n): Au
       isLocal:     true,
     },
   ];
+};
+
+interface AuthConfigLike {
+  id: string;
+  _type?: string;
+}
+
+/**
+ * The catalogue of provider types that can be configured, one entry per type.
+ *
+ * Rancher pre-creates a singleton authconfig per supported type, but a multi-IDP
+ * install also carries a config per *instance* - eleven GitHub configs are still
+ * one GitHub to choose from - so the list is keyed by provider rather than by id.
+ * The singleton is preferred as the entry for its type, since its id is the one
+ * the edit route expects.
+ */
+export const toProviderTypes = <T extends AuthConfigLike>(configs: T[]): T[] => {
+  const byKey = new Map<string, T>();
+
+  configs.forEach((config) => {
+    if (config.id === LOCAL_AUTH_ID || UNSUPPORTED_AUTH_IDS.includes(config.id)) {
+      return;
+    }
+
+    const key = providerKey(config._type);
+
+    if (!key) {
+      return;
+    }
+
+    const existing = byKey.get(key);
+
+    if (!existing || config.id === key) {
+      byKey.set(key, config);
+    }
+  });
+
+  return Array.from(byKey.values());
 };
 
 export const getRememberedProviderId = (): string | null => {

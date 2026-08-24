@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import type { RouteLocationRaw } from 'vue-router';
 import { RcButton } from '@components/RcButton';
 import { RcIcon } from '@components/RcIcon';
 
-defineProps<{
-  createLocation: RouteLocationRaw;
-}>();
+const emit = defineEmits<{(e: 'create'): void }>();
 </script>
 
 <template>
@@ -26,8 +23,8 @@ defineProps<{
       <div class="auth-providers-empty__actions">
         <rc-button
           variant="primary"
-          :to="createLocation"
           data-testid="auth-config-create"
+          @click="emit('create')"
         >
           <template #before>
             <RcIcon

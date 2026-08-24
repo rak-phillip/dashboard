@@ -5,7 +5,7 @@ import { sortBy } from '@shell/utils/sort';
 import { MODE, _EDIT } from '@shell/config/query-params';
 import Loading from '@shell/components/Loading';
 import { RcButton } from '@components/RcButton';
-import { LOCAL_AUTH_ID, UNSUPPORTED_AUTH_IDS } from '@shell/utils/auth';
+import { toProviderTypes } from '@shell/utils/auth-providers';
 
 const resource = MANAGEMENT.AUTH_CONFIG;
 
@@ -29,11 +29,7 @@ export default {
      * authconfig per supported type, so those singletons double as the type list.
      */
     rows() {
-      const types = this.allConfigs.filter((c) => {
-        return c.id !== LOCAL_AUTH_ID && !UNSUPPORTED_AUTH_IDS.includes(c.id);
-      });
-
-      return sortBy(types, ['sideLabel', 'nameDisplay']);
+      return sortBy(toProviderTypes(this.allConfigs), ['sideLabel', 'provider']);
     },
 
     listLocation() {
