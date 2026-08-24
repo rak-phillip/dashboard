@@ -200,33 +200,38 @@ export default {
       :label="toggleError"
     />
 
+    <!-- Nothing to disable local login in favour of until a provider is configured -->
+    <DisableLocalLoginCard
+      v-if="rows.length"
+      :value="disableLocalAuth"
+      :disabled="!canToggleLocalAuth"
+      @update:value="setDisableLocalAuth"
+    />
+
+    <div class="auth-config-section-header">
+      <div class="auth-config-section-header__label">
+        <h2 class="auth-config-section-title">
+          {{ t('authConfig.list.external') }}
+        </h2>
+        <RcCounterBadge
+          type="inactive"
+          :count="rows.length"
+        />
+      </div>
+      <router-link
+        :to="brandingRoute"
+        data-testid="auth-config-customise-login"
+      >
+        {{ t('authConfig.list.customiseLogin') }}
+      </router-link>
+    </div>
+
     <AuthProvidersEmptyState
       v-if="!rows.length"
       @create="promptAddProvider"
     />
 
     <template v-else>
-      <DisableLocalLoginCard
-        :value="disableLocalAuth"
-        :disabled="!canToggleLocalAuth"
-        @update:value="setDisableLocalAuth"
-      />
-
-      <div class="auth-config-section-header">
-        <div class="auth-config-section-header__label">
-          <h2 class="auth-config-section-title">
-            {{ t('authConfig.list.external') }}
-          </h2>
-          <RcCounterBadge
-            type="inactive"
-            :count="rows.length"
-          />
-        </div>
-        <router-link :to="brandingRoute">
-          {{ t('authConfig.list.customiseLogin') }}
-        </router-link>
-      </div>
-
       <AuthProviderRow
         v-for="row in rows"
         :key="row.id"
