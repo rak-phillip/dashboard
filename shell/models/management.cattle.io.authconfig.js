@@ -69,15 +69,33 @@ export default class AuthConfig extends SteveModel {
     const out = super._availableActions;
 
     insertAt(out, 0, {
-      action:  'disable',
-      label:   'Disable',
-      icon:    'icon icon-spinner',
+      action:  'promptDisable',
+      label:   this.t('authConfig.disable.action'),
+      icon:    'icon icon-close',
       enabled: this.enabled === true,
     });
 
     insertAt(out, 1, { divider: true });
 
     return out;
+  }
+
+  /**
+   * Disabling deletes everything Rancher stores for the provider, so the action
+   * menu confirms before {@link disable} is allowed to run.
+   */
+  promptDisable() {
+    this.$dispatch('promptModal', {
+      component:      'DisableAuthProviderDialog',
+      customClass:    'remove-modal',
+      modalWidth:     '600',
+      height:         'auto',
+      styles:         'max-height: 100vh;',
+      componentProps: {
+        name:      this.nameDisplay,
+        disableCb: () => this.disable(),
+      },
+    });
   }
 
   /**

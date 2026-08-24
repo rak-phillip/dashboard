@@ -1,13 +1,19 @@
 <script>
 import { Card } from '@components/Card';
+import { Banner } from '@components/Banner';
+import { Checkbox } from '@components/Form/Checkbox';
+import { RcIcon } from '@components/RcIcon';
 
 export default {
-  name: 'PromptRemove',
+  name: 'DisableAuthProviderDialog',
 
-  emits: ['disable', 'close'],
+  emits: ['close'],
 
-  components: { Card },
-  props:      {
+  components: {
+    Banner, Card, Checkbox, RcIcon
+  },
+
+  props: {
     /**
      * Inherited global identifier prefix for tests
      * Define a term based on the parent component to avoid conflicts on multiple components
@@ -16,16 +22,39 @@ export default {
       type:    String,
       default: 'disable-auth-provider'
     },
+
+    /** The provider's display name, shown in the title. */
+    name: {
+      type:    String,
+      default: ''
+    },
+
     disableCb: {
       type:    Function,
       default: () => {}
     }
   },
+
+  data() {
+    return { acknowledged: false };
+  },
+
+  computed: {
+    title() {
+      return this.name ? this.t('authConfig.disable.title', { name: this.name }) : this.t('authConfig.disable.titleGeneric');
+    }
+  },
+
   methods: {
     close() {
       this.$emit('close');
     },
+
     disable() {
+      if (!this.acknowledged) {
+        return;
+      }
+
       this.disableCb();
       this.$emit('close');
     }
@@ -40,12 +69,37 @@ export default {
   >
     <template #title>
       <h4 class="text-default-text">
-        {{ t('promptRemove.title') }}
+        {{ title }}
       </h4>
     </template>
     <template #body>
-      <div class="mb-10">
-        <p v-clean-html="t('promptRemove.attemptingToRemoveAuthConfig', null, true)" />
+      <div class="disable-auth-provider__body">
+        <p>{{ t('authConfig.disable.loggedOut') }}</p>
+
+        <a
+          :href="t('authConfig.disable.docsUrl')"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          class="disable-auth-provider__link"
+        >
+          {{ t('authConfig.disable.learnMore') }}
+          <RcIcon
+            type="external-link"
+            size="medium"
+          />
+        </a>
+
+        <Banner
+          color="warning"
+          class="disable-auth-provider__warning"
+        >
+          <p>{{ t('authConfig.disable.irreversible') }}</p>
+          <Checkbox
+            v-model:value="acknowledged"
+            :label="t('authConfig.disable.acknowledge')"
+            :data-testid="componentTestid + '-acknowledge'"
+          />
+        </Banner>
       </div>
     </template>
     <template #actions>
@@ -58,39 +112,41 @@ export default {
       <div class="spacer" />
       <button
         class="btn role-primary bg-error ml-10"
+        :disabled="!acknowledged"
         :data-testid="componentTestid + '-confirm-button'"
         @click="disable"
       >
-        {{ t('generic.disable') }}
+        {{ t('authConfig.disable.confirm') }}
       </button>
     </template>
   </Card>
 </template>
 
-<style lang='scss'>
+<style lang='scss' scoped>
   .disable-auth-provider {
     &.card-container {
       box-shadow: none;
     }
-    #confirm {
-      width: 90%;
-      margin-left: 3px;
+
+    &__body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
     }
 
-    .remove-modal {
-        border-radius: var(--border-radius);
-        overflow: scroll;
-        max-height: 100vh;
-        & ::-webkit-scrollbar-corner {
-          background: rgba(0,0,0,0);
-        }
+    &__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .actions {
-      text-align: right;
+    &__warning {
+      width: 100%;
+      margin: 0;
     }
 
-    .card-actions {
+    :deep(.card-actions) {
       display: flex;
 
       .spacer {

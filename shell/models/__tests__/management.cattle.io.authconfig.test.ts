@@ -191,6 +191,35 @@ describe('class AuthConfig', () => {
       expect(typeof makeConfig({ id: 'github-two' }).disable).toBe('function');
     });
 
+    // Disabling deletes everything stored for the provider, so the action menu
+    // must confirm rather than firing it straight off a single click.
+    it('should confirm before disabling', () => {
+      const { config, dispatch } = makeDisableable({});
+
+      config.promptDisable();
+
+      const call = (dispatch.mock.calls as any[])[0];
+
+      expect(call[0]).toBe('promptModal');
+      expect(call[1].component).toBe('DisableAuthProviderDialog');
+      expect(call[1].componentProps.name).toBe(config.nameDisplay);
+    });
+
+    it('should disable only once the dialog calls back', async() => {
+      const norman = { hasAction: () => true, doAction: jest.fn() };
+      const { config, dispatch } = makeDisableable(norman);
+
+      config.promptDisable();
+
+      const { disableCb } = (dispatch.mock.calls as any[])[0][1].componentProps;
+
+      expect(norman.doAction).not.toHaveBeenCalled();
+
+      await disableCb();
+
+      expect(norman.doAction).toHaveBeenCalledWith('disable');
+    });
+
     it('should run the norman action for the matching config', async() => {
       const norman = { hasAction: () => true, doAction: jest.fn() };
       const { config, dispatch } = makeDisableable(norman);
