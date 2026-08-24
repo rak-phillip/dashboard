@@ -102,7 +102,7 @@ export default {
     promptAddProvider() {
       this.$store.dispatch('management/promptModal', {
         component:      'AddAuthProviderDialog',
-        modalWidth:     '960',
+        modalWidth:     '960px', // AppModal ignores a width with no unit and falls back to 600px
         height:         'auto',
         styles:         'max-height: 100vh;',
         componentProps: {
