@@ -150,6 +150,9 @@ const select = (id: string) => {
 </template>
 
 <style lang="scss" scoped>
+// How far a focus ring reaches beyond the element it belongs to (offset + width)
+$tile-focus-ring: 4px;
+
 .add-auth-provider {
   &.card-container {
     box-shadow: none;
@@ -185,6 +188,11 @@ const select = (id: string) => {
 
   &__filter {
     cursor: pointer;
+
+    &:focus-visible {
+      @include focus-outline;
+      outline-offset: 2px;
+    }
   }
 
   &__grid {
@@ -192,11 +200,23 @@ const select = (id: string) => {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 12px;
 
-    margin: 0;
-    padding: 0;
+    // A scrolling box clips at its padding edge, which would cut the ring off an
+    // edge tile - the padding gives the ring room, and the margin takes it back
+    // out so the tiles still line up with the search field above them.
+    margin: -$tile-focus-ring;
+    padding: $tile-focus-ring;
     list-style: none;
     max-height: 400px;
     overflow-y: auto;
+
+    // The list scrolls, so browsers make it focusable in its own right - give it
+    // the same ring as anything else you can tab to, rather than the default one.
+    border-radius: var(--border-radius-lg);
+
+    &:focus-visible {
+      @include focus-outline;
+      outline-offset: 2px;
+    }
   }
 
   &__tile {
@@ -215,6 +235,11 @@ const select = (id: string) => {
 
     &:hover {
       background-color: var(--dropdown-hover-bg);
+    }
+
+    &:focus-visible {
+      @include focus-outline;
+      outline-offset: 2px;
     }
   }
 
