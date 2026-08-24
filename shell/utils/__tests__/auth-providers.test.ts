@@ -5,6 +5,7 @@ import {
   resolveInitialProvider,
   setRememberedProviderId,
   toProviderOptions,
+  toProviderTypes,
 } from '@shell/utils/auth-providers';
 import type { AuthProviderDriver, AuthProviderOption } from '@shell/utils/auth-providers';
 
@@ -220,5 +221,52 @@ describe('remembered provider storage', () => {
 
       expect(() => clearRememberedProviderId()).not.toThrow();
     });
+  });
+});
+
+
+describe('fx: toProviderTypes', () => {
+  const configs = [
+    { id: 'github', _type: 'githubConfig' },
+    { id: 'github-two', _type: 'githubConfig' },
+    { id: 'github-eleven', _type: 'githubConfig' },
+    { id: 'okta', _type: 'oktaConfig' },
+    { id: 'local', _type: 'localConfig' },
+    { id: 'oidc', _type: 'oidcConfig' },
+  ];
+
+  // The bug this exists to fix: a multi-IDP install carries one config per
+  // instance, so the picker showed eleven GitHub tiles.
+  it('should offer each provider type once', () => {
+    expect(toProviderTypes(configs).map((c) => c.id)).toStrictEqual(['github', 'okta']);
+  });
+
+  it('should prefer the singleton as the entry for its type', () => {
+    const reordered = [
+      { id: 'github-two', _type: 'githubConfig' },
+      { id: 'github', _type: 'githubConfig' },
+    ];
+
+    expect(toProviderTypes(reordered).map((c) => c.id)).toStrictEqual(['github']);
+  });
+
+  it('should fall back to the first config when there is no singleton', () => {
+    const named = [
+      { id: 'github-two', _type: 'githubConfig' },
+      { id: 'github-three', _type: 'githubConfig' },
+    ];
+
+    expect(toProviderTypes(named).map((c) => c.id)).toStrictEqual(['github-two']);
+  });
+
+  it.each([
+    ['local', 'local'],
+    ['unsupported', 'oidc'],
+  ])('should leave out the %s provider', (_label, id) => {
+    expect(toProviderTypes(configs).map((c) => c.id)).not.toContain(id);
+  });
+
+  it('should cope with a config that has no type', () => {
+    expect(toProviderTypes([{ id: 'mystery' } as any])).toStrictEqual([]);
   });
 });

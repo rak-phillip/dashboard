@@ -524,6 +524,13 @@ authConfig:
       active: Active
       disabled: Disabled
       manageUsers: Manage local users
+  add:
+    title: Add an authentication provider
+    subtitle: Choose the identity provider you want to connect. You can connect more than one.
+    searchPlaceholder: Search providers
+    filterLabel: Protocol
+    filterAll: All
+    noResults: No providers match your search.
   create:
     title: Add an Authentication Provider
     back: Authentication Providers

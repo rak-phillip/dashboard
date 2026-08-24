@@ -2,12 +2,7 @@ import { mount, RouterLinkStub } from '@vue/test-utils';
 import AuthProvidersEmptyState from '@shell/components/auth/AuthProvidersEmptyState.vue';
 import { RcButton } from '@components/RcButton';
 
-const createLocation = { name: 'c-cluster-auth-config-create', params: { cluster: 'local' } };
-
-const createWrapper = () => mount(AuthProvidersEmptyState, {
-  props:  { createLocation },
-  global: { stubs: { RouterLink: RouterLinkStub } }
-});
+const createWrapper = () => mount(AuthProvidersEmptyState, { global: { stubs: { RouterLink: RouterLinkStub } } });
 
 describe('component: AuthProvidersEmptyState', () => {
   it('should explain that only local accounts can log in', () => {
@@ -17,13 +12,18 @@ describe('component: AuthProvidersEmptyState', () => {
     expect(wrapper.find('.auth-providers-empty__description').text()).toBe('%authConfig.list.empty.description%');
   });
 
-  it('should send the primary action to the provider catalogue', () => {
+  // The picker is a modal now, so the page owns opening it rather than the CTA
+  // navigating anywhere.
+  it('should ask the page to open the provider picker', async() => {
     const wrapper = createWrapper();
 
     const cta = wrapper.findComponent(RcButton);
 
     expect(cta.attributes('data-testid')).toBe('auth-config-create');
-    expect(cta.props('to')).toStrictEqual(createLocation);
+
+    await cta.trigger('click');
+
+    expect(wrapper.emitted('create')).toHaveLength(1);
   });
 
   // The docs live off-site, so the link has to be safe to open in a new tab.
