@@ -88,6 +88,16 @@ export default {
       type:    Object,
       default: null
     },
+
+    /**
+     * Resolve the detail and edit components against this instead of the id in
+     * the route. For resources whose form is per subtype rather than per
+     * resource - several auth configs of one provider share one form.
+     */
+    subTypeOverride: {
+      type:    String,
+      default: null,
+    },
   },
 
   async fetch() {
@@ -107,8 +117,9 @@ export default {
     // know about:  view, edit, create (stage, import and clone become "create")
     const mode = ([_CLONE, _IMPORT, _STAGE].includes(realMode) ? _CREATE : realMode);
 
-    const hasCustomDetail = store.getters['type-map/hasCustomDetail'](resourceType, id);
-    const hasCustomEdit = store.getters['type-map/hasCustomEdit'](resourceType, id);
+    const subType = this.subTypeOverride || id;
+    const hasCustomDetail = store.getters['type-map/hasCustomDetail'](resourceType, subType);
+    const hasCustomEdit = store.getters['type-map/hasCustomEdit'](resourceType, subType);
 
     const schemas = store.getters[`${ inStore }/all`](SCHEMA);
 
@@ -414,7 +425,7 @@ export default {
      * the route parameters or the instance's resourceOverride property.
      */
     configureResource(userId = '', resourceOverride = null) {
-      const id = userId || this.$route.params.id;
+      const id = userId || this.subTypeOverride || this.$route.params.id;
       const resource = resourceOverride || this.resourceOverride || this.$route.params.resource;
       const options = this.$store.getters[`type-map/optionsFor`](resource);
 

@@ -156,3 +156,29 @@ export const resolveInitialProvider = (
 
   return remembered || options[0];
 };
+
+/**
+ * A free authconfig name for a new instance of a provider type.
+ *
+ * The name is the config's `metadata.name`, which the API will not let you change
+ * after creation, so it has to be settled before the config is written. Rancher's
+ * pre-created singleton already owns the bare provider key, hence the suffix.
+ */
+export const nextAuthConfigName = (takenIds: string[], key: string): string => {
+  const taken = new Set(takenIds);
+
+  if (!taken.has(key)) {
+    return key;
+  }
+
+  let suffix = 2;
+
+  while (taken.has(`${ key }-${ suffix }`)) {
+    suffix++;
+  }
+
+  return `${ key }-${ suffix }`;
+};
+
+/** `metadata.name` is a DNS label, and Rancher rejects anything else. */
+export const isValidAuthConfigName = (name: string): boolean => /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/.test(name) && name.length <= 63;

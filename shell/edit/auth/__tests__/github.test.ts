@@ -17,6 +17,7 @@ const validTargetUrl = 'https://github.mycompany.com';
 const mockGitHubModel = {
   enabled:      false,
   id:           'github',
+  type:         'githubConfig',
   clientId:     validClientId,
   clientSecret: validClientSecret,
   hostname:     'github.com',
@@ -26,6 +27,7 @@ const mockGitHubModel = {
 const mockGitHubAppModel = {
   ...mockGitHubModel,
   id:         'githubapp',
+  type:       'githubAppConfig',
   appId:      validAppId,
   privateKey: validPrivateKey,
 };
