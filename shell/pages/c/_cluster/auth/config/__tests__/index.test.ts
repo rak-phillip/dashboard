@@ -10,7 +10,8 @@ const oktaConfig = {
   id:           'okta-corp',
   _type:        'oktaConfig',
   enabled:      true,
-  nameDisplay:  'okta-corp',
+  nameDisplay:  'Okta (okta-corp)',
+  provider:     'Okta',
   sideLabel:    'SAML',
   icon:         'okta.svg',
   stateDisplay: 'Active',
@@ -57,7 +58,9 @@ describe('page: AuthConfigList', () => {
 
     // One for Okta, one for the local provider section
     expect(rows).toHaveLength(2);
-    expect(rows[0].props('title')).toBe('okta-corp');
+    // The provider's own label, with the config's name in the chip beside it
+    expect(rows[0].props('title')).toBe('Okta');
+    expect(rows[0].props('meta')).toBe('okta-corp');
     expect(rows[0].props('chips')).toStrictEqual(['SAML']);
     expect(rows[0].props('icon')).toBe('okta.svg');
     expect(rows[0].props('statusLabel')).toBe('Active');
