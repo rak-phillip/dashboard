@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { Card } from '@components/Card';
 import { RcButton } from '@components/RcButton';
 import { RcTag } from '@components/Pill';
+import { RcItemCard } from '@components/RcItemCard';
 import AuthProviderLogo from '@shell/components/auth/AuthProviderLogo.vue';
 
 interface ProviderType {
@@ -112,18 +113,28 @@ const select = (id: string) => {
             v-for="row in filtered"
             :key="row.id"
           >
-            <button
-              type="button"
+            <rc-item-card
+              :id="row.id"
+              :value="row"
+              :header="{ title: { text: row.provider } }"
+              variant="medium"
+              :clickable="true"
               class="add-auth-provider__tile"
               :data-testid="`add-auth-provider-tile-${ row.id }`"
-              @click="select(row.id)"
+              @card-click="select(row.id)"
             >
-              <AuthProviderLogo :icon="row.icon" />
-              <span class="add-auth-provider__tile-text">
-                <span class="add-auth-provider__tile-name">{{ row.provider }}</span>
-                <span class="add-auth-provider__tile-protocol">{{ row.sideLabel }}</span>
-              </span>
-            </button>
+              <template #item-card-image>
+                <AuthProviderLogo :icon="row.icon" />
+              </template>
+              <template #item-card-sub-header>
+                <RcTag
+                  type="inactive"
+                  :data-testid="`add-auth-provider-tile-protocol-${ row.id }`"
+                >
+                  {{ row.sideLabel }}
+                </RcTag>
+              </template>
+            </rc-item-card>
           </li>
         </ul>
         <p
@@ -220,47 +231,11 @@ $tile-focus-ring: 4px;
   }
 
   &__tile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 12px;
-
-    background-color: var(--body-bg);
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius-lg);
-    color: var(--body-text);
-    text-align: left;
-    cursor: pointer;
-
-    &:hover {
-      background-color: var(--dropdown-hover-bg);
+    // The card stacks title and sub-header with its default 8px rhythm; the
+    // design pairs them tighter as a single label block.
+    :deep(.item-card-body-details) {
+      gap: 4px;
     }
-
-    &:focus-visible {
-      @include focus-outline;
-      outline-offset: 2px;
-    }
-  }
-
-  &__tile-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  &__tile-name {
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 21px;
-    overflow-wrap: anywhere;
-  }
-
-  &__tile-protocol {
-    color: var(--label-secondary);
-    font-size: 12px;
-    line-height: 18px;
   }
 
   &__empty {
