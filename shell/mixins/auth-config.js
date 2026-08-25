@@ -2,6 +2,7 @@ import { MODE, _EDIT } from '@shell/config/query-params';
 import { DESCRIPTION } from '@shell/config/labels-annotations';
 import { NORMAN, MANAGEMENT } from '@shell/config/types';
 import { providerKey } from '@shell/models/management.cattle.io.authconfig';
+import { isValidAuthConfigName } from '@shell/utils/auth-providers';
 import { AFTER_SAVE_HOOKS, BEFORE_SAVE_HOOKS } from '@shell/mixins/child-hook';
 import { BASE_SCOPES, SLO_AUTH_PROVIDERS } from '@shell/store/auth';
 import { addObject, findBy } from '@shell/utils/array';
@@ -104,6 +105,71 @@ export default {
 
     isCreate() {
       return !!this.authConfigCreate;
+    },
+
+    /**
+     * The config's name. It is `metadata.name`, which the API rejects on update,
+     * so it can only be set while the config is still being added.
+     */
+    configName: {
+      get() {
+        // While adding, the name is still being chosen, and the page holds it -
+        // `authConfigName` is only settled once the config exists.
+        return this.authConfigCreate ? this.authConfigCreate.name : this.authConfigName;
+      },
+      set(value) {
+        if (this.authConfigCreate) {
+          this.authConfigCreate.name = value;
+        }
+      },
+    },
+
+    /** Why the name cannot be used, or null. Only a new config has a say in it. */
+    configNameError() {
+      if (!this.isCreate || this.authConfigCreate.created) {
+        return null;
+      }
+
+      const name = this.authConfigCreate.name;
+
+      if (!name) {
+        return this.t('authConfig.create.name.required');
+      }
+
+      if (!isValidAuthConfigName(name)) {
+        return this.t('authConfig.create.name.invalid');
+      }
+
+      if ((this.authConfigCreate.takenIds || []).includes(name)) {
+        return this.t('authConfig.create.name.taken', { name });
+      }
+
+      return null;
+    },
+
+    /**
+     * What the admin called this connection. The API has no field for one, so it
+     * lives in the annotation the rest of the UI reads descriptions from.
+     */
+    configDescription: {
+      get() {
+        return this.model?.annotations?.[DESCRIPTION] || '';
+      },
+      set(value) {
+        if (!this.model) {
+          return;
+        }
+
+        const annotations = { ...(this.model.annotations || {}) };
+
+        if (value) {
+          annotations[DESCRIPTION] = value;
+        } else {
+          delete annotations[DESCRIPTION];
+        }
+
+        this.model.annotations = annotations;
+      },
     },
 
     AUTH_CONFIG() {
@@ -356,7 +422,8 @@ export default {
         return;
       }
 
-      const { name, description, normanType } = this.authConfigCreate;
+      const { name, normanType } = this.authConfigCreate;
+      const description = this.configDescription;
       const metadata = { name };
 
       if (description) {
