@@ -86,6 +86,12 @@ describe('page: AuthConfigList', () => {
     });
   });
 
+  it('should size the add provider header action like resource list actions', () => {
+    const wrapper = createWrapper();
+
+    expect(wrapper.find('[data-testid="auth-config-create"]').attributes('size')).toBe('large');
+  });
+
   describe('adding a provider', () => {
     // The picker is for new entries, so it lists provider *types*. A multi-IDP
     // install has one config per instance, which previously showed eleven GitHub
