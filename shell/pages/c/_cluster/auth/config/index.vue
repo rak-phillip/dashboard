@@ -267,7 +267,7 @@ export default {
       :status-label="disableLocalAuth ? t('authConfig.list.localRow.disabled') : t('authConfig.list.localRow.active')"
       data-testid="auth-config-row-local"
     >
-      <template #trailing>
+      <template #meta-trailing>
         <router-link :to="localUsersRoute">
           {{ t('authConfig.list.localRow.manageUsers') }}
         </router-link>

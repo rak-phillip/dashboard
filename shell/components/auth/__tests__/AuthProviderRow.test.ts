@@ -109,6 +109,21 @@ describe('component: AuthProviderRow', () => {
     expect(wrapper.find('.auth-provider-row__trailing .row-action').exists()).toBe(true);
   });
 
+  it('should put a meta control beside the meta line rather than at the end of the row', () => {
+    const wrapper = mount(AuthProviderRow, {
+      props:  { title: 'Local authentication', meta: 'Rancher-managed accounts' },
+      slots:  { 'meta-trailing': '<a class="meta-action">Manage local users</a>' },
+      global: { stubs: { 'router-link': RouterLinkStub } }
+    });
+
+    const metaRow = wrapper.find('.auth-provider-row__meta-row');
+    const action = wrapper.find('.meta-action');
+
+    expect(metaRow.exists()).toBe(true);
+    expect(metaRow.find('.auth-provider-row__meta').text()).toBe('Rancher-managed accounts');
+    expect(metaRow.element.lastElementChild).toBe(action.element);
+  });
+
   // A control nested inside the row's link would navigate on click, and on Enter
   // and Space, rather than doing its own job.
   it('should keep the trailing controls out of the link', () => {
