@@ -15,6 +15,7 @@ const oktaConfig = {
   sideLabel:    'SAML',
   icon:         'okta.svg',
   stateDisplay: 'Active',
+  description:  'Corporate SSO for employees.',
 };
 
 const disabledConfig = {
@@ -64,6 +65,18 @@ describe('page: AuthConfigList', () => {
     expect(rows[0].props('chips')).toStrictEqual(['SAML']);
     expect(rows[0].props('icon')).toBe('okta.svg');
     expect(rows[0].props('statusLabel')).toBe('Active');
+  });
+
+  it('should describe a provider with the description its config carries', () => {
+    const rows = createWrapper().findAllComponents(AuthProviderRow);
+
+    expect(rows[0].props('description')).toBe('Corporate SSO for employees.');
+  });
+
+  it('should leave the description off a provider whose config has none', () => {
+    const wrapper = createWrapper({ configs: [localConfig, { ...oktaConfig, description: undefined }] });
+
+    expect(wrapper.findAllComponents(AuthProviderRow)[0].props('description')).toBeUndefined();
   });
 
   // Rancher pre-creates a disabled authconfig per supported type; those are the
@@ -196,6 +209,22 @@ describe('page: AuthConfigList', () => {
 
       expect(rows).toHaveLength(1);
       expect(rows[0].props('title')).toBe('%authConfig.list.localRow.title%');
+    });
+  });
+
+  describe('the local provider row', () => {
+    const localRow = (wrapper: any) => wrapper.findAllComponents(AuthProviderRow)[1];
+
+    it('should describe what local accounts are for', () => {
+      expect(localRow(createWrapper()).props('description')).toBe('%authConfig.list.localRow.description%');
+    });
+
+    // An admin can annotate the local config the same as any other, and that
+    // wins over the generic copy.
+    it('should prefer a description set on the local config', () => {
+      const wrapper = createWrapper({ configs: [{ ...localConfig, description: 'Break-glass only.' }, oktaConfig] });
+
+      expect(localRow(wrapper).props('description')).toBe('Break-glass only.');
     });
   });
 
