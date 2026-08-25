@@ -181,6 +181,7 @@ export default {
       <rc-button
         v-if="rows.length"
         variant="primary"
+        size="large"
         data-testid="auth-config-create"
         @click="promptAddProvider"
       >
