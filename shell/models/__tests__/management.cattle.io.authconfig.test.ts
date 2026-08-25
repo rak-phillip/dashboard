@@ -142,6 +142,53 @@ describe('class AuthConfig', () => {
     });
   });
 
+  describe('nameDisplay', () => {
+    it('should name a provider by its label when it is the only config of its type', () => {
+      const config = makeConfig({ id: 'github', _type: 'githubConfig' });
+
+      expect(config.nameDisplay).toBe('model.authConfig.name."github"');
+    });
+
+    // Eight GitHub configs would otherwise be eight identical page titles.
+    it('should name an instance as well when it is not the provider singleton', () => {
+      const config = makeConfig({ id: 'github-5', _type: 'githubConfig' });
+
+      expect(config.nameDisplay).toBe('model.authConfig.name."github-5" (github-5)');
+    });
+
+    it('should prefer what the admin called it', () => {
+      const config = makeConfig({
+        id:       'github-5',
+        _type:    'githubConfig',
+        metadata: { annotations: { 'field.cattle.io/description': 'Contractors' } },
+      });
+
+      expect(config.nameDisplay).toBe('Contractors');
+    });
+  });
+
+  // Forms are registered per provider, so a lookup by config id finds nothing for
+  // an instance and takes `Edit Config` off its action menu.
+  describe('canCustomEdit', () => {
+    const makeEditable = (data: Object) => new AuthConfig(data, {
+      rootGetters: {
+        ...rootGetters,
+        'type-map/hasCustomEdit': (type: string, subType: string) => subType === 'github',
+      }
+    } as any);
+
+    it.each([
+      ['the provider singleton', 'github'],
+      ['an instance of the provider', 'github-5'],
+    ])('should find the form for %s', (_label, id) => {
+      expect(makeEditable({ id, _type: 'githubConfig' }).canCustomEdit).toBe(true);
+    });
+
+    it('should report no form when the provider has none', () => {
+      expect(makeEditable({ id: 'okta', _type: 'oktaConfig' }).canCustomEdit).toBe(false);
+    });
+  });
+
   describe('icon', () => {
     it.each([
       ['githubConfig', 'github'],

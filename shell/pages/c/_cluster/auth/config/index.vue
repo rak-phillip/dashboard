@@ -235,7 +235,7 @@ export default {
       <AuthProviderRow
         v-for="row in rows"
         :key="row.id"
-        :title="row.nameDisplay"
+        :title="row.provider"
         :icon="row.icon"
         :chips="chipsFor(row)"
         :description="row.description"
