@@ -1,5 +1,7 @@
 import { mount } from '@vue/test-utils';
 import AddAuthProviderDialog from '@shell/dialog/AddAuthProviderDialog.vue';
+import { RcItemCard } from '@components/RcItemCard';
+import { RcTag } from '@components/Pill';
 
 const rows = [
   {
@@ -19,11 +21,41 @@ const createWrapper = (props = {}) => mount(AddAuthProviderDialog, {
   }
 });
 
-const tileNames = (wrapper: any) => wrapper.findAll('.add-auth-provider__tile-name').map((n: any) => n.text());
+const tileNames = (wrapper: any) => wrapper
+  .findAllComponents(RcItemCard)
+  .map((card: any) => card.props('header').title.text);
+
+const protocolTag = (wrapper: any, id: string) => wrapper
+  .findAllComponents(RcTag)
+  .find((tag: any) => tag.attributes('data-testid') === `add-auth-provider-tile-protocol-${ id }`);
 
 describe('component: AddAuthProviderDialog', () => {
   it('should offer every provider type it is given', () => {
     expect(tileNames(createWrapper())).toStrictEqual(['Okta', 'GitHub', 'OpenLDAP']);
+  });
+
+  it('should render each provider type as a Rancher Components card', () => {
+    const wrapper = createWrapper();
+
+    expect(wrapper.findAllComponents(RcItemCard)).toHaveLength(3);
+  });
+
+  it.each([
+    ['okta', 'SAML'],
+    ['github', 'OAuth'],
+    ['openldap', 'LDAP'],
+  ])('should tag the %s card with its protocol', (id, sideLabel) => {
+    expect(protocolTag(createWrapper(), id).text()).toBe(sideLabel);
+  });
+
+  it('should render the protocol tag as inactive', () => {
+    expect(protocolTag(createWrapper(), 'okta').props('type')).toBe('inactive');
+  });
+
+  it('should render the protocol tag in the card sub-header rather than as card content', () => {
+    const card = createWrapper().findComponent(RcItemCard);
+
+    expect(card.props('content')).toBeUndefined();
   });
 
   it('should narrow the grid by search term', async() => {
