@@ -13,6 +13,7 @@ import AllowedPrincipals from '@shell/components/auth/AllowedPrincipals';
 import { MANAGEMENT } from '@shell/config/types';
 import { providerKey } from '@shell/models/management.cattle.io.authconfig';
 import { findBy } from '@shell/utils/array';
+import AuthConfigIdentity from '@shell/components/auth/AuthConfigIdentity.vue';
 import AuthConfig from '@shell/mixins/auth-config';
 import AuthBanner from '@shell/components/auth/AuthBanner';
 import AuthProviderWarningBanners from '@shell/edit/auth/AuthProviderWarningBanners';
@@ -25,6 +26,7 @@ import { zodValidators } from '@shell/utils/validators/zod-helpers';
 
 export default {
   components: {
+    AuthConfigIdentity,
     Loading,
     CruResource,
     RadioGroup,
@@ -215,6 +217,13 @@ export default {
       @finish="save"
       @cancel="cancel"
     >
+      <AuthConfigIdentity
+        v-model:name="configName"
+        v-model:description="configDescription"
+        :name-fixed="!isCreate"
+        :name-error="configNameError"
+      />
+
       <template v-if="model.enabled && !isEnabling && !editConfig">
         <AuthBanner
           :t-args="tArgs"

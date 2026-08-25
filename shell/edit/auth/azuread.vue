@@ -12,6 +12,7 @@ import { Checkbox } from '@components/Form/Checkbox';
 import AuthBanner from '@shell/components/auth/AuthBanner';
 import CopyToClipboardText from '@shell/components/CopyToClipboardText.vue';
 import AllowedPrincipals from '@shell/components/auth/AllowedPrincipals';
+import AuthConfigIdentity from '@shell/components/auth/AuthConfigIdentity.vue';
 import AuthConfig, { SLO_OPTION_VALUES } from '@shell/mixins/auth-config';
 import { AZURE_MIGRATED } from '@shell/config/labels-annotations';
 import { get } from '@shell/utils/object';
@@ -60,6 +61,7 @@ const ENDPOINT_MAPPING = {
 
 export default {
   components: {
+    AuthConfigIdentity,
     Loading,
     CruResource,
     InfoBox,
@@ -403,6 +405,13 @@ export default {
       @finish="save"
       @cancel="cancel"
     >
+      <AuthConfigIdentity
+        v-model:name="configName"
+        v-model:description="configDescription"
+        :name-fixed="!isCreate"
+        :name-error="configNameError"
+      />
+
       <template v-if="editMemberConfig">
         <AuthBanner
           :t-args="tArgs"
