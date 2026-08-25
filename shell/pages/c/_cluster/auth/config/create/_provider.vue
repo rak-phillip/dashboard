@@ -1,14 +1,13 @@
 <script>
 import { provide, reactive } from 'vue';
 import Loading from '@shell/components/Loading';
-import { LabeledInput } from '@components/Form/LabeledInput';
 import { Banner } from '@components/Banner';
 import { RcButton } from '@components/RcButton';
 import { RcSeparator } from '@components/RcSeparator';
 import AuthProviderLogo from '@shell/components/auth/AuthProviderLogo.vue';
 import { MANAGEMENT } from '@shell/config/types';
 import { providerIcon, providerKey } from '@shell/models/management.cattle.io.authconfig';
-import { isValidAuthConfigName, nextAuthConfigName } from '@shell/utils/auth-providers';
+import { nextAuthConfigName } from '@shell/utils/auth-providers';
 
 const resource = MANAGEMENT.AUTH_CONFIG;
 
@@ -17,17 +16,16 @@ export default {
   components: {
     AuthProviderLogo,
     Banner,
-    LabeledInput,
     Loading,
     RcButton,
     RcSeparator,
   },
 
   setup() {
-    // The provider form creates the config itself when it first saves, and reads
-    // the name and description from here to do it.
+    // The provider form creates the config itself when it first saves, and takes
+    // the name from here to do it. `takenIds` is what it validates that name against.
     const authConfigCreate = reactive({
-      name: '', description: '', normanType: '', created: false
+      name: '', normanType: '', takenIds: [], created: false
     });
 
     provide('authConfigCreate', authConfigCreate);
@@ -44,9 +42,9 @@ export default {
     }
 
     this.template = template;
-    this.takenIds = allConfigs.map((config) => config.id);
     this.authConfigCreate.normanType = template._type;
-    this.authConfigCreate.name = nextAuthConfigName(this.takenIds, this.provider);
+    this.authConfigCreate.takenIds = allConfigs.map((config) => config.id);
+    this.authConfigCreate.name = nextAuthConfigName(this.authConfigCreate.takenIds, this.provider);
 
     // The form is filled in against an empty config of the chosen provider's type
     this.value = await this.$store.dispatch('management/create', { type: resource, _type: template._type });
@@ -56,7 +54,6 @@ export default {
   data() {
     return {
       template:      null,
-      takenIds:      [],
       value:         null,
       editComponent: null,
     };
@@ -73,32 +70,6 @@ export default {
 
     displayName() {
       return this.$store.getters['i18n/withFallback'](`model.authConfig.provider."${ this.provider }"`, null, this.provider);
-    },
-
-    nameHint() {
-      return this.nameError || '';
-    },
-
-    nameError() {
-      const name = this.authConfigCreate.name;
-
-      if (this.authConfigCreate.created) {
-        return null;
-      }
-
-      if (!name) {
-        return this.t('authConfig.create.name.required');
-      }
-
-      if (!isValidAuthConfigName(name)) {
-        return this.t('authConfig.create.name.invalid');
-      }
-
-      if (this.takenIds.includes(name)) {
-        return this.t('authConfig.create.name.taken', { name });
-      }
-
-      return null;
     },
 
     listLocation() {
@@ -137,24 +108,6 @@ export default {
       </h1>
     </div>
 
-    <div class="auth-config-identity">
-      <LabeledInput
-        v-model:value="authConfigCreate.name"
-        :label="t('authConfig.create.name.label')"
-        :required="true"
-        :disabled="authConfigCreate.created"
-        :status="nameError ? 'error' : null"
-        :sub-label="nameHint"
-        data-testid="auth-config-name"
-      />
-      <LabeledInput
-        v-model:value="authConfigCreate.description"
-        :label="t('authConfig.create.descriptionField.label')"
-        :placeholder="t('authConfig.create.descriptionField.placeholder')"
-        data-testid="auth-config-description"
-      />
-    </div>
-
     <RcSeparator class="mb-20" />
 
     <component
@@ -186,10 +139,4 @@ a.rc-button.variant-link.auth-config-back {
   padding: 0; // left-align the link with the heading below it
 }
 
-.auth-config-identity {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px; // the name's hint runs to two lines and would meet the separator
-}
 </style>

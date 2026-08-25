@@ -216,7 +216,7 @@ describe('mixin: authConfigMixin', () => {
       });
       const replace = jest.fn();
       const authConfigCreate = {
-        name: 'github-2', description: 'Contractors', normanType: 'githubConfig', ...overrides
+        name: 'github-2', normanType: 'githubConfig', takenIds: ['github'], ...overrides
       };
 
       return {
@@ -230,6 +230,7 @@ describe('mixin: authConfigMixin', () => {
     it('should create the config through the Kubernetes API', async() => {
       const { instance, dispatch } = createInstance();
 
+      instance.configDescription = 'Contractors';
       await instance.save(jest.fn());
 
       expect(dispatch).toHaveBeenCalledWith('management/request', {
@@ -246,7 +247,7 @@ describe('mixin: authConfigMixin', () => {
     });
 
     it('should leave out the description annotation when none was given', async() => {
-      const { instance, dispatch } = createInstance({ description: '' });
+      const { instance, dispatch } = createInstance();
 
       await instance.save(jest.fn());
 
@@ -294,6 +295,106 @@ describe('mixin: authConfigMixin', () => {
       expect(btnCb).toHaveBeenCalledWith(false);
       expect(replace).not.toHaveBeenCalled();
       expect(instance.errors.length).toBeGreaterThan(0);
+    });
+  });
+
+  // The API has no description field, so it lives in an annotation, and the form
+  // edits it the way it edits any other field of the config.
+  describe('configDescription', () => {
+    const FakeComponent = {
+      render() {},
+      mixins:  [authConfigMixin, childHook],
+      methods: { applyHooks: jest.fn() },
+    };
+
+    const createInstance = (model: any) => mount(FakeComponent, {
+      data:   () => ({ value: { configType: 'oauth' }, model }),
+      global: {
+        mocks: {
+          $store: { dispatch: jest.fn() },
+          $route: { params: { cluster: 'local', id: 'github-5' }, query: { mode: 'edit' } },
+        }
+      }
+    }).vm as any;
+
+    const model = (annotations: Record<string, string>) => ({
+      id: 'github-5', type: 'githubConfig', enabled: true, annotations
+    });
+
+    it('should read what the admin called this connection', () => {
+      const instance = createInstance(model({ 'field.cattle.io/description': 'Contractors' }));
+
+      expect(instance.configDescription).toBe('Contractors');
+    });
+
+    it('should be empty when the config has no description', () => {
+      const instance = createInstance(model({}));
+
+      expect(instance.configDescription).toBe('');
+    });
+
+    it('should write the description onto the config, to be saved with the rest of it', () => {
+      const instance = createInstance(model({ 'management.cattle.io/auth-provider-cleanup': 'unlocked' }));
+
+      instance.configDescription = 'Contractors';
+
+      expect(instance.model.annotations['field.cattle.io/description']).toBe('Contractors');
+      // ...without disturbing annotations that are not ours
+      expect(instance.model.annotations['management.cattle.io/auth-provider-cleanup']).toBe('unlocked');
+    });
+
+    it('should take the description away when it has been cleared', () => {
+      const instance = createInstance(model({ 'field.cattle.io/description': 'Contractors' }));
+
+      instance.configDescription = '';
+
+      expect(instance.model.annotations['field.cattle.io/description']).toBeUndefined();
+    });
+  });
+
+  // The name is `metadata.name`, which the API rejects on update, so only a config
+  // that has yet to be created has a name the form can still argue with.
+  describe('configNameError', () => {
+    const FakeComponent = {
+      render() {},
+      mixins:  [authConfigMixin, childHook],
+      methods: { applyHooks: jest.fn() },
+    };
+
+    const createInstance = (authConfigCreate: any) => mount(FakeComponent, {
+      data:   () => ({ value: { configType: 'oauth' }, model: { id: 'github-2' } }),
+      global: {
+        provide: authConfigCreate ? { authConfigCreate } : {},
+        mocks:   {
+          $store: { dispatch: jest.fn() },
+          $route: { params: { cluster: 'local', id: 'github-2' }, query: { mode: 'edit' } },
+        }
+      }
+    }).vm as any;
+
+    const adding = (name: string) => ({
+      name, normanType: 'githubConfig', takenIds: ['github', 'okta'], created: false
+    });
+
+    it('should accept a free name', () => {
+      expect(createInstance(adding('github-2')).configNameError).toBeNull();
+    });
+
+    it.each([
+      ['it is empty', '', 'authConfig.create.name.required'],
+      ['it is not a DNS label', 'GitHub Two', 'authConfig.create.name.invalid'],
+      ['another config already has it', 'github', 'authConfig.create.name.taken'],
+    ])('should reject a name when %s', (_label, name, key) => {
+      // The test harness renders a translation key as `%key%`
+      expect(createInstance(adding(name)).configNameError).toContain(key);
+    });
+
+    it('should stop arguing once the config has been created', () => {
+      expect(createInstance({ ...adding(''), created: true }).configNameError).toBeNull();
+    });
+
+    it('should have nothing to say about a config that already exists', () => {
+      expect(createInstance(null).configNameError).toBeNull();
     });
   });
 });
