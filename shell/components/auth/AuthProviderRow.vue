@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { RcStatusBadge, RcTag } from '@components/Pill';
 import type { Status } from '@components/utils/status';
 import AuthProviderLogo from '@shell/components/auth/AuthProviderLogo.vue';
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   title: string;
   icon?: string;
   chips?: string[];
@@ -14,12 +15,30 @@ withDefaults(defineProps<{
   statusLabel?: string;
   to?: RouteLocationRaw;
 }>(), { chips: () => [] });
+
+const router = useRouter();
+
+/**
+ * The whole row is the target, not just the title.
+ *
+ * Anything with a job of its own opts out: the slots sit inside a marked
+ * wrapper, and the title is a real link that navigates by itself, so a click
+ * landing on either is left alone rather than routing twice.
+ */
+const activate = (event: MouseEvent) => {
+  if (!props.to || (event.target as HTMLElement).closest('a, button, [data-row-action]')) {
+    return;
+  }
+
+  router.push(props.to);
+};
 </script>
 
 <template>
   <div
     class="auth-provider-row"
     :class="{ 'auth-provider-row--link': to }"
+    @click="activate"
   >
     <AuthProviderLogo :icon="icon" />
     <div class="auth-provider-row__content">
@@ -47,7 +66,7 @@ withDefaults(defineProps<{
         {{ description }}
       </span>
       <div
-        v-if="meta || $slots.metaTrailing"
+        v-if="meta || $slots['meta-trailing']"
         class="auth-provider-row__meta-row"
       >
         <RcTag
@@ -57,7 +76,13 @@ withDefaults(defineProps<{
         >
           {{ meta }}
         </RcTag>
-        <slot name="meta-trailing" />
+        <div
+          v-if="$slots['meta-trailing']"
+          class="auth-provider-row__slot"
+          data-row-action
+        >
+          <slot name="meta-trailing" />
+        </div>
       </div>
     </div>
     <div class="auth-provider-row__trailing">
@@ -67,7 +92,13 @@ withDefaults(defineProps<{
       >
         {{ statusLabel }}
       </RcStatusBadge>
-      <slot name="trailing" />
+      <div
+        v-if="$slots.trailing"
+        class="auth-provider-row__slot"
+        data-row-action
+      >
+        <slot name="trailing" />
+      </div>
     </div>
   </div>
 </template>
@@ -85,8 +116,23 @@ $header-line: 32px;
   border-bottom: 1px solid var(--border);
   border-radius: var(--border-radius);
 
-  &--link:hover {
-    background-color: var(--dropdown-hover-bg);
+  &--link {
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--dropdown-hover-bg);
+    }
+  }
+
+  // The title is the row's only tab stop, so the ring belongs to the whole row
+  &:has(.auth-provider-row__title:focus-visible) {
+    @include focus-outline;
+    outline-offset: -2px;
+  }
+
+  // Keeps slot contents on the row's flex line instead of boxing them up
+  &__slot {
+    display: contents;
   }
 
   &__content {
@@ -116,9 +162,14 @@ $header-line: 32px;
     line-height: 21px;
     overflow-wrap: anywhere;
 
+    // The whole row highlights on hover, so the title does not underline as well
     &:is(a):hover {
       color: var(--body-text);
-      text-decoration: underline;
+      text-decoration: none;
+    }
+
+    &:focus-visible {
+      outline: none;
     }
   }
 

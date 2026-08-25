@@ -3,6 +3,10 @@ import AuthProviderRow from '@shell/components/auth/AuthProviderRow.vue';
 import AuthProviderLogo from '@shell/components/auth/AuthProviderLogo.vue';
 import { RcStatusBadge, RcTag } from '@components/Pill';
 
+const mockPush = jest.fn();
+
+jest.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
+
 type Props = InstanceType<typeof AuthProviderRow>['$props'];
 
 const createWrapper = (props: Props) => mount(AuthProviderRow, {
@@ -11,6 +15,8 @@ const createWrapper = (props: Props) => mount(AuthProviderRow, {
 });
 
 describe('component: AuthProviderRow', () => {
+  beforeEach(() => jest.clearAllMocks());
+
   it('should lead with the name the admin gave the config', () => {
     const wrapper = createWrapper({
       title:       'okta-corp',
@@ -91,6 +97,71 @@ describe('component: AuthProviderRow', () => {
     expect(link.classes()).toContain('auth-provider-row__title');
   });
 
+  describe('activating the row', () => {
+    const to = { name: 'c-cluster-auth-config-id', params: { id: 'okta-corp' } };
+
+    // Only the title used to be a target, which left most of the row inert.
+    it.each([
+      ['the description', '.auth-provider-row__description'],
+      ['the vendor mark', '.auth-provider-logo'],
+      ['empty space in the row', '.auth-provider-row__content'],
+    ])('should go to the config when the click lands on %s', async(_case, selector) => {
+      const wrapper = createWrapper({
+        title: 'okta-corp', description: 'Partners and contractors.', to
+      });
+
+      await wrapper.find(selector).trigger('click');
+
+      expect(mockPush).toHaveBeenCalledWith(to);
+    });
+
+    // The title is a real link and navigates itself, so handling the click here
+    // as well would push the same route twice.
+    it('should leave the title link to navigate by itself', async() => {
+      const wrapper = createWrapper({ title: 'okta-corp', to });
+
+      await wrapper.find('.auth-provider-row__title').trigger('click');
+
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    // A control in a slot has its own job - the actions menu, the local users link.
+    it.each([
+      ['the trailing slot', 'trailing', '<button class="row-action">Actions</button>', '.row-action'],
+      ['the meta slot', 'meta-trailing', '<a class="meta-action">Manage local users</a>', '.meta-action'],
+    ])('should let a control in %s act instead of navigating', async(_case, slot, markup, selector) => {
+      const wrapper = mount(AuthProviderRow, {
+        props:  { title: 'okta-corp', to },
+        slots:  { [slot]: markup },
+        global: { stubs: { 'router-link': RouterLinkStub } }
+      });
+
+      await wrapper.find(selector).trigger('click');
+
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate from a row that has no destination', async() => {
+      const wrapper = createWrapper({ title: 'Local authentication', description: 'Accounts for administrators.' });
+
+      await wrapper.find('.auth-provider-row__description').trigger('click');
+
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+  });
+
+  // The slot used to be gated on a name that never matched, so a row carrying a
+  // meta control but no meta line dropped the control entirely.
+  it('should keep a meta control on a row that has no meta line', () => {
+    const wrapper = mount(AuthProviderRow, {
+      props:  { title: 'Local authentication' },
+      slots:  { 'meta-trailing': '<a class="meta-action">Manage local users</a>' },
+      global: { stubs: { 'router-link': RouterLinkStub } }
+    });
+
+    expect(wrapper.find('.auth-provider-row__meta-row .meta-action').exists()).toBe(true);
+  });
+
   // The local provider row has nowhere to go, so it must not look clickable.
   it('should stay plain content when there is nowhere to go', () => {
     const wrapper = createWrapper({ title: 'Local authentication' });
@@ -121,7 +192,7 @@ describe('component: AuthProviderRow', () => {
 
     expect(metaRow.exists()).toBe(true);
     expect(metaRow.find('.auth-provider-row__meta').text()).toBe('Rancher-managed accounts');
-    expect(metaRow.element.lastElementChild).toBe(action.element);
+    expect(metaRow.element.lastElementChild?.contains(action.element)).toBe(true);
   });
 
   // A control nested inside the row's link would navigate on click, and on Enter
