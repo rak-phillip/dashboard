@@ -81,6 +81,14 @@ export default {
       return sortBy(toProviderTypes(this.allConfigs), ['sideLabel', 'provider']);
     },
 
+    /**
+     * Local has no vendor copy of its own, so it falls back to describing what
+     * the built-in accounts are for.
+     */
+    localDescription() {
+      return this.localConfig?.description || this.t('authConfig.list.localRow.description');
+    },
+
     localUsersRoute() {
       return {
         name:   'c-cluster-product-resource',
@@ -263,6 +271,7 @@ export default {
       v-if="localConfig"
       :title="t('authConfig.list.localRow.title')"
       :chips="[t('authConfig.list.localRow.chip')]"
+      :description="localDescription"
       :meta="t('authConfig.list.localRow.meta')"
       :status="disableLocalAuth ? 'none' : 'success'"
       :status-label="disableLocalAuth ? t('authConfig.list.localRow.disabled') : t('authConfig.list.localRow.active')"

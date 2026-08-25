@@ -520,6 +520,7 @@ authConfig:
     localRow:
       title: Local authentication
       chip: Built-in
+      description: Accounts for administrators. Use only when a provider is unavailable.
       meta: Rancher-managed accounts
       active: Active
       disabled: Disabled
