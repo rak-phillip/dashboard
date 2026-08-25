@@ -46,13 +46,19 @@ withDefaults(defineProps<{
       >
         {{ description }}
       </span>
-      <RcTag
-        v-if="meta"
-        type="inactive"
-        class="auth-provider-row__meta"
+      <div
+        v-if="meta || $slots.metaTrailing"
+        class="auth-provider-row__meta-row"
       >
-        {{ meta }}
-      </RcTag>
+        <RcTag
+          v-if="meta"
+          type="inactive"
+          class="auth-provider-row__meta"
+        >
+          {{ meta }}
+        </RcTag>
+        <slot name="meta-trailing" />
+      </div>
     </div>
     <div class="auth-provider-row__trailing">
       <RcStatusBadge
@@ -126,6 +132,13 @@ $header-line: 32px;
     font-size: 12px;
     line-height: 18px;
     overflow-wrap: anywhere;
+  }
+
+  &__meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 100%;
   }
 
   &__meta {
