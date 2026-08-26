@@ -17,6 +17,14 @@ export default {
       required: true,
       default:  () => { },
     },
+    /**
+     * How the config is named, e.g. `GitHub — github-2`. Falls back to the
+     * provider on its own, which is all a singleton config is called anyway.
+     */
+    name: {
+      type:    String,
+      default: '',
+    },
     disable: {
       type:     Function,
       required: true,
@@ -46,7 +54,7 @@ export default {
         componentProps: {
           // Without this the dialog can only offer its generic title, even though
           // the page it is opened from is about one specific provider.
-          name:      this.tArgs?.provider,
+          name:      this.name || this.tArgs?.provider,
           disableCb: () => {
             this.disable();
           }

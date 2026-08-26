@@ -39,9 +39,19 @@ describe('component: AuthBanner', () => {
     expect(disable).not.toHaveBeenCalled();
   });
 
-  // The page this banner sits on is about one specific provider, so the dialog
-  // should be able to name it instead of falling back to its generic title.
-  it('should tell the dialog which provider is being disabled', () => {
+  // Several configs of one provider share a label, so the dialog has to name the
+  // instance to say which of them is about to be deleted.
+  it('should tell the dialog which config is being disabled', () => {
+    const { wrapper, dispatch } = createWrapper({ name: 'GitHub — github-7' });
+
+    (wrapper.vm as any).showDisableModal();
+
+    expect(modalArgs(dispatch).componentProps.name).toBe('GitHub — github-7');
+  });
+
+  // Every provider form passes a name, but the prop is optional, and naming only
+  // the provider still beats the dialog's generic title.
+  it('should fall back to the provider when given no name', () => {
     const { wrapper, dispatch } = createWrapper();
 
     (wrapper.vm as any).showDisableModal();

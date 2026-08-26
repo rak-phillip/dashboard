@@ -153,17 +153,19 @@ describe('class AuthConfig', () => {
     it('should name an instance as well when it is not the provider singleton', () => {
       const config = makeConfig({ id: 'github-5', _type: 'githubConfig' });
 
-      expect(config.nameDisplay).toBe('model.authConfig.name."github-5" (github-5)');
+      expect(config.nameDisplay).toBe('model.authConfig.name."github-5" — github-5');
     });
 
-    it('should prefer what the admin called it', () => {
+    // The description is a sentence about the config, so it cannot stand in for
+    // the instance's name on something as final as the disable confirmation.
+    it('should still identify the instance when the admin has described it', () => {
       const config = makeConfig({
         id:       'github-5',
         _type:    'githubConfig',
-        metadata: { annotations: { 'field.cattle.io/description': 'Contractors' } },
+        metadata: { annotations: { 'field.cattle.io/description': 'For contractors and partner organisations.' } },
       });
 
-      expect(config.nameDisplay).toBe('Contractors');
+      expect(config.nameDisplay).toBe('model.authConfig.name."github-5" — github-5');
     });
   });
 
