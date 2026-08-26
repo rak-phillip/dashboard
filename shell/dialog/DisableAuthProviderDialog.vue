@@ -2,6 +2,7 @@
 import { Card } from '@components/Card';
 import { Banner } from '@components/Banner';
 import { Checkbox } from '@components/Form/Checkbox';
+import { RcButton } from '@components/RcButton';
 import { RcIcon } from '@components/RcIcon';
 
 export default {
@@ -10,7 +11,7 @@ export default {
   emits: ['close'],
 
   components: {
-    Banner, Card, Checkbox, RcIcon
+    Banner, Card, Checkbox, RcButton, RcIcon
   },
 
   props: {
@@ -63,18 +64,43 @@ export default {
 </script>
 
 <template>
+  <!--
+    The design (Figma 5520:2060) also specifies an intro line ("N users
+    authenticate through <provider>.") and a "WHAT LOSES ACCESS" panel counting
+    the external users, mapped groups and cluster/project/global role bindings
+    that disabling would delete. Both are omitted here because the API cannot
+    currently answer them for a single provider instance:
+
+    - Principal IDs encode the provider *type*, not the authconfig instance
+      (`azuread_user://...` -> `azuread`, see management.cattle.io.user's
+      `provider` getter). With multiple instances of one type - the case this
+      feature exists to support - a count for `github-2` would silently include
+      everything belonging to `github`.
+    - There is no group resource to count. A group only exists once a binding
+      references it, so "groups mapped" means distinct group principals across
+      GRB/CRTB/PRTB.
+    - Nothing can be filtered server-side. Steve's filter grammar has no prefix
+      matching, and none of these types are registered for paginated fetch, so
+      the counts would need four unfiltered findAll calls (users being the
+      largest collection in the product) on every open of this dialog.
+
+    Showing the panel properly needs a backend-provided per-authconfig impact
+    summary. Until then the dialog states the consequence without quantifying it.
+  -->
   <Card
     class="disable-auth-provider"
     :show-highlight-border="false"
   >
     <template #title>
-      <h4 class="text-default-text">
+      <h3 class="disable-auth-provider__title">
         {{ title }}
-      </h4>
+      </h3>
     </template>
     <template #body>
       <div class="disable-auth-provider__body">
-        <p>{{ t('authConfig.disable.loggedOut') }}</p>
+        <p class="disable-auth-provider__aftermath">
+          {{ t('authConfig.disable.loggedOut') }}
+        </p>
 
         <a
           :href="t('authConfig.disable.docsUrl')"
@@ -90,7 +116,7 @@ export default {
         </a>
 
         <Banner
-          color="warning"
+          color="error"
           class="disable-auth-provider__warning"
         >
           <p>{{ t('authConfig.disable.irreversible') }}</p>
@@ -103,21 +129,27 @@ export default {
       </div>
     </template>
     <template #actions>
-      <button
-        class="btn role-secondary"
-        @click="close"
-      >
-        {{ t('generic.cancel') }}
-      </button>
-      <div class="spacer" />
-      <button
-        class="btn role-primary bg-error ml-10"
-        :disabled="!acknowledged"
-        :data-testid="componentTestid + '-confirm-button'"
-        @click="disable"
-      >
-        {{ t('authConfig.disable.confirm') }}
-      </button>
+      <div class="disable-auth-provider__actions">
+        <RcButton
+          variant="link"
+          size="large"
+          class="disable-auth-provider__cancel"
+          :data-testid="componentTestid + '-cancel-button'"
+          @click="close"
+        >
+          {{ t('generic.cancel') }}
+        </RcButton>
+        <RcButton
+          variant="primary"
+          size="large"
+          class="disable-auth-provider__confirm"
+          :disabled="!acknowledged"
+          :data-testid="componentTestid + '-confirm-button'"
+          @click="disable"
+        >
+          {{ t('authConfig.disable.confirm') }}
+        </RcButton>
+      </div>
     </template>
   </Card>
 </template>
@@ -126,6 +158,31 @@ export default {
   .disable-auth-provider {
     &.card-container {
       box-shadow: none;
+      margin: 0;
+      padding: 24px;
+    }
+
+    // The design runs title straight into the body, without the rule the Card
+    // draws between its title and body slots.
+    :deep(.card-wrap > hr) {
+      display: none;
+    }
+
+    :deep(.card-body) {
+      margin-top: 16px;
+      color: var(--body-text);
+    }
+
+    :deep(.card-actions) {
+      padding-top: 40px;
+    }
+
+    &__title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 23px;
+      font-weight: 700;
+      color: var(--body-text);
     }
 
     &__body {
@@ -133,6 +190,12 @@ export default {
       flex-direction: column;
       align-items: flex-start;
       gap: 16px;
+    }
+
+    &__aftermath {
+      margin: 0;
+      line-height: 22px;
+      color: var(--label-secondary);
     }
 
     &__link {
@@ -144,13 +207,41 @@ export default {
     &__warning {
       width: 100%;
       margin: 0;
+
+      :deep(.banner__content) {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        p {
+          margin: 0;
+        }
+      }
     }
 
-    :deep(.card-actions) {
+    &__actions {
       display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+      width: 100%;
+    }
 
-      .spacer {
-        flex: 1;
+    // The cancel action reads as a link, so it keeps the tighter padding rather
+    // than the 16px the large size would otherwise give it.
+    &__cancel.rc-button {
+      --rc-button-padding: 0 12px;
+    }
+
+    // Destructive confirm. Scoping beats `.rc-button.variant-primary` on
+    // specificity, so the primary background doesn't win.
+    &__confirm.rc-button {
+      background-color: var(--error);
+      color: var(--error-text);
+
+      &:hover:not(:disabled) {
+        background-color: var(--error-hover-bg);
+        color: var(--error-hover-text);
       }
     }
   }

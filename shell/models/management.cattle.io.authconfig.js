@@ -88,7 +88,7 @@ export default class AuthConfig extends SteveModel {
     this.$dispatch('promptModal', {
       component:      'DisableAuthProviderDialog',
       customClass:    'remove-modal',
-      modalWidth:     '600',
+      modalWidth:     '640',
       height:         'auto',
       styles:         'max-height: 100vh;',
       componentProps: {
