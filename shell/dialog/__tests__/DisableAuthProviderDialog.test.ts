@@ -5,18 +5,19 @@ import { Checkbox } from '@components/Form/Checkbox';
 const createWrapper = (props = {}) => mount(DisableAuthProviderDialog, { props: { name: 'okta-corp', ...props } });
 
 const confirmButton = (wrapper: any) => wrapper.find('[data-testid="disable-auth-provider-confirm-button"]');
+const cancelButton = (wrapper: any) => wrapper.find('[data-testid="disable-auth-provider-cancel-button"]');
 
 describe('component: DisableAuthProviderDialog', () => {
   it('should name the provider being disabled', () => {
     const wrapper = createWrapper();
 
-    expect(wrapper.find('h4').text()).toBe('%authConfig.disable.title%');
+    expect(wrapper.find('h3').text()).toBe('%authConfig.disable.title%');
   });
 
   it('should fall back to a generic title when the provider has no name', () => {
     const wrapper = createWrapper({ name: '' });
 
-    expect(wrapper.find('h4').text()).toBe('%authConfig.disable.titleGeneric%');
+    expect(wrapper.find('h3').text()).toBe('%authConfig.disable.titleGeneric%');
   });
 
   // The whole point of the dialog: disabling deletes everything stored for the
@@ -56,9 +57,17 @@ describe('component: DisableAuthProviderDialog', () => {
     const disableCb = jest.fn();
     const wrapper = createWrapper({ disableCb });
 
-    await wrapper.find('.role-secondary').trigger('click');
+    await cancelButton(wrapper).trigger('click');
 
     expect(disableCb).not.toHaveBeenCalled();
     expect(wrapper.emitted('close')).toHaveLength(1);
+  });
+
+  // The confirming action is destructive, so it must not read as an ordinary
+  // primary button.
+  it('should present the confirm action as destructive', () => {
+    const wrapper = createWrapper();
+
+    expect(confirmButton(wrapper).classes()).toContain('disable-auth-provider__confirm');
   });
 });
