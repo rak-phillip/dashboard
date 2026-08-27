@@ -267,8 +267,10 @@ export default {
       {{ t('authConfig.list.local') }}
     </h2>
 
+    <!-- Nothing follows local, so it has nothing to be parted from -->
     <AuthProviderRow
       v-if="localConfig"
+      :divided="false"
       :title="t('authConfig.list.localRow.title')"
       :chips="[t('authConfig.list.localRow.chip')]"
       :description="localDescription"

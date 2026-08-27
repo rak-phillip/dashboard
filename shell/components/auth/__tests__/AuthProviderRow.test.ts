@@ -207,4 +207,16 @@ describe('component: AuthProviderRow', () => {
     expect(wrapper.find('a .row-action').exists()).toBe(false);
     expect(wrapper.find('.row-action').exists()).toBe(true);
   });
+
+  // The rule below a row parts it from the row underneath, so a row with nothing
+  // under it draws a line under the whole page for no reason.
+  it.each([
+    [undefined, true],
+    [true, true],
+    [false, false],
+  ])('should draw the rule below the row for divided %p', (divided, expected) => {
+    const wrapper = createWrapper({ title: 'okta-corp', divided });
+
+    expect(wrapper.classes().includes('auth-provider-row--divided')).toBe(expected);
+  });
 });
