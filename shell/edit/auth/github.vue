@@ -135,7 +135,7 @@ export default {
     toSave() {
       return {
         enabled:      true,
-        githubConfig: Object.assign(this.model, { configName: this.model.id }),
+        githubConfig: this.model,
         description:  'Enable GitHub',
       };
     },
