@@ -1,4 +1,5 @@
 import AuthConfig, { configTypeForProvider, providerIcon, providerKey } from '@shell/models/management.cattle.io.authconfig';
+import Resource from '@shell/plugins/dashboard-store/resource-class';
 import { requireAsset } from '@shell/utils/require-asset';
 
 jest.mock('@shell/utils/require-asset', () => {
@@ -337,6 +338,51 @@ describe('class AuthConfig', () => {
         id:   'github-two',
         opt:  { force: true },
       });
+    });
+  });
+
+  describe('_availableActions', () => {
+    // The parent getter reads runtime config the tests don't have, so it stands
+    // in for whatever the base class offers.
+    const inherited = [
+      { action: 'showConfiguration', label: 'action.showConfiguration' },
+      { divider: true },
+      { action: 'goToEdit', label: 'action.edit' },
+      { divider: true },
+      { action: 'download', label: 'action.download' },
+      { action: 'promptRemove', label: 'action.remove' },
+    ];
+
+    beforeEach(() => {
+      jest.spyOn(Resource.prototype, '_availableActions', 'get').mockReturnValue([...inherited]);
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    // A rule between every pair of entries is noise. One says where the group
+    // that works on the config ends and the group that takes it away begins.
+    it('should part the menu into two groups with a single divider', () => {
+      const actions = makeConfig({ id: 'github', enabled: true })._availableActions;
+
+      expect(actions.filter((a: any) => a.divider)).toHaveLength(1);
+      expect(actions.map((a: any) => a.action || 'divider')).toStrictEqual([
+        'showConfiguration',
+        'goToEdit',
+        'download',
+        'divider',
+        'promptDisable',
+        'promptRemove',
+      ]);
+    });
+
+    it('should offer disabling only while the provider is enabled', () => {
+      const enabled = makeConfig({ id: 'github', enabled: true })._availableActions;
+      const disabled = makeConfig({ id: 'github', enabled: false })._availableActions;
+
+      const disableAction = (actions: any[]) => actions.find((a) => a.action === 'promptDisable');
+
+      expect(disableAction(enabled).enabled).toBe(true);
+      expect(disableAction(disabled).enabled).toBe(false);
     });
   });
 });

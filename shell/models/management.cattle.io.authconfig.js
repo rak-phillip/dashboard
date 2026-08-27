@@ -1,4 +1,3 @@
-import { insertAt } from '@shell/utils/array';
 import SteveModel from '@shell/plugins/steve/steve-class';
 import { requireAsset } from '@shell/utils/require-asset';
 import { MANAGEMENT, NORMAN } from '@shell/config/types';
@@ -64,20 +63,30 @@ export const providerIcon = (type) => {
   }
 };
 
-export default class AuthConfig extends SteveModel {
-  get _availableActions() {
-    const out = super._availableActions;
+/**
+ * Actions that take the provider away, as opposed to working on it.
+ */
+const destructive = ['promptDisable', 'promptRemove'];
 
-    insertAt(out, 0, {
+export default class AuthConfig extends SteveModel {
+  /**
+   * The base class parts each action from the next, which leaves a menu that is
+   * mostly rules. These read as two groups instead: what you can do with the
+   * config, and what takes it away.
+   */
+  get _availableActions() {
+    const inherited = super._availableActions.filter((a) => !a.divider);
+    const disable = {
       action:  'promptDisable',
       label:   this.t('authConfig.disable.action'),
       icon:    'icon icon-close',
       enabled: this.enabled === true,
-    });
+    };
 
-    insertAt(out, 1, { divider: true });
+    const out = inherited.filter((a) => !destructive.includes(a.action));
+    const away = [disable, ...inherited.filter((a) => destructive.includes(a.action))];
 
-    return out;
+    return [...out, { divider: true }, ...away];
   }
 
   /**
