@@ -14,7 +14,9 @@ const props = withDefaults(defineProps<{
   status?: Status;
   statusLabel?: string;
   to?: RouteLocationRaw;
-}>(), { chips: () => [] });
+  /** The rule below the row, which parts it from the row underneath. */
+  divided?: boolean;
+}>(), { chips: () => [], divided: true });
 
 const router = useRouter();
 
@@ -37,7 +39,7 @@ const activate = (event: MouseEvent) => {
 <template>
   <div
     class="auth-provider-row"
-    :class="{ 'auth-provider-row--link': to }"
+    :class="{ 'auth-provider-row--link': to, 'auth-provider-row--divided': divided }"
     @click="activate"
   >
     <AuthProviderLogo :icon="icon" />
@@ -113,8 +115,11 @@ $header-line: 32px;
   padding: 12px 16px;
 
   color: var(--body-text);
-  border-bottom: 1px solid var(--border);
   border-radius: var(--border-radius);
+
+  &--divided {
+    border-bottom: 1px solid var(--border);
+  }
 
   &--link {
     cursor: pointer;

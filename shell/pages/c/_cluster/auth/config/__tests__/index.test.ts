@@ -226,6 +226,15 @@ describe('page: AuthConfigList', () => {
 
       expect(localRow(wrapper).props('description')).toBe('Break-glass only.');
     });
+
+    // Local closes the page, so a rule under it parts it from nothing.
+    it('should end the page without a rule under it', () => {
+      const wrapper = createWrapper();
+      const rows = wrapper.findAllComponents(AuthProviderRow);
+
+      expect(rows[0].props('divided')).toBe(true);
+      expect(localRow(wrapper).props('divided')).toBe(false);
+    });
   });
 
   describe('disabling local login', () => {
