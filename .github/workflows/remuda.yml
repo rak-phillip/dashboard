@@ -1,0 +1,75 @@
+# Remuda: a dev environment per pull request, on prak-upgrade-test.
+#
+# Label a pull request `remuda` to build one; closing it or removing the label
+# deletes it. Owners, members and collaborators can also comment `/remuda up`,
+# `/remuda rebuild` or `/remuda down`.
+#
+# This file has to be on the default branch: issue_comment only runs workflows
+# from there, and pull_request_target runs the one on the pull request's base.
+#
+# Needs a `remuda` label and a REMUDA_TOKEN repository secret (a Rancher API
+# token that can manage Environments). Without the secret a run fails with an
+# annotation naming it.
+#
+# The bot is examples/github-bot in rak-phillip/remuda, pinned below. See its
+# README for what each event does.
+name: Remuda
+
+on:
+  pull_request_target:
+    types: [labeled, unlabeled, synchronize, reopened, closed]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  remuda:
+    # Filtered here so an unrelated label, push or comment never starts a runner
+    # -- or cancels a run that is still waiting for an environment to answer.
+    #
+    # The bot's own comments cannot trigger this: GitHub does not start workflows
+    # for events made with a workflow's GITHUB_TOKEN.
+    if: >-
+      (github.event_name == 'pull_request_target' && (
+        github.event.label.name == 'remuda' ||
+        (github.event.action != 'labeled' && github.event.action != 'unlabeled' &&
+          contains(github.event.pull_request.labels.*.name, 'remuda'))
+      )) ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
+        contains(github.event.comment.body, '/remuda'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # One run per pull request. A later event supersedes an earlier one, so it
+    # cancels it -- in practice, a run still waiting to post an environment's URL.
+    concurrency:
+      group: remuda-${{ github.event.pull_request.number || github.event.issue.number }}
+      cancel-in-progress: true
+    steps:
+      # The bot, pinned to a commit. Never the pull request: pull_request_target
+      # runs with this repository's secrets, and that is only safe because the
+      # only code this job executes is the pinned bot.
+      - name: Check out the bot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: rak-phillip/remuda
+          ref: 8072cd3520574cfc514487f6e3efa9a5dfc38584 # feat/github-bot
+          path: remuda
+          persist-credentials: false
+
+      - name: Drive Remuda
+        run: node remuda/examples/github-bot/action.mjs
+        env:
+          RANCHER_URL: https://prak-upgrade-test.ui.rancher.space
+          REMUDA_TOKEN: ${{ secrets.REMUDA_TOKEN }}
+          # Environments are named rak-dashboard-pr-<number>, which keeps them
+          # apart from anything another dashboard repository creates.
+          NAME_PREFIX: rak-dashboard
+          # Set the repository variable to 1 to validate against the API server
+          # without creating anything.
+          REMUDA_DRY_RUN: ${{ vars.REMUDA_DRY_RUN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          POST_COMMENTS: '1'
