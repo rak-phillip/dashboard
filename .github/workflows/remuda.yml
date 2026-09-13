@@ -56,7 +56,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: rak-phillip/remuda
-          ref: 8072cd3520574cfc514487f6e3efa9a5dfc38584 # feat/github-bot
+          ref: fbc5367ec5e8a726dfc82b0905919af00c600ab5 # feat/github-bot
           path: remuda
           persist-credentials: false
 
@@ -68,6 +68,15 @@ jobs:
           # Environments are named rak-dashboard-pr-<number>, which keeps them
           # apart from anything another dashboard repository creates.
           NAME_PREFIX: rak-dashboard
+          # Built on the downstream prak-test1 cluster rather than on the host.
+          # Fleet delivers a downstream environment and cannot read the target
+          # back, so these four are pinned instead of discovered -- the values
+          # prak-test3 resolved to on the same cluster.
+          TARGET_CLUSTER: c-m-9jprk9c6
+          PIN_INGRESS_CLASS: traefik
+          PIN_STORAGE_CLASS: local-path
+          PIN_NESTED_POD_CIDR: 10.44.0.0/16
+          PIN_NESTED_SERVICE_CIDR: 10.45.0.0/16
           # Set the repository variable to 1 to validate against the API server
           # without creating anything.
           REMUDA_DRY_RUN: ${{ vars.REMUDA_DRY_RUN }}
