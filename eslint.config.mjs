@@ -206,4 +206,10 @@ export default [
     files: ['**/po/**/*.{js,ts,vue}'],
     rules: { '@typescript-eslint/explicit-module-boundary-types': 'off' },
   },
+
+	// TEMPORARY: merge-queue semantic-conflict probe. Remove after testing.
+	{
+		files: ['**/shell/utils/merge-queue-probe.ts'],
+		rules: { 'no-plusplus': 'error' },
+	},
 ];
