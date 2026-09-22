@@ -4631,7 +4631,7 @@ neuvector:
 login:
   login: Login
   howdy: Howdy!
-  welcome: Welcome to {vendor}
+  welcome: Welcome to {vendor}, served from a branch build
   logoAlt: '{vendor} Logo'
   loggedOut: You have been logged out.
   loggedOutSessionIdle: You've been logged out of Rancher because your session has expired. Log in again to continue.
