@@ -47,8 +47,17 @@ export default {
   },
 
   computed: {
+    /**
+     * Every provider an admin has added. Nothing is pre-created, so a config that
+     * exists is one somebody made, whether or not it is currently switched on.
+    */
     rows() {
-      return this.allConfigs.filter((c) => c.enabled && c.id !== LOCAL_AUTH_ID);
+      return this.allConfigs.filter((c) => c.id !== LOCAL_AUTH_ID);
+    },
+
+    /** Local cannot be turned off until something else can let people in. */
+    hasEnabledProvider() {
+      return this.rows.some((c) => c.enabled);
     },
 
     localConfig() {
@@ -201,8 +210,9 @@ export default {
       :label="toggleError"
     />
 
+    <!-- Nothing to disable local login in favour of until a provider is enabled -->
     <DisableLocalLoginCard
-      v-if="rows.length"
+      v-if="hasEnabledProvider"
       :value="disableLocalAuth"
       :disabled="!canToggleLocalAuth"
       @update:value="setDisableLocalAuth"
@@ -241,7 +251,7 @@ export default {
         :chips="chipsFor(row)"
         :description="row.description"
         :meta="row.id"
-        status="success"
+        :status="row.enabled ? 'success' : 'none'"
         :status-label="row.stateDisplay"
         selectable
         :data-testid="`auth-config-row-${ row.id }`"
@@ -260,8 +270,12 @@ export default {
       {{ t('authConfig.list.local') }}
     </h2>
 
+    <!--
+      Local is always there - it is how Rancher is first logged into - so the row
+      is not conditional on a config being found for it. Nothing follows it, so it
+      has nothing to be parted from.
+    -->
     <AuthProviderRow
-      v-if="localConfig"
       :divided="false"
       :title="t('authConfig.list.localRow.title')"
       :chips="[t('authConfig.list.localRow.chip')]"
