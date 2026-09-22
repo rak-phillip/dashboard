@@ -804,6 +804,11 @@ export default {
 
   .login-panel {
     padding-bottom: 60px;
+
+    // Set together deliberately: the panel's text is theme-coloured, so a dark
+    // background without a light foreground is unreadable in the light theme.
+    background: #14304a;
+    color: #f4f6f8;
   }
 
   .locale-selector {
