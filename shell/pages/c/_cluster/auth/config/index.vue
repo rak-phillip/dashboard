@@ -10,8 +10,9 @@ import AuthProvidersEmptyState from '@shell/components/auth/AuthProvidersEmptySt
 import DisableLocalLoginCard from '@shell/components/auth/DisableLocalLoginCard.vue';
 import { HIDE_LOCAL_AUTH_PROVIDER } from '@shell/store/features';
 import { MODE, _EDIT } from '@shell/config/query-params';
-import { LOCAL_AUTH_ID, UNSUPPORTED_AUTH_IDS, canWriteLocalAuthFeature, localAuthFeature } from '@shell/utils/auth';
-import { sortBy } from '@shell/utils/sort';
+import { LOCAL_AUTH_ID, canWriteLocalAuthFeature, localAuthFeature } from '@shell/utils/auth';
+import { toProviderTypes } from '@shell/utils/auth-providers';
+import { allHash } from '@shell/utils/promise';
 
 const resource = MANAGEMENT.AUTH_CONFIG;
 
@@ -28,13 +29,20 @@ export default {
   },
 
   async fetch() {
-    this.allConfigs = await this.$store.dispatch('management/findAll', { type: resource });
+    const hash = await allHash({
+      configs: this.$store.dispatch('management/findAll', { type: resource }),
+      types:   this.$store.dispatch('auth/getAuthProviderTypes'),
+    });
+
+    this.allConfigs = hash.configs;
+    this.providerTypes = toProviderTypes(hash.types, { withFallback: this.$store.getters['i18n/withFallback'] });
   },
 
   data() {
     return {
-      allConfigs:  [],
-      toggleError: null,
+      allConfigs:    [],
+      providerTypes: [],
+      toggleError:   null,
     };
   },
 
@@ -59,12 +67,10 @@ export default {
       return canWriteLocalAuthFeature(this.$store.getters);
     },
 
-    providerTypes() {
-      const configurable = this.allConfigs.filter((c) => c.id !== LOCAL_AUTH_ID && !UNSUPPORTED_AUTH_IDS.includes(c.id));
-
-      return sortBy(configurable, ['sideLabel', 'provider']);
-    },
-
+    /**
+     * Local has no vendor copy of its own, so it falls back to describing what
+     * the built-in accounts are for.
+     */
     localDescription() {
       if (this.localConfig?.description) {
         return this.localConfig.description;
@@ -99,11 +105,23 @@ export default {
         styles:         'max-height: 100vh;',
         componentProps: {
           rows:     this.providerTypes,
-          selectCb: (id) => this.$router.push(this.editLocation({ id })),
+          selectCb: (provider) => this.$router.push(this.addLocation(provider)),
         },
       });
     },
 
+    /**
+     * Where picking a provider type in the add dialog goes.
+     *
+     * Every connection to a provider is a config of its own, which needs a name
+     * before it can be written, so adding one always starts on the create page.
+     */
+    addLocation(provider) {
+      return {
+        name:   'c-cluster-auth-config-create-provider',
+        params: { cluster: this.$route.params.cluster, provider },
+      };
+    },
     editLocation(row) {
       return {
         name:   'c-cluster-auth-config-id',
