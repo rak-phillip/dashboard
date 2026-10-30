@@ -1,0 +1,8 @@
+{
+  "name": "chunkrepro",
+  "description": "Repro: CSS-only shared chunk in the deps map",
+  "version": "0.1.0",
+  "private": false,
+  "rancher": true,
+  "engines": { "node": ">=20" }
+}
