@@ -1,0 +1,8 @@
+{
+  "name": "lazycjs",
+  "description": "Repro: first import() of a CommonJS module in a package build",
+  "version": "0.1.0",
+  "private": false,
+  "rancher": true,
+  "engines": { "node": ">=20" }
+}
