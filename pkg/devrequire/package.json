@@ -1,0 +1,8 @@
+{
+  "name": "devrequire",
+  "description": "Repro: require() of a callable CommonJS package under yarn dev",
+  "version": "0.1.0",
+  "private": false,
+  "rancher": true,
+  "engines": { "node": ">=20" }
+}
