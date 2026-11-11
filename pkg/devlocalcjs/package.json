@@ -1,0 +1,8 @@
+{
+  "name": "devlocalcjs",
+  "description": "Repro: a local CommonJS file in pkg/ under yarn dev",
+  "version": "0.1.0",
+  "private": false,
+  "rancher": true,
+  "engines": { "node": ">=20" }
+}
